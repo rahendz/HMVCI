@@ -56,7 +56,7 @@ if (defined('ENVIRONMENT'))
  * as this file.
  *
  */
-	$system_path = 'system';
+	$system_path = '../cores/2.2.1';
 
 /*
  *---------------------------------------------------------------
