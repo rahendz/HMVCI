@@ -493,25 +493,8 @@ if ( ! function_exists ( 'do_upload' ) ) :
 	}
 endif;
 
-if ( ! function_exists ( 'do_validate_form' ) ) :
-	function do_validate_form ( $field = array(), $human = NULL, $rules = NULL ) {
-		$CI =& get_instance();
-		if ( ! isset ( $CI->form_validation ) ) $CI->load->library ( 'form_validation' );
-		if ( is_array ( $field ) )
-			foreach ( $field as $f )
-				$CI->form_validation->set_rules ( $f['0'], $f['1'], $f['2'] );
-		else $CI->form_validation->set_rules ( $field, $human, $rules );
-		$custom_msg = array (
-			array ( 'required', 'tidak boleh kosong' )
-			);
-		foreach ( $custom_msg as $m )
-			$CI->form_validation->set_message ( $m['0'], 'Kolom %s ' . $m['1'] );
-		return $CI->form_validation->run();
-	}
-endif;
-
-if ( ! function_exists ( 'ci_db' ) ) :
-	function &ci_db() {
+if ( ! function_exists ( 'initiate_db' ) ) :
+	function &initiate_db() {
 		$_ci =& get_instance();
 		$_ci->load->config ( 'database', FALSE, TRUE );
 		$dbparam = ! config_item ( 'default' ) ? '' : config_item ( 'default' );
@@ -522,35 +505,35 @@ endif;
 
 if ( ! function_exists ( 'list_tables' ) ) :
 	function list_tables() {
-		$_db =& ci_db();
+		$_db =& initiate_db();
 		return $_db->list_tables();
 	}
 endif;
 
 if ( ! function_exists ( 'table_exists' ) ) :
 	function table_exists ( $table_name ) {
-		$_db =& ci_db();
+		$_db =& initiate_db();
 		return $_db->table_exists ( $table_name );
 	}
 endif;
 
 if ( ! function_exists ( 'list_fields' ) ) :
 	function list_fields() {
-		$_db =& ci_db();
+		$_db =& initiate_db();
 		return $_db->list_fields();
 	}
 endif;
 
 if ( ! function_exists ( 'field_exists' ) ) :
 	function field_exists ( $field, $table ) {
-		$_db =& ci_db();
+		$_db =& initiate_db();
 		return $_db->field_exists ( $field, $table );
 	}
 endif;
 
 if ( ! function_exists ( 'field_data' ) ) :
 	function field_data ( $table = NULL ) {
-		$_db =& ci_db();
+		$_db =& initiate_db();
 		return $_db->field_data ( $table );
 	}
 endif;

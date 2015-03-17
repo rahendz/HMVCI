@@ -30,6 +30,10 @@ class Example extends Public_Controller
         $this->methods['user_delete']['limit'] = 50; //50 requests per hour per user/key
     }
 
+    function test_get(){
+        $this->response(array('jinguk'));
+    }
+
     function user_get()
     {
         if(!$this->get('id'))

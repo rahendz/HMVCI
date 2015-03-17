@@ -33,6 +33,10 @@ class MY_Model extends CI_Model {
 	public $string = NULL;
 	public $values = array();
 	public $key = NULL;
+	public $rules = array();
+	public $errors = FALSE;
+	public $format = array();
+	public $exists = array();
 	public $platform;
 	public $version;
 	public $conn_id;
@@ -290,6 +294,23 @@ class MY_Model extends CI_Model {
 			return call_user_func_array ( array ( &$this->db, $method ), $param );
 		}
 		return $this->db->$method();
+	}
+
+	public function validate() {
+		if ( ! isset ( $this->validation ) ) {
+			$this->load->library ( 'form_validation', $this->rules, 'validation' );
+		}
+
+		$this->validation->set_message ( $this->format );
+
+		if ( $this->validation->run() == FALSE AND ! empty ( $this->validation->error_string() ) ) {
+			$this->errors['string'] = $this->validation->error_string();
+			foreach ( $this->rules as $r ) {
+				$this->errors[$r['field']] = $this->validation->error($r['field']);
+			}
+			return FALSE;
+		}
+		return TRUE;
 	}
 }
 

@@ -21,14 +21,16 @@ class Welcome extends Public_Controller {
 			array ( 'meneh', 'meneh.js',array(),'3.2.0',TRUE)
 			);
 
-
-		// $wel =& load_model ( 'm_welcome' );
+		// $wel = new M_Welcome;
+		// echo_r ( $model->test() );
+		$wel =& load_model ( 'm_welcome' );
+		$wel->sign_validation();
 		// echo_r( $wel->test() );
 		// echo_r( $wel->test_2() );
-		$this->data_theme['jinguk'] = 'parsing data to theme';
+		// $this->data_theme['jinguk'] = 'parsing data to theme';
 
 		// $theme_data['content'] = $this->load->view ( 'welcome_message', array(), TRUE );
-		$this->content_theme = 'welcome_message';
+		$this->content_theme = 'test_form';
 		return $this->render_theme ( /*$theme_data*/ );
 	}
 }

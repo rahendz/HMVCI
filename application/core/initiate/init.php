@@ -23,3 +23,6 @@ if ( isset ( $my_config ) AND count ( $my_config ) > 0 )
 	foreach ( $my_config as $c => $i ) $assign_to_config[$c] = $i;
 
 $modules_locations = current ( $assign_to_config['modules_locations'] );
+
+define ( 'VENDORPATH', APPPATH . 'core/vendor/' );
+@require_once VENDORPATH . 'autoload.php';
