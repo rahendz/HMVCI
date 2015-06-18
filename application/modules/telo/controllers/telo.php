@@ -5,13 +5,14 @@ class Telo extends Public_Controller {
 	public function index()
 	{
 		echo 'iki telo joss';
-		$this->load->theme();
+		// echo $this->load->current_controller;
+		return $this->render_theme();
 	}
 
 	public function jinguk()
 	{
 		echo 'iki jinguk';
-		$this->load->theme();
+		return $this->render_theme();
 	}
 }
 

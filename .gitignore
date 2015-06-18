@@ -5,6 +5,22 @@ application/cache
 application/config/*
 !application/config/themes.php
 
+application/controllers/*
+!application/controllers/api
+!application/controllers/oauth2.php
+!application/controllers/welcome.php
+
+application/controllers/*
+!application/controllers/api
+!application/controllers/oauth2.php
+!application/controllers/welcome.php
+
+application/errors/*
+!application/errors/error_404.php
+!application/errors/error_db.php
+!application/errors/error_general.php
+!application/errors/error_php.php
+
 application/helpers
 application/hooks
 application/language

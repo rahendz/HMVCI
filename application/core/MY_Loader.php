@@ -5,6 +5,7 @@ class MY_Loader extends CI_Loader {
 	protected $_ci_modules = array();
 	protected $_ci_controllers = array();
 
+	public $theme_config = array();
 	public $theme_part = NULL;
 	public $theme_dir = NULL;
 	public $views_files = NULL;
@@ -177,35 +178,30 @@ class MY_Loader extends CI_Loader {
 
 	public function theme_initiate() {
 
-		$this->config ( 'themes' );
+		// $this->config ( 'themes' );
 		$router =& $this->_ci_get_component ( 'router' );
 
-		$theme_config = config_item ( 'theme-name' );
-		$theme_data = isset ( $theme_config[$router->method] ) ?
-			$theme_config[$router->method] : $theme_config;
+		// $theme_config = config_item ( 'theme-name' );
+		// $theme_data = isset ( $theme_config[$router->method] ) ?
+			// $theme_config[$router->method] : $theme_config;
 
 		$backend_theme_path = config_item ( 'backend_theme_path' ) !== FALSE ?
-			FCPATH . config_item ( 'backend_theme_path' ) : FCPATH . APPPATH .'themes/';
+			FCPATH . config_item ( 'backend_theme_path' ) : APPPATH .'themes/';
 
 		$frontend_theme_path = config_item ( 'frontend_theme_path' ) !== FALSE ?
 			FCPATH . config_item ( 'frontend_theme_path' ) : FCPATH . 'themes/';
 
-		switch ( key ( $theme_data ) ) :
-			default:
-			case 'frontend':
-				$theme_name = isset ( $theme_data['frontend'] ) ? $theme_data['frontend'] : 'default';
-				$this->theme_dir = is_dir ( $frontend_theme_path . $theme_name ) ?
-					$frontend_theme_path . $theme_name .'/' :
-					array ( 'dir' => $frontend_theme_path . $theme_name );
-				break;
-
-			case 'backend':
-				$theme_name = isset ( $theme_data['backend'] ) ? $theme_data['backend'] : 'default';
-				$this->theme_dir = is_dir ( $backend_theme_path . $theme_name ) ?
-					$backend_theme_path . $theme_name . '/' :
-					array ( 'dir' => $backend_theme_path . $theme_name );
-				break;
-		endswitch;
+		if ( isset ( $this->theme_config['frontend'] ) ) {
+			$theme_name = $this->theme_config['frontend'];
+			$this->theme_dir = is_dir ( $frontend_theme_path . $theme_name ) ?
+				$frontend_theme_path . $theme_name . '/' : array (
+					'dir' => $frontend_theme_path . $theme_name );
+		} elseif ( $this->theme_config['backend'] ) {
+			$theme_name = $this->theme_config['backend'];
+			$this->theme_dir = is_dir ( $backend_theme_path . $theme_name ) ?
+				$backend_theme_path . $theme_name . '/' : array (
+					'dir' => $backend_theme_path . $theme_name );
+		}
 
 		! is_array ( $this->theme_dir ) OR show_error ( '<p><strong>' . strtoupper ( key ( $theme_data ) ) .
 			' THEME NOTICE:</strong> It\'s seems theme directory aren\'t set yet or missing.</p><code>' .
@@ -216,7 +212,7 @@ class MY_Loader extends CI_Loader {
 		$this->vars ( array (
 			'base_url' => $config->base_url(),
 			'site_url' => $config->site_url(),
-			'template_type' => key ( $theme_data ),
+			'template_type' => key ( $this->theme_config ),
 			'template_path' => str_replace ( FCPATH, '', $this->theme_dir ),
 			'stylesheet_url' => $config->base_url ( str_replace ( FCPATH, '', $this->theme_dir ) . 'style.css' )
 			) );
@@ -233,26 +229,34 @@ class MY_Loader extends CI_Loader {
 		}
 
 		$_ci_vars = $this->_ci_object_to_array ( $vars );
-
 		$theme_files = array ( 'front-page', 'blog', 'home', 'index' );
-		if ( ! is_null ( $this->theme_part ) ) $theme_files = array ( $this->theme_part );
 
-		foreach ( $theme_files as $index_file )
+		if ( ! is_null ( $this->theme_part ) ) {
+			$theme_files = array ( $this->theme_part );
+			extract ( $this->views_data );
+		}
+
+		foreach ( $theme_files as $index_file ) {
 			if ( file_exists ( $index_path = $this->theme_dir . $index_file . EXT ) !== FALSE ) break;
 			else $index_path = FALSE;
+		}
 
-		( $index_path !== FALSE ) OR show_error ( '<p><strong>' . strtoupper ( key ( $theme_data ) ) .
+		( $index_path !== FALSE ) OR show_error ( '<p><strong>' . strtoupper ( key ( $this->theme_config ) ) .
 			' THEME NOTICE:</strong> There\'s no index file on your theme.</p>' );
 
 		! file_exists ( $theme_functions = $this->theme_dir . 'functions' . EXT ) OR @include_once $theme_functions;
 
 		$_ci_CI =& get_instance();
 
-		foreach ( get_object_vars ( $_ci_CI ) as $_ci_key => $_ci_var )
-			if ( ! isset ( $this->$_ci_key ) ) $this->$_ci_key = $_ci_CI->$_ci_key;
+		foreach ( get_object_vars ( $_ci_CI ) as $_ci_key => $_ci_var ) {
+			if ( ! isset ( $this->$_ci_key ) ) {
+				$this->$_ci_key = $_ci_CI->$_ci_key;
+			}
+		}
 
-		if ( is_array ( $_ci_vars ) AND count ( $_ci_vars ) > 0 )
+		if ( is_array ( $_ci_vars ) AND count ( $_ci_vars ) > 0 ) {
 			$this->_ci_cached_vars = array_merge ( $this->_ci_cached_vars, $_ci_vars );
+		}
 
 		$this->vars ( $this->_ci_cached_vars );
 		extract ( $this->_ci_cached_vars );
@@ -279,18 +283,16 @@ class MY_Loader extends CI_Loader {
 		}
 	}
 
-	public function enqueue_style ( $id, $file, $require = array(), $version = NULL ) {
+	public function enqueue_style ( $id, $file = NULL, $require = array(), $version = NULL ) {
 		$this->enqueue_style[$id] = array (
-			'id' => $id,
 			'file' => $file,
 			'require' => $require,
 			'ver' => $version
 			);
 	}
 
-	public function enqueue_script ( $id, $file, $require = array(), $version = NULL, $in_footer = FALSE ) {
+	public function enqueue_script ( $id, $file = NULL, $require = array(), $version = NULL, $in_footer = FALSE ) {
 		$this->enqueue_script[$id] = array (
-			'id' => $id,
 			'file' => $file,
 			'require' => $require,
 			'ver' => $version,
@@ -299,83 +301,134 @@ class MY_Loader extends CI_Loader {
 	}
 
 	public function theme_enqueue_head ( $return = NULL ) {
+		$assets_css_path = APPPATH . 'core/assets/css/';
+		$assets_js_path = APPPATH . 'core/assets/js/';
 
-		foreach ( $this->enqueue_style as $e ) {
-			list ( $id, $file, $require, $version ) = $e;
+		// $return .= '<meta name="site_url" content="'. $this->config->site_url() .'" />'. "\n\t";
+		// $return .= '<meta name="assets_path" content="'. $this->config->base_url ( APPPATH . 'core/assets' ) .'" />'. "\n\t";
+		// $return .= '<meta name="template_directory_uri" content="'. get_template_directory_uri() .'" />'. "\n\t";
+		// $return .= '<meta name="stylesheet_url" content="'. get_stylesheet_uri() .'" />'. "\n\t";
+
+		foreach ( $this->enqueue_style as $id => $e ) {
+			list ( $file, $require, $version ) = $e;
 
 			$requires = isset ( $require ) ? $require : array();
 			$filepath = get_template_directory_uri ( $file . '?ver=' . ( isset ( $version ) ? $version : NULL ) );
 
+			if ( $this->is_anystyle_required ( $requires ) === FALSE ) {
+				foreach ( $requires as $r ) {
+					$r = file_exists( $assets_css_path . $r . '.min.css' ) ? $r . '.min' : $r; 
+					if ( file_exists ( $assets_css_path . $r . '.css' ) ) {
+						$require_file = base_url ( $assets_css_path . $r . '.css' );
+						$return .= sprintf ( '<link rel="stylesheet" id="%s-css" href="%s" />',	$r, $require_file ) . "\n\t";
+						$this->enqueue_style_id[] = $r;
+					}
+				}
+			}
+
 			if ( $id !== 'style' AND $this->is_anystyle_required ( $requires ) !== FALSE ) {
 				$return .= sprintf ( '<link rel="stylesheet" id="%s-css" href="%s" />',	$id, $filepath ) . "\n\t";
 				$this->enqueue_style_id[] = $id;
+			} else {
+				$stylesheet = sprintf ( '<link rel="stylesheet" id="%s-css" href="%s" />',	$id, $filepath ) . "\n\t";
 			}
 		}
 
-		$is_style_found = recursive_array_search ( 'style', $this->enqueue_style );
-		if ( $is_style_found !== FALSE ) {
-			list ( $id, $file, $require, $version ) = $is_style_found;
-			$filepath = get_template_directory_uri ( $file .'?ver='. ( isset ( $version ) ? $version : NULL ) );
-			$return .= sprintf ( '<link rel="stylesheet" id="%s-css" href="%s" />', $id, $filepath ) ."\n\t";
+		if ( isset ( $stylesheet ) ) {
+			$return .= $stylesheet;
 		}
 
 		$force_load_last = array (
 			'trigger', 'admin-trigger', 'trigger-admin', 'trigger-backend', 'backend-trigger', 'trigger-frontend', 'frontend-trigger'
 			);
 
-		foreach ( $this->enqueue_script as $s ) {
-			for ( $i = 5; $i > count($s); $i-- ) {
+		foreach ( $this->enqueue_script as $id => $s ) {
+			for ( $i = 4; $i > count($s); $i-- ) {
 				$s[] = '';
 			}
 
-			list ( $id, $file, $require, $version, $in_footer ) = $s;
+			list ( $file, $require, $version, $in_footer ) = $s;
 
 			$filepath = get_template_directory_uri ( $file .'?ver='. ( isset ( $version ) ? $version : NULL ) );
 			$requires = isset ( $require ) ? $require : array();
 			$for_footer = isset ( $in_footer ) ? $in_footer : FALSE;
 
+			if ( $this->is_anyscript_required ( $requires ) === FALSE ) {
+				foreach ( $requires as $r ) {
+
+					$x = $r === 'tinymce' ? 'tinymce/tinymce' : $r;
+					$re = file_exists ( $assets_js_path . $x . '.min.js' ) ? $x . '.min' : $x;
+
+					if ( ( $r == 'jquery' OR $r == 'tinymce' ) AND file_exists ( $assets_js_path . $re . '.js' ) ) {
+						$require_file = base_url ( $assets_js_path . $re . '.js' );
+						if ( $this->is_anyscript_required ( array ( $r ) ) === FALSE ) {
+							$return .= sprintf ( '<script id="%s" src="%s"></script>', $r, $require_file ) . "\n\t";
+							$this->enqueue_script_id[] = $r;
+						}
+					}
+				}
+			}
+
 			if ( ! $for_footer AND ! in_array ( $id, $force_load_last ) AND $this->is_anyscript_required ( $require ) !== FALSE ) {
-				$return .= sprintf ( '<script id="%s" src="%s" ></script>', $id, $filepath ) ."\n\t";
+				$return .= sprintf ( '<script id="%s" src="%s"></script>', $id, $filepath ) ."\n\t";
 				$this->enqueue_script_id[] = $id;
 			}
 		}
+
+		$return .= '<!--[if lt IE 9]>' . "\n\t";
+		if ( file_exists ( $assets_js_path . 'html5shiv.js' ) ) {
+			$return .= "\t" . sprintf ( '<script src="%s"></script>', base_url ( $assets_js_path . 'html5shiv.js' ) ) . "\n\t";
+		}
+		if ( file_exists ( $assets_js_path . 'respond.js' ) ) {
+			$return .= "\t" . sprintf ( '<script src="%s"></script>', base_url ( $assets_js_path . 'respond.js' ) ) . "\n\t";
+		}
+		$return .= '<![endif]-->' . "\n\t";
 
 		echo rtrim ( $return, "\t" );
 	}
 
 	public function theme_enqueue_foot ( $return = "\n" ) {
+		$assets_js_path = APPPATH . 'core/assets/js/';
+
 		$force_load_last = array (
 			'trigger', 'admin-trigger', 'trigger-admin', 'trigger-backend', 'backend-trigger', 'trigger-frontend', 'frontend-trigger'
 			);
 
-		foreach ( $this->enqueue_script as $e ) {
-			for ( $i = 5; $i > count($e); $i-- ) {
+		foreach ( $this->enqueue_script as $id => $e ) {
+			for ( $i = 4; $i > count($e); $i-- ) {
 				$e[] = '';
 			}
 
-			list ( $id, $file, $require, $version, $in_footer ) = $e;
+			list ( $file, $require, $version, $in_footer ) = $e;
 
 			$filepath = get_template_directory_uri ( $file .'?ver='. ( isset ( $version ) ? $version : NULL ) );
 			$requires = isset ( $require ) ? $require : array();
 			$for_footer = isset ( $in_footer ) ? $in_footer : FALSE;
 
+			if ( $this->is_anyscript_required ( $requires ) === FALSE ) {
+				foreach ( $requires as $r ) {
+
+					// $x = $r === 'tinymce' ? 'tinymce/tinymce' : $r;
+					$re = file_exists ( $assets_js_path . $r . '.min.js' ) ? $r . '.min' : $r;
+
+					// echo $assets_js_path . $re . '<br/>';
+					if ( $r !== 'jquery' AND file_exists ( $assets_js_path . $re . '.js' ) ) {
+						$require_file = base_url ( $assets_js_path . $re . '.js' );
+						$return .= sprintf ( '<script id="%s" src="%s"></script>',	$r, $require_file ) . "\n";
+						$this->enqueue_script_id[] = $r;
+					}
+				}
+			}
 			if ( $for_footer AND ! in_array ( $id, $force_load_last ) AND $this->is_anyscript_required ( $requires ) !== FALSE ) {
 				$return .= sprintf ( '<script id="%s" src="%s"></script>', $id, $filepath ) . "\n";
 				$this->enqueue_script_id[] = $id;
+			} else {
+				$stylescript = sprintf ( '<script id="%s" src="%s"></script>', $id, $filepath ) . "\n";
 			}
 		}
 
-		$is_trigger_found = recursive_array_search ( 'trigger', $this->enqueue_script );
-		if ( $is_trigger_found !== FALSE ) {
-			for ( $i = 5; $i > count($is_trigger_found); $i-- ) {
-				$is_trigger_found[] = '';
-			}
-
-			list ( $id, $file, $require, $version, $in_footer ) = $is_trigger_found;
-
-			$filepath = get_template_directory_uri ( $file .'?ver='. ( isset ( $version ) ? $version : NULL ) );
-
-			$return .= sprintf ( '<script id="%s" src="%s"></script>', $id, $filepath ) . "\n";
+		if ( isset ( $stylescript ) ) {
+			$return .= $stylescript;
 		}
 
 		echo $return;
@@ -415,14 +468,19 @@ class MY_Loader extends CI_Loader {
 		$class = isset ( $segments[0] ) ? $segments[0] : FALSE;
 		$method = isset ( $segments[1] ) ? $segments[1] : "index";
 
-		if ( ! $class ) return;
+		if ( ! $class ) {
+			return;
+		}
 
 		if ( ! array_key_exists ( strtolower ( $class ), $this->_ci_controllers ) ) {
 			if ( file_exists ( APPPATH . 'controllers/' . $router->fetch_directory() . $class . '.php' ) )
 				include_once ( APPPATH . 'controllers/' . $router->fetch_directory() . $class . '.php' );
 			elseif ( file_exists ( APPPATH . 'controllers/' . $class . '.php' ) )
 				include_once ( APPPATH . 'controllers/' . $class . '.php' );
-			if ( ! class_exists ( $class ) ) echo '390'; show_404 ( "{$class}/{$method}" );
+			if ( ! class_exists ( $class ) ) {
+				echo '426'; 
+				show_404 ( "{$class}/{$method}" );
+			}
 			$this->_ci_controllers[strtolower($class)] = new $class();
 		}
 
@@ -457,8 +515,8 @@ class MY_Loader extends CI_Loader {
 	}
 
 	private function find_module ( $module ) {
-		$config =& $this->_ci_get_component ( 'config' );
-		$module_path = current ( $config->item ( 'modules_locations' ) ) . rtrim ( $module, '/' ) . '/';
+		// $config =& $this->_ci_get_component ( 'config' );
+		$module_path = MODULES_LOCATIONS . rtrim ( $module, '/' ) . '/';
 		$controllers_path = APPPATH . 'controllers/';
 
 		if ( is_dir ( $module_path ) ) return $module_path;
@@ -470,7 +528,7 @@ class MY_Loader extends CI_Loader {
 
 	private function is_anystyle_required ( $require = array() ) {
 		foreach ( $require as $r ) {
-			if ( ! in_array ( $r, $this->enqueue_style_id ) ) {
+			if ( ! isset ( $this->enqueue_style_id ) OR ! in_array ( $r, $this->enqueue_style_id ) ) {
 				return FALSE;
 			}
 		}
@@ -487,13 +545,13 @@ class MY_Loader extends CI_Loader {
 	}
 
 	private function get_current_controller() {
-		$router = & $this->_ci_get_component ( 'router' );
+		$router =& $this->_ci_get_component ( 'router' );
 		if ( empty ( $router->module ) ) {
 			return APPPATH . 'controllers/' . $router->directory . $router->class . EXT;
 		}
-		$config =& $this->_ci_get_component ( 'config' );
-		$real_modules_path = realpath ( current ( (array) $config->config['modules_locations'] ) );
-		$modules_path = str_replace ( array ( FCPATH, '\\' ), array ( '', '/' ), $real_modules_path );
-		return $modules_path .'/'. $router->module .'/controllers/'. realpath ( $router->directory ) . $router->class . EXT;
+		// $config =& $this->_ci_get_component ( 'config' );
+		// $real_modules_path = realpath ( current ( (array) $config->config['modules_locations'] ) );
+		// $modules_path = str_replace ( array ( FCPATH, '\\' ), array ( '', '/' ), $real_modules_path );
+		return MODULES_LOCATIONS.$router->module. '/controllers/' .realpath($router->directory).$router->class.EXT;
 	}
 }

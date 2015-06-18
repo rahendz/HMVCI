@@ -27,3 +27,10 @@ if ( ! function_exists ( 'echo_r' ) ) :
 		if ( $exit ) exit;
 	}
 endif;
+
+if ( ! function_exists ( 'echo_j' ) ) :
+	function echo_j ( $data )
+	{
+		echo_r ( $data, 'json' );
+	}
+endif;

@@ -129,11 +129,12 @@ if ( ! function_exists ( 'load_library' ) ) :
 	function &load_library ( $library ) {
 		$_ci =& get_instance();
 		$subname = $basename = FALSE;
+		$modules_locations = config_item ( 'modules_locations' );
 
 		$sub_library_file = APPPATH . 'libraries/' . ucfirst ( $library ) . EXT;
 
 		if ( ! file_exists ( $sub_library_file ) AND ! empty ( $_ci->router->module ) ) {
-			$sub_library_file = config_item ( 'modules_locations' )[0] . $_ci->router->module . '/libraries/' . ucfirst ( $library ) . EXT;
+			$sub_library_file = $modules_locations[0] . $_ci->router->module . '/libraries/' . ucfirst ( $library ) . EXT;
 		}
 
 		$base_library_file = BASEPATH . 'libraries/' . ucfirst ( $library ) . EXT;
@@ -166,7 +167,8 @@ if ( ! function_exists ( 'load_model' ) ) {
 if ( ! function_exists ( 'get_current_path' ) ) {
 	function get_current_path ( $type = NULL, $realpath = FALSE ) {
 		$_ci =& get_instance();
-		$current_path = str_replace ( array ( FCPATH, '\\' ), array ( '', '/' ), current ( debug_backtrace() )['file'] );
+		$debug = current ( debug_backtrace() );
+		$current_path = str_replace ( array ( FCPATH, '\\' ), array ( '', '/' ), $debug['file'] );
 
 		if ( 'views' == $type AND strpos ( $current_path, $type ) !== FALSE ) {
 			return $current_path;
@@ -202,7 +204,11 @@ if ( ! function_exists ( 'redirect' ) ) :
 endif;
 
 if ( ! function_exists ( 'get_input' ) ) :
-	function get_input ( $type, $name = NULL ) {
+	function get_input ( $type = NULL, $name = NULL ) {
+		if ( is_null ( $type ) ) {
+			parse_str ( $_SERVER['QUERY_STRING'], $parse );
+			return is_null ( key ( $parse ) ) ? FALSE : key ( $parse );
+		}
 		$_ci =& get_instance();
 		$type = strtolower ( $type );
 		$func = array (
@@ -216,11 +222,41 @@ if ( ! function_exists ( 'get_input' ) ) :
 			'agent'		=> 'user_agent',
 			'md5'		=> 'post'
 			);
-		if ( ! array_key_exists ( $type, $func ) ) return FALSE;
+
+		if ( $type === 'files' ) {
+			$files = current ( $_FILES );
+
+			if ( ! is_null ( $name ) ) {
+				return $files[$name];
+			}
+
+			return $files;
+		}
+
+		if ( ! array_key_exists ( $type, $func ) ) {
+			return FALSE;
+		}
+
 		$input_method = $func[$type];
-		if ( $type == 'md5' )
+
+		if ( $type == 'md5' ) {
 			return md5 ( $_ci->input->$input_method ( $name, TRUE ) );
+		}
 		return $_ci->input->$input_method ( $name, TRUE );
+	}
+endif;
+
+if ( ! function_exists ( 'on_input' ) ) :
+	function on_input ( $name, $type = 'get' ) {
+		if ( $type === 'get' AND isset ( $_GET[$name] ) ) {
+			return $name;
+		} elseif ( $type === 'post' AND isset ( $_POST[$name] ) ) {
+			return $name;
+		} elseif ( $type === 'both' AND ( isset ( $_GET[$name] ) OR isset ( $_POST[$name] ) ) ) {
+			return $name;
+		} else {
+			return FALSE;
+		}
 	}
 endif;
 
@@ -240,11 +276,21 @@ endif;
 
 if ( ! function_exists ( 'is_input' ) ) :
 	function is_input ( $type, $name = NULL, $value = NULL ) {
-		if ( ! is_null ( $value ) )
+		if ( ! is_null ( $value ) ) {
 			return get_input ( $type, $name ) !== $value ? FALSE : TRUE;
+		}
 		return ! get_input ( $type, $name ) ? FALSE : TRUE;
 	}
 endif;
+
+if ( ! function_exists ( 'is_post' ) AND ! function_exists ( 'is_get' ) ) {
+	function is_post ( $name, $value = NULL ) {
+		return is_input ( 'post', $name, $value );
+	}
+	function is_get ( $name, $value = NULL ) {
+		return is_input ( 'get', $name, $value );
+	}
+}
 
 if ( ! function_exists ( 'current_url_string' ) ) :
 	function current_url_string() {
@@ -266,7 +312,7 @@ endif;
 if ( ! function_exists ( 'base_url' ) ) :
 	function base_url ( $path = NULL ) {
 		$_ci =& get_instance();
-		return $_ci->config->base_url ( $url );
+		return $_ci->config->base_url ( $path );
 	}
 endif;
 
@@ -377,6 +423,22 @@ if ( ! function_exists ( 'recursive_array_search' ) ) :
 	}
 endif;
 
+if ( ! function_exists ( 'recursive_array_search_key' ) ) :
+	function recursive_array_search_key ( $needle, $haystack ) {
+		foreach ( $haystack as $key => $value ) {
+			if ( is_array ( $value ) ) {
+				$inside = recursive_array_search_key ( $needle, $value );
+			}
+
+			if ( $needle === $value OR ( isset ( $inside ) AND $inside !== FALSE ) ) {
+				return $key;
+			}
+		}
+
+		return FALSE;
+	}
+endif;
+
 if ( ! function_exists ( 'benchmark_start' ) ) :
 	function benchmark_start ( $slug ) {
 		$_ci =& get_instance();
@@ -468,10 +530,13 @@ if ( ! function_exists ( 'pagination' ) ) :
 		$paging['num_tag_close'] = isset ( $num_tag_close ) ? $num_tag_close : '</li>';
 		if ( isset ( $display_pages ) ) $paging['display_pages'] = $display_pages;
 		$_ci->paged->initialize ( $paging );
+		$current_offset = $paging['use_page_numbers'] !== FALSE ? $offset : $_ci->uri->segment ( $uri_segment );
+		$current_num = $paging['use_page_numbers'] !== FALSE ? $offset + 1 : $_ci->uri->segment ( $uri_segment ) + 1;
 		return ( object ) array (
 			'limit' => $per_page,
-			'offset' => $paging['use_page_numbers'] !== FALSE ? $offset : $_ci->uri->segment ( $uri_segment ),
-			'num' => $paging['use_page_numbers'] !== FALSE ? $offset + 1 : $_ci->uri->segment ( $uri_segment ) + 1,
+			'offset' => $current_offset,
+			'num' => $current_num,
+			'info' => 'Showing ' .$current_num. ' to ' .( $current_num * $per_page ). ' of ' .$total_rows. ' Records',
 			'links' => $_ci->paged->create_links()
 			);
 	}
@@ -480,16 +545,33 @@ endif;
 if ( ! function_exists ( 'do_upload' ) ) :
 	function do_upload ( $name = 'userfile', $path = './upload/', $types = 'gif|jpg|png', $size = '500' ) {
 		$CI =& get_instance();
-		if ( ! isset ( $CI->upload ) ) $CI->load->library ( 'upload' );
-		if ( ! is_dir ( $path ) AND ! mkdir ( $path, 0777, TRUE ) )
+
+		if ( ! isset ( $CI->upload ) ) {
+			$CI->load->library ( 'upload' );
+		}
+		
+		if ( is_array ( $path ) ) {
+			foreach ( $path as $opt => $val ) {
+				$cfg[$opt] = $val;
+			}
+		} else {
+			$cfg['upload_path'] = $path;
+			$cfg['allowed_types'] = $types;
+			$cfg['max_size'] = $size;
+		}
+
+		$CI->upload->initialize($cfg);
+
+		if ( ! is_dir ( $cfg['upload_path'] ) AND ! mkdir ( $cfg['upload_path'], 0777, TRUE ) ) {
 			return array ( 'error' => TRUE, 'msg' => 'Ups! Something wrong with directory upload' );
-		$CI->upload->upload_path = $path;
-		$CI->upload->allowed_types = explode ( '|', $types );
-		$CI->upload->max_size = $size;
-		$CI->upload->encrypt_name = TRUE;
-		if ( $CI->upload->do_upload ( $name ) === FALSE )
-			return array ( 'error' => TRUE, 'msg' => $CI->upload->display_errors() );
-		else return $CI->upload->data();
+		}
+
+		if ( $CI->upload->do_upload ( $name ) === FALSE ) {
+			return array ( 'error' => TRUE, 'msg' => $CI->upload->error_msg );
+		}
+		else {
+			return $CI->upload->data();
+		}
 	}
 endif;
 
@@ -673,3 +755,43 @@ if ( ! function_exists ( 'post_remote' ) ) :
 		return $buffer;
 	}
 endif;
+
+if ( ! function_exists ( 'get_template_dir' ) ) {
+	function get_template_dir ( $path = NULL ) {
+		$_ci =& get_instance();
+		return $_ci->load->theme_dir . $path;
+	}
+}
+
+if ( ! function_exists ( 'call_login_form' ) ) {
+	function call_login_form ( $alert = NULL ) {
+		$_ci =& get_instance();
+		extract ( $_ci->load->views_data );
+
+		$default_login = 'login';
+
+		if ( isset ( $alert_msg ) ) {
+			$alert = '<div class="alert alert-warning alert-thin text-center">' . $alert_msg . '</div>';
+		} elseif ( is_get ( 'logged_out', 'true' ) ) {
+			$alert = '<div class="alert alert-warning alert-thin text-center">Anda berhasil keluar.</div>';
+		}
+
+		if ( file_exists ( get_template_dir ( $default_login . EXT ) ) ) {
+			include get_template_dir ( $default_login . EXT );
+		} else {
+			include INIT_VIEWS . 'login_form' . EXT;
+		}
+	}
+}
+
+if ( ! function_exists ( 'is_updated' ) ) {
+	function is_updated() {
+		if ( is_get ( 'status_updated', 'true' ) OR is_get ( 'status_added', 'true' ) OR is_get ( 'status_trashed', 'true' ) OR is_get ( 'status_restored', 'true' ) ) {
+			return TRUE;
+		} elseif ( is_get ( 'status_updated', 'false' ) OR is_get ( 'status_added' ,'false' ) OR is_get ( 'status_trashed', 'false' ) OR is_get ( 'status_restored', 'false' ) ) {
+			return FALSE;
+		} else {
+			return NULL;
+		}
+	}
+}

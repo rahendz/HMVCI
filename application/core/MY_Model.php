@@ -81,7 +81,7 @@ class MY_Model extends CI_Model {
 
 		// From Query
 		if ( in_array ( $method, array ( 'get', 'count', 'delete', 'empty_table', 'truncate' ) ) ) {
-			$this->db->from ( $this->table );
+			$this->db->from ( $this->db->dbprefix ( $this->table ) );
 		}
 
 		// Join Query
@@ -98,7 +98,7 @@ class MY_Model extends CI_Model {
 		}
 
 		// Set Query
-		if ( in_array ( $method, array ( 'insert', 'update' ) ) ) {
+		if ( in_array ( $method, array ( 'insert', 'update', 'replace' ) ) ) {
 			if ( ! is_null ( $this->set ) AND coutn ( $this->set ) > 0 ) {
 				$this->db->set ( $this->set );
 			}
@@ -195,18 +195,35 @@ class MY_Model extends CI_Model {
 		return $this->db->get();
 	}
 
+	public function get_one ( $object = TRUE ) {
+		if ( $object ) {
+			return $this->get()->row();
+		} else {
+			return $this->get()->row_array();
+		}
+	}
+
+	public function get_all ( $object = TRUE ) {
+		if ( $object ) {
+			return $this->get()->result();
+		} else {
+			return $this->get()->result_array();
+		}
+	}
+
 	public function count() {
 		$this->initiate_query ( __FUNCTION__ );
-		return $this->db->count_all_result();
+		return $this->db->count_all_results();
 	}
 
 	public function count_all() {
-		return $this->db->count_all ( $this->table );
+		return $this->db->count_all ( $this->db->dbprefix ( $this->table ) );
 	}
 
 	public function insert() {
 		$return = ! $this->return_id ? 'affected_rows' : 'insert_id';
-		$this->db->insert ( $this->table, $this->values );
+		$this->initiate_query ( __FUNCTION__ );
+		$this->db->insert ( $this->db->dbprefix ( $this->table ), $this->values );
 		return $this->db->$return();
 	}
 
@@ -214,47 +231,56 @@ class MY_Model extends CI_Model {
 		if ( FALSE !== $this->native ) {
 			$insert_id = array();
 			foreach ( $this->values as $val ) {
-				$return = ! $this->return_id ? 'affected_rows' : 'insert_id';
-				$this->db->insert ( $this->table, $val );
-				$insert_id[] = $this->db->$return();
+				$this->values = $val;
+				$insert_id[] = $this->insert();
 			}
 			return $insert_id;
 		}
 		$this->db->trans_start();
-		$this->db->insert_batch ( $this->table, $this->values );
+		$this->db->insert_batch ( $this->db->dbprefix ( $this->table ), $this->values );
 		$this->db->trans_complete();
 		return $this->db->trans_status();
 	}
 
 	public function insert_string() {
-		return $this->db->insert_string ( $this->table, $this->values );
+		return $this->db->insert_string ( $this->db->dbprefix ( $this->table ), $this->values );
 	}
 
 	public function update() {
-		$this->db->update ( $this->table, $this->value );
+		$this->initiate_query ( __FUNCTION__ );
+		$this->db->update ( $this->db->dbprefix ( $this->table ), $this->value );
 		return $this->db->affected_rows();
 	}
 
 	public function update_batch() {
 		$this->db->trans_start();
-		$this->db->update_batch ( $this->table, $this->values, $this->key );
+		$this->db->update_batch ( $this->db->dbprefix ( $this->table ), $this->values, $this->key );
 		$this->db->trans_complete();
 		return $this->db->trans_status();
 	}
 
 	public function update_string() {
-		return $this->db->update_string ( $this->table, $this->values, $this->where );
+		return $this->db->update_string ( $this->db->dbprefix ( $this->table ), $this->values, $this->where );
+	}
+
+	public function replace() {
+		$this->initiate_query ( __FUNCTION__ );
+		$this->db->replace ( $this->db->dbprefix ( $this->table ), $this->values );
+		return $this->db->affected_rows();
 	}
 
 	public function delete() {
-		return $this->db->delete ( $this->table );
+		$this->initiate_query ( __FUNCTION__ );
+		return $this->db->delete ( $this->db->dbprefix ( $this->table ) );
 	}
 
 	public function empty_table() {
-		return $this->db->empty_table ( $this->table );
+		$this->initiate_query ( __FUNCTION__ );
+		return $this->db->empty_table ( $this->db->dbprefix ( $this->table ) );
 	}
 
 	public function truncate() {
+		$this->initiate_query ( __FUNCTION__ );
 		return $this->db->truncate();
 	}
 
@@ -303,7 +329,7 @@ class MY_Model extends CI_Model {
 
 		$this->validation->set_message ( $this->format );
 
-		if ( $this->validation->run() == FALSE AND ! empty ( $this->validation->error_string() ) ) {
+		if ( $this->validation->run() == FALSE AND $this->validation->error_string() !== '' ) {
 			$this->errors['string'] = $this->validation->error_string();
 			foreach ( $this->rules as $r ) {
 				$this->errors[$r['field']] = $this->validation->error($r['field']);
@@ -312,6 +338,12 @@ class MY_Model extends CI_Model {
 		}
 		return TRUE;
 	}
+
+	public function reset_query() {
+		foreach ( get_class_vars ( get_class($this) ) as $name => $default ) {
+			$this->$name = $default;
+		}
+	}
 }
 
 class Model extends MY_Model {
@@ -319,3 +351,6 @@ class Model extends MY_Model {
 		parent::__construct();
 	}
 }
+
+/* End of file MY_Model.php */
+/* Location: ./application/core/MY_Model.php */
