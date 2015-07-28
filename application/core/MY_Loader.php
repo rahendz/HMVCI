@@ -1,4 +1,5 @@
-<?php if ( ! defined ( 'BASEPATH' ) ) exit ( 'No direct script access allowed' );
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 class MY_Loader extends CI_Loader {
 
@@ -8,25 +9,26 @@ class MY_Loader extends CI_Loader {
 	public $theme_config = array();
 	public $theme_part = NULL;
 	public $theme_dir = NULL;
-	public $views_files = NULL;
+	public $views_file = NULL;
 	public $views_data = array();
 
 	public $enqueue_style = array();
-	static $enqueue_style_id = array();
+	public $enqueue_style_id = array();
 	public $enqueue_script = array();
-	static $enqueue_script_id = array();
+	public $enqueue_script_id = array();
 
 	public $current_controller = NULL;
 
 	public function __construct() {
 		parent::__construct();
 		$router =& $this->_ci_get_component ( 'router' );
-		if ( $router->module ) $this->add_module ( $router->module );
+		if ( $router->module ) {
+			$this->add_module ( $router->module );
+		}
 		$this->current_controller = $this->get_current_controller();
 	}
 
 	public function controller ( $uri, $params = array(), $return = FALSE ) {
-
 		list ( $module ) = $this->detect_module ( $uri );
 		if ( ! isset ( $module ) ) {
 			$router =& $this->_ci_get_component ( 'router' );
@@ -51,7 +53,6 @@ class MY_Loader extends CI_Loader {
 			}
 			return;
 		}
-
 		if ( list ( $module, $lib ) = $this->detect_module ( $library ) ) {
 			if ( in_array ( $module, $this->_ci_modules ) ) {
 				return parent::library ( $lib, $params, $object_name );
@@ -61,7 +62,6 @@ class MY_Loader extends CI_Loader {
 			$this->remove_module();
 			return $void;
 		}
-
 		else {
 			return parent::library ( $library, $params, $object_name );
 		}
@@ -74,7 +74,6 @@ class MY_Loader extends CI_Loader {
 			}
 			return;
 		}
-
 		if ( list ( $module, $class ) = $this->detect_module ( $model ) ) {
 			if ( in_array ( $module, $this->_ci_modules ) ) {
 				return parent::model ( $class, $name, $db_conn );
@@ -84,7 +83,6 @@ class MY_Loader extends CI_Loader {
 			$this->remove_module();
 			return $void;
 		}
-
 		else {
 			return parent::model ( $model, $name, $db_conn );
 		}
@@ -100,7 +98,6 @@ class MY_Loader extends CI_Loader {
 			$this->remove_module();
 			return $void;
 		}
-
 		else {
 			return parent::view ( $view, $vars, $return );
 		}
@@ -113,7 +110,7 @@ class MY_Loader extends CI_Loader {
 			'_ci_return' => $return
 			) );
 	}
-
+	
 	public function config ( $file = '', $use_sections = FALSE, $fail_gracefully = FALSE ) {
 		if ( list ( $module, $class ) = $this->detect_module ( $file ) ) {
 			if ( in_array ( $module, $this->_ci_modules ) ) {
@@ -124,7 +121,6 @@ class MY_Loader extends CI_Loader {
 			$this->remove_module();
 			return $void;
 		}
-
 		else {
 			parent::config ( $file, $use_sections, $fail_gracefully );
 		}
@@ -137,7 +133,6 @@ class MY_Loader extends CI_Loader {
 			}
 			return;
 		}
-
 		if ( list ( $module, $class ) = $this->detect_module ( $helper ) ) {
 			if ( in_array ( $module, $this->_ci_modules ) ) {
 				return parent::helper ( $class );
@@ -147,7 +142,6 @@ class MY_Loader extends CI_Loader {
 			$this->remove_module();
 			return $void;
 		}
-
 		else {
 			return parent::helper ( $helper );
 		}
@@ -160,7 +154,6 @@ class MY_Loader extends CI_Loader {
 			}
 			return;
 		}
-
 		if ( list ( $module, $class ) = $this->detect_module ( $file ) ) {
 			if ( in_array ( $module, $this->_ci_modules ) ) {
 				return parent::language ( $class, $lang );
@@ -170,27 +163,22 @@ class MY_Loader extends CI_Loader {
 			$this->remove_module();
 			return $void;
 		}
-
 		else {
 			return parent::language ( $file, $lang );
 		}
 	}
 
+	// THEME ROUTING
 	public function theme_initiate() {
 
-		// $this->config ( 'themes' );
 		$router =& $this->_ci_get_component ( 'router' );
 
-		// $theme_config = config_item ( 'theme-name' );
-		// $theme_data = isset ( $theme_config[$router->method] ) ?
-			// $theme_config[$router->method] : $theme_config;
-
-		$backend_theme_path = config_item ( 'backend_theme_path' ) !== FALSE ?
+		$backend_theme_path = config_item ( 'backend_theme_path' ) != FALSE ?
 			FCPATH . config_item ( 'backend_theme_path' ) : APPPATH .'themes/';
 
-		$frontend_theme_path = config_item ( 'frontend_theme_path' ) !== FALSE ?
+		$frontend_theme_path = config_item ( 'frontend_theme_path' ) != FALSE ?
 			FCPATH . config_item ( 'frontend_theme_path' ) : FCPATH . 'themes/';
-
+		
 		if ( isset ( $this->theme_config['frontend'] ) ) {
 			$theme_name = $this->theme_config['frontend'];
 			$this->theme_dir = is_dir ( $frontend_theme_path . $theme_name ) ?
@@ -203,7 +191,7 @@ class MY_Loader extends CI_Loader {
 					'dir' => $backend_theme_path . $theme_name );
 		}
 
-		! is_array ( $this->theme_dir ) OR show_error ( '<p><strong>' . strtoupper ( key ( $theme_data ) ) .
+		! is_array ( $this->theme_dir ) OR show_error ( '<p><strong>' . strtoupper ( key ( $this->theme_config ) ) .
 			' THEME NOTICE:</strong> It\'s seems theme directory aren\'t set yet or missing.</p><code>' .
 			str_replace ( '/', '\\', $this->theme_dir['dir'] ) . '</code>' );
 
@@ -216,13 +204,17 @@ class MY_Loader extends CI_Loader {
 			'template_path' => str_replace ( FCPATH, '', $this->theme_dir ),
 			'stylesheet_url' => $config->base_url ( str_replace ( FCPATH, '', $this->theme_dir ) . 'style.css' )
 			) );
+
+		if ( ! isset ( $this->views_file ) AND is_null ( $this->theme_part ) ) {
+			show_error ( '<p><strong>THEME NOTICE:</strong> It\'s seems theme content aren\'t set properly or it\'s missing.</p>' );
+		}
 	}
 
 	public function theme ( $vars = array(), $_ci_return = FALSE ) {
 
 		$this->theme_initiate();
 
-		if ( ! is_null ( $this->views_file ) ) {
+		if ( ! is_null ( $this->views_file ) AND $this->views_file !== false ) {
 			$vars = array_merge ( $vars, array (
 				'content' => $this->view ( $this->views_file, $this->views_data, TRUE )
 				) );
@@ -248,15 +240,11 @@ class MY_Loader extends CI_Loader {
 
 		$_ci_CI =& get_instance();
 
-		foreach ( get_object_vars ( $_ci_CI ) as $_ci_key => $_ci_var ) {
-			if ( ! isset ( $this->$_ci_key ) ) {
-				$this->$_ci_key = $_ci_CI->$_ci_key;
-			}
-		}
+		foreach ( get_object_vars ( $_ci_CI ) as $_ci_key => $_ci_var )
+			if ( ! isset ( $this->$_ci_key ) ) $this->$_ci_key = $_ci_CI->$_ci_key;
 
-		if ( is_array ( $_ci_vars ) AND count ( $_ci_vars ) > 0 ) {
+		if ( is_array ( $_ci_vars ) AND count ( $_ci_vars ) > 0 )
 			$this->_ci_cached_vars = array_merge ( $this->_ci_cached_vars, $_ci_vars );
-		}
 
 		$this->vars ( $this->_ci_cached_vars );
 		extract ( $this->_ci_cached_vars );
@@ -304,10 +292,10 @@ class MY_Loader extends CI_Loader {
 		$assets_css_path = APPPATH . 'core/assets/css/';
 		$assets_js_path = APPPATH . 'core/assets/js/';
 
-		// $return .= '<meta name="site_url" content="'. $this->config->site_url() .'" />'. "\n\t";
-		// $return .= '<meta name="assets_path" content="'. $this->config->base_url ( APPPATH . 'core/assets' ) .'" />'. "\n\t";
-		// $return .= '<meta name="template_directory_uri" content="'. get_template_directory_uri() .'" />'. "\n\t";
-		// $return .= '<meta name="stylesheet_url" content="'. get_stylesheet_uri() .'" />'. "\n\t";
+		$return .= '<meta name="site_url" content="'. $this->config->site_url() .'" />'. "\n\t";
+		$return .= '<meta name="assets_path" content="'. $this->config->base_url ( APPPATH . 'core/assets' ) .'" />'. "\n\t";
+		$return .= '<meta name="template_directory_uri" content="'. get_template_directory_uri() .'" />'. "\n\t";
+		$return .= '<meta name="stylesheet_url" content="'. get_stylesheet_uri() .'" />'. "\n\t";
 
 		foreach ( $this->enqueue_style as $id => $e ) {
 			list ( $file, $require, $version ) = $e;
@@ -376,12 +364,8 @@ class MY_Loader extends CI_Loader {
 		}
 
 		$return .= '<!--[if lt IE 9]>' . "\n\t";
-		if ( file_exists ( $assets_js_path . 'html5shiv.js' ) ) {
-			$return .= "\t" . sprintf ( '<script src="%s"></script>', base_url ( $assets_js_path . 'html5shiv.js' ) ) . "\n\t";
-		}
-		if ( file_exists ( $assets_js_path . 'respond.js' ) ) {
-			$return .= "\t" . sprintf ( '<script src="%s"></script>', base_url ( $assets_js_path . 'respond.js' ) ) . "\n\t";
-		}
+		$return .= "\t" . sprintf ( '<script src="%s"></script>', base_url ( $assets_js_path . 'html5shiv.js' ) ) . "\n\t";
+		$return .= "\t" . sprintf ( '<script src="%s"></script>', base_url ( $assets_js_path . 'respond.js' ) ) . "\n\t";
 		$return .= '<![endif]-->' . "\n\t";
 
 		echo rtrim ( $return, "\t" );
@@ -434,96 +418,8 @@ class MY_Loader extends CI_Loader {
 		echo $return;
 	}
 
-	/* PRIVATE FUNCTION */
-	private function add_module ( $module, $view_cascade = TRUE ) {
-		if ( $path = $this->find_module ( $module ) ) {
-			array_unshift ( $this->_ci_modules, $module );
-			parent::add_package_path ( $path, $view_cascade );
-		}
-	}
-
-	private function remove_module ( $module = '', $remove_config = TRUE ) {
-		if ( $module == '' ) {
-			array_shift ( $this->_ci_modules );
-			parent::remove_package_path ( '', $remove_config );
-		}
-
-		elseif ( ( $key = array_search ( $module, $this->_ci_modules ) ) !== FALSE ) {
-			if ( $path = $this->find_module ( $module ) ) {
-				unset ( $this->_ci_modules[$key] );
-				parent::remove_package_path($path, $remove_config);
-			}
-		}
-	}
-
-	private function _load_controller ( $uri = '', $params = array(), $return = FALSE ) {
-		$router = & $this->_ci_get_component ( 'router' );
-
-		$backup = array();
-		foreach ( array ( 'directory', 'class', 'method', 'module' ) as $prop ) {
-			$backup[$prop] = $router->{$prop};
-		}
-
-		$segments = $router->locate ( explode ( '/', $uri ) );
-		$class = isset ( $segments[0] ) ? $segments[0] : FALSE;
-		$method = isset ( $segments[1] ) ? $segments[1] : "index";
-
-		if ( ! $class ) {
-			return;
-		}
-
-		if ( ! array_key_exists ( strtolower ( $class ), $this->_ci_controllers ) ) {
-			if ( file_exists ( APPPATH . 'controllers/' . $router->fetch_directory() . $class . '.php' ) )
-				include_once ( APPPATH . 'controllers/' . $router->fetch_directory() . $class . '.php' );
-			elseif ( file_exists ( APPPATH . 'controllers/' . $class . '.php' ) )
-				include_once ( APPPATH . 'controllers/' . $class . '.php' );
-			if ( ! class_exists ( $class ) ) {
-				echo '426'; 
-				show_404 ( "{$class}/{$method}" );
-			}
-			$this->_ci_controllers[strtolower($class)] = new $class();
-		}
-
-		$controller = $this->_ci_controllers[strtolower($class)];
-		if ( ! method_exists ( $controller, $method ) ) echo '395';show_404 ( "{$class}/{$method}" );
-		foreach ( $backup as $prop => $value ) $router->{$prop} = $value;
-
-		ob_start();
-		$result = call_user_func_array ( array ( $controller, $method ), $params );
-
-		if ( $return === TRUE ) {
-			$buffer = ob_get_contents();
-			@ob_end_clean();
-			return $buffer;
-		}
-
-		ob_end_flush();
-		return $result;
-	}
-
-	private function detect_module ( $class ) {
-		$class = str_replace ( '.php', '', trim ( $class, '/' ) );
-
-		if ( ( $first_slash = strpos ( $class, '/' ) ) !== FALSE ) {
-			$module = substr ( $class, 0, $first_slash );
-			$class = substr ( $class, $first_slash + 1 );
-			if ( $this->find_module ( $module ) ) return array ( $module, $class );
-		}
-
-		if ( $this->find_module ( $class ) ) return array ( $class );
-		return FALSE;
-	}
-
-	private function find_module ( $module ) {
-		// $config =& $this->_ci_get_component ( 'config' );
-		$module_path = MODULES_LOCATIONS . rtrim ( $module, '/' ) . '/';
-		$controllers_path = APPPATH . 'controllers/';
-
-		if ( is_dir ( $module_path ) ) return $module_path;
-		elseif ( is_dir ( $controllers_path . $module ) ) return $controllers_path . $module;
-		elseif ( is_file ( $controllers_path . $module . EXT ) ) return $controllers_path;
-
-		return FALSE;
+	public function get_component ( $type ) {
+		return $this->_ci_get_component ( $type );
 	}
 
 	private function is_anystyle_required ( $require = array() ) {
@@ -544,14 +440,86 @@ class MY_Loader extends CI_Loader {
 		return TRUE;
 	}
 
-	private function get_current_controller() {
-		$router =& $this->_ci_get_component ( 'router' );
-		if ( empty ( $router->module ) ) {
-			return APPPATH . 'controllers/' . $router->directory . $router->class . EXT;
+	/* PRIVATE FUNCTION */
+	private function add_module ( $module, $view_cascade = TRUE ) {
+		if ( $path = $this->find_module ( $module ) ) {
+			array_unshift ( $this->_ci_modules, $module );
+			parent::add_package_path ( $path, $view_cascade );
 		}
-		// $config =& $this->_ci_get_component ( 'config' );
-		// $real_modules_path = realpath ( current ( (array) $config->config['modules_locations'] ) );
-		// $modules_path = str_replace ( array ( FCPATH, '\\' ), array ( '', '/' ), $real_modules_path );
-		return MODULES_LOCATIONS.$router->module. '/controllers/' .realpath($router->directory).$router->class.EXT;
 	}
+
+	private function remove_module ( $module = '', $remove_config = TRUE ) {
+		if ( $module == '' ) {
+			array_shift ( $this->_ci_modules );
+			parent::remove_package_path ( '', $remove_config );
+		}
+		elseif ( ( $key = array_search ( $module, $this->_ci_modules ) ) !== FALSE ) {
+			if ( $path = $this->find_module ( $module ) ) {
+				unset ( $this->_ci_modules[$key] );
+				parent::remove_package_path($path, $remove_config);
+			}
+		}
+	}
+
+	private function _load_controller ( $uri = '', $params = array(), $return = FALSE ) {
+		$router = & $this->_ci_get_component ( 'router' );
+		$backup = array();
+		foreach ( array ( 'directory', 'class', 'method', 'module' ) as $prop ) {
+			$backup[$prop] = $router->{$prop};
+		}
+		$segments = $router->locate ( explode ( '/', $uri ) );
+		$class = isset ( $segments[0] ) ? $segments[0] : FALSE;
+		$method = isset ( $segments[1] ) ? $segments[1] : "index";
+		if ( ! $class ) return;
+		if ( ! array_key_exists ( strtolower ( $class ), $this->_ci_controllers ) ) {
+			if ( file_exists ( APPPATH . 'controllers/' . $router->fetch_directory() . $class . '.php' ) )
+				include_once ( APPPATH . 'controllers/' . $router->fetch_directory() . $class . '.php' );
+			elseif ( file_exists ( APPPATH . 'controllers/' . $class . '.php' ) )
+				include_once ( APPPATH . 'controllers/' . $class . '.php' );
+			if ( ! class_exists ( $class ) ) echo '390'; show_404 ( "{$class}/{$method}" );
+			$this->_ci_controllers[strtolower($class)] = new $class();
+		}
+		$controller = $this->_ci_controllers[strtolower($class)];
+		if ( ! method_exists ( $controller, $method ) ) echo '395';show_404 ( "{$class}/{$method}" );
+		foreach ( $backup as $prop => $value ) $router->{$prop} = $value;
+		ob_start();
+		$result = call_user_func_array ( array ( $controller, $method ), $params );
+		if ( $return === TRUE ) {
+			$buffer = ob_get_contents();
+			@ob_end_clean();
+			return $buffer;
+		}
+		ob_end_flush();
+		return $result;
+	}
+
+	private function detect_module ( $class ) {
+		$class = str_replace ( '.php', '', trim ( $class, '/' ) );
+		if ( ( $first_slash = strpos ( $class, '/' ) ) !== FALSE ) {
+			$module = substr ( $class, 0, $first_slash );
+			$class = substr ( $class, $first_slash + 1 );
+			if ( $this->find_module ( $module ) ) return array ( $module, $class );
+		}
+		if ( $this->find_module ( $class ) ) return array ( $class );
+		return FALSE;
+	}
+
+	private function find_module ( $module ) {
+		$config =& $this->_ci_get_component ( 'config' );
+		$module_path = current ( $config->item ( 'modules_locations' ) ) . rtrim ( $module, '/' ) . '/';
+		$controllers_path = APPPATH . 'controllers/';
+		if ( is_dir ( $module_path ) ) return $module_path;
+		elseif ( is_dir ( $controllers_path . $module ) ) return $controllers_path . $module;
+		elseif ( is_file ( $controllers_path . $module . EXT ) ) return $controllers_path;
+		return FALSE;
+	}
+
+	private function get_current_controller() {
+		$router = & $this->_ci_get_component ( 'router' );
+		return APPPATH . 'controllers/' . $router->directory . $router->class . EXT;
+	}
+
 }
+
+/* End of file MY_Loader.php */
+/* Location: ./application/core/MY_Loader.php */

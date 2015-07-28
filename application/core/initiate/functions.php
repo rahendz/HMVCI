@@ -295,7 +295,9 @@ if ( ! function_exists ( 'is_post' ) AND ! function_exists ( 'is_get' ) ) {
 if ( ! function_exists ( 'current_url_string' ) ) :
 	function current_url_string() {
 		$_ci =& get_instance();
-		return $_ci->uri->uri_string();
+		$query_string = ( isset ( $_SERVER['QUERY_STRING'] ) AND ! empty ( $_SERVER['QUERY_STRING'] ) ) ?
+			'?' . $_SERVER['QUERY_STRING'] : null;
+		return $_ci->uri->uri_string() . $query_string;
 	}
 endif;
 
@@ -532,11 +534,12 @@ if ( ! function_exists ( 'pagination' ) ) :
 		$_ci->paged->initialize ( $paging );
 		$current_offset = $paging['use_page_numbers'] !== FALSE ? $offset : $_ci->uri->segment ( $uri_segment );
 		$current_num = $paging['use_page_numbers'] !== FALSE ? $offset + 1 : $_ci->uri->segment ( $uri_segment ) + 1;
+		$last_per_page = $total_rows < ($current_num * $per_page) ? $total_rows : $current_num * $per_page;
 		return ( object ) array (
 			'limit' => $per_page,
 			'offset' => $current_offset,
 			'num' => $current_num,
-			'info' => 'Showing ' .$current_num. ' to ' .( $current_num * $per_page ). ' of ' .$total_rows. ' Records',
+			'info' => 'Showing ' .$current_num. ' to ' .$last_per_page. ' of ' .$total_rows. ' Records',
 			'links' => $_ci->paged->create_links()
 			);
 	}
@@ -793,5 +796,37 @@ if ( ! function_exists ( 'is_updated' ) ) {
 		} else {
 			return NULL;
 		}
+	}
+}
+
+if ( ! function_exists ( 'get_option' ) ) {
+	function get_option ( $name ) {
+		$_ci =& get_instance();
+		$_ci->load->model ( 'm_settings', 'settings' );
+		return $_ci->settings->get_option ( $name );
+	}
+}
+
+if ( ! function_exists ( 'unique_slug' ) ) {
+	function unique_slug ( $name, $sep = '-', $num = null ) {
+		$_ci =& get_instance();
+
+		if ( ! function_exists ( 'increment_string' ) ) {
+			$_ci->load->helper('string');
+		}
+
+		return increment_string ( $name, $sep, $num );
+	}
+}
+
+if ( ! function_exists ( 'create_slug' ) ) {
+	function create_slug ( $title, $sep = '-', $lowercase = true ) {
+		$_ci =& get_instance();
+
+		if ( ! function_exists ( 'url_title' ) ) {
+			$_ci->load->helper('url');
+		}
+
+		return url_title ( $title, $sep, $lowercase );
 	}
 }

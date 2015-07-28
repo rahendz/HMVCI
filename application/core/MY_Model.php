@@ -1,8 +1,9 @@
-<?php if ( ! defined ( 'BASEPATH' ) ) exit ( 'No direct script access allowed' );
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 class MY_Model extends CI_Model {
 
-	private $db;
+	// private $db;
 	public $table = NULL;
 	public $native = FALSE;
 	public $return_id = FALSE;
@@ -29,7 +30,7 @@ class MY_Model extends CI_Model {
 	public $limit = NULL;
 	public $offset = NULL;
 	public $group_by = NULL;
-	public $order_by = array();
+	public $order_by = NULL;
 	public $string = NULL;
 	public $values = array();
 	public $key = NULL;
@@ -43,10 +44,7 @@ class MY_Model extends CI_Model {
 
 	public function __construct() {
 		parent::__construct();
-		$this->load->config ( 'database', FALSE, TRUE );
-		$dbparam = ! config_item ( 'default' ) ? '' : config_item ( 'default' );
-		unset ( $this->db );
-		$this->db = $this->load->database ( $dbparam, TRUE );
+		isset ( $this->db ) OR $this->load->database();
 		$this->platform = $this->db->platform();
 		$this->version = $this->db->version();
 		$this->conn_id = $this->db->conn_id;
@@ -54,6 +52,10 @@ class MY_Model extends CI_Model {
 
 	public function __destruct() {
 		$this->db->save_queries = FALSE;
+	}
+
+	public function prefix ( $table_name ) {
+		return $this->db->dbprefix ( $table_name );
 	}
 
 	private function initiate_query ( $method ) {
@@ -99,7 +101,7 @@ class MY_Model extends CI_Model {
 
 		// Set Query
 		if ( in_array ( $method, array ( 'insert', 'update', 'replace' ) ) ) {
-			if ( ! is_null ( $this->set ) AND coutn ( $this->set ) > 0 ) {
+			if ( ! is_null ( $this->set ) AND count ( $this->set ) > 0 ) {
 				$this->db->set ( $this->set );
 			}
 		}
@@ -167,8 +169,10 @@ class MY_Model extends CI_Model {
 
 		// Order By Query
 		if ( in_array ( $method, array ( 'get', 'count' ) ) ) {
-			if ( ! is_null ( $this->group_by ) ) {
-				$this->db->group_by ( $this->group_by );
+			if ( is_array ( $this->order_by ) ) {
+				$this->db->order_by ( $this->order_by[0], $this->order_by[1] );
+			} elseif ( ! is_null ( $this->order_by ) ) {
+				$this->db->order_by ( $this->order_by );
 			}
 		}
 
@@ -248,7 +252,7 @@ class MY_Model extends CI_Model {
 
 	public function update() {
 		$this->initiate_query ( __FUNCTION__ );
-		$this->db->update ( $this->db->dbprefix ( $this->table ), $this->value );
+		$this->db->update ( $this->db->dbprefix ( $this->table ), $this->values );
 		return $this->db->affected_rows();
 	}
 
@@ -340,10 +344,43 @@ class MY_Model extends CI_Model {
 	}
 
 	public function reset_query() {
-		foreach ( get_class_vars ( get_class($this) ) as $name => $default ) {
-			$this->$name = $default;
-		}
+		// $this->table = NULL;
+		$this->native = FALSE;
+		$this->return_id = FALSE;
+		$this->select = NULL;
+		$this->select_max = NULL;
+		$this->select_min = NULL;
+		$this->select_avg = NULL;
+		$this->select_sum = NULL;
+		$this->distinct = FALSE;
+		$this->set = array();
+		$this->join = array();
+		$this->where = array();
+		$this->or_where = array();
+		$this->where_in = array();
+		$this->or_where_in = array();
+		$this->where_not_in = array();
+		$this->or_where_not_in = array();
+		$this->like = array();
+		$this->or_like = array();
+		$this->not_like = array();
+		$this->or_not_like = array();
+		$this->having = array();
+		$this->or_having = array();
+		$this->limit = NULL;
+		$this->offset = NULL;
+		$this->group_by = NULL;
+		$this->order_by = NULL;
+		$this->string = NULL;
+		$this->values = array();
+		$this->key = NULL;
+		$this->rules = array();
+		$this->errors = FALSE;
+		$this->format = array();
+		$this->exists = array();
+		$this->db->flush_cache();
 	}
+
 }
 
 class Model extends MY_Model {

@@ -1,9 +1,9 @@
 # HMVCI
-Custom Codeigniter based on Official v2.2.1
+Custom Codeigniter based on Official v2.2.2
 
-Custom Codeigniter with HMVC Modular, Theme Structure Wordpress A-Like and Simple RESTful API. Based on Official Codeigniter v2.2.1
+Custom Codeigniter with HMVC Modular, Theme Structure Wordpress A-Like and Simple RESTful API. Based on Official Codeigniter v2.2.2
 
 How-To
 ==============================
-Load Initialization File ( APPPATH . 'core/initiate/init.php' )
-right before system load the codeigniter bootstrap file.
+1. 	Rename index-sample.php into index.php
+2. 	Change system folder path into yours

@@ -1,0 +1,205 @@
+html{height:89.6%;}
+body.fileuploader{height:100%;}
+body.fileuploader .nav-tabs{background-color:#F5F5F5;padding-left:10px;}
+body.fileuploader .tab-content{height:100%;overflow-y:auto;}
+body.fileuploader .tab-content > .tab-pane{padding-top:20px;}
+body.fileuploader .btn-upload{margin-bottom:10px;}
+body.fileuploader .dragndrop{background-color:#F5F5F5;border:4px dashed #DDD;padding:15px;text-align:center;margin-bottom:20px;}
+body.fileuploader .dragndrop:hover{border-color:#BCE8F1;}
+body.fileuploader .dragndrop span{display:block;}
+body.fileuploader #status{padding-top:20px;}
+body.fileuploader .progress{border-radius:0;}
+body.fileuploader #detail{margin-bottom:30px;}
+body.fileuploader #imglists{margin-bottom:20px;padding:10px;border:1px solid #DDD;background-color:#F5F5F5;margin:0;}
+body.fileuploader .filename{padding:0 12px;display:table;}
+body.fileuploader #img-uploaded{background-repeat:no-repeat;background-position:center center;display:inline-block;}
+body.fileuploader .btn-detail{padding:0;line-height:18px;}
+body.fileuploader .form-image{margin-top:10px;padding:10px 0 0;border-top:1px solid #CCC;}
+body.fileuploader .form-image .form-group{margin-bottom:10px;}
+body.fileuploader .form-image .form-group:last-child{margin-bottom:0;}
+body.fileuploader .control-label{font-weight:normal;padding-top:7px;margin-bottom:0;text-align:right;}
+body.fileuploader #fileslists{margin-bottom:20px;padding:10px;border:1px solid #DDD;background-color:#F5F5F5;margin:0;}
+body.fileuploader .form-files{margin-top:10px;padding:10px 0 0;border-top:1px solid #CCC;}
+body.fileuploader .form-files .form-group{margin-bottom:10px;}
+body.fileuploader .form-files .form-group:last-child{margin-bottom:0;}
+.form-control,input,button,select,textarea,.btn{border-radius:2px;}
+
+    label.checkbox, label{
+      position: relative;
+    }
+    label.checkbox input[type="checkbox"],
+    label input[type="checkbox"]{
+      visibility: hidden;
+      margin-right: 15px;
+    }
+    label.checkbox .check/* ,
+    label .check */{
+      cursor: pointer;
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 0;
+      left: 0;
+      border-radius: 4px;
+      -moz-border-radius: 4px;
+      -webkit-border-radius: 4px;
+      background: #BDC3C7;
+      margin-right: 20px;
+    }
+    label.checkbox .check:after/* ,
+    label .check:after */ {
+      -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+      filter: alpha(opacity=0);
+      opacity: 0;
+      content: '';
+      position: absolute;
+      width: 11px;
+      height: 8px;
+      background: transparent;
+      top: 4px;
+      left: 5px;
+      border: 3px solid #FCFFF4;
+      border-top: none;
+      border-right: none;
+      -webkit-transform: rotate(-45deg);
+      -moz-transform: rotate(-45deg);
+      -o-transform: rotate(-45deg);
+      -ms-transform: rotate(-45deg);
+      transform: rotate(-45deg);
+    }
+    label.checkbox .check:hover::after/* ,
+    label .check:hover::after */ {
+      -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+      filter: alpha(opacity=30);
+      opacity: 0.3;
+    }
+    label.checkbox input[type="checkbox"]:checked + .check,
+    label input[type="checkbox"]:checked + .check{
+      background: #74A6BD;
+    }
+    label.checkbox input[type="checkbox"]:checked + .check:after,
+    label input[type="checkbox"]:checked + .check:after {
+      -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+      filter: alpha(opacity=100);
+      opacity: 1;
+    }
+    label.checkbox input[disabled="disabled"] + .check/* ,
+    label input[disabled="disabled"] + .check */{
+      cursor: default;
+      background: #ECF0F1;
+    }
+    label.disabled{
+      cursor: default;
+      color: #CCCCCC;
+    }
+    label.disabled input[type="checkbox"] + .check,
+    label.disabled input[type="checkbox"]:checked + .check,
+    label.checkbox.disabled input[type="checkbox"]:checked + .check {
+      cursor: default;
+      background: #ECF0F1;
+    }
+label.radio{
+  position: relative;
+}
+
+label.radio input[type="radio"],
+label input[type="radio"]{
+  visibility: hidden;
+  margin-right: 15px;
+}
+
+label.radio .check/* s,
+label .checks */{
+  cursor: pointer;
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  top: 0;
+  left: 0;
+  border-radius: 12px;
+  -moz-border-radius: 12px;
+  -webkit-border-radius: 12px;
+  background: #ffffff;
+  border: 3px solid #BDC3C7;
+  margin-right: 20px;
+}
+
+label.radio .check:after/* ,
+label .checks:after */ {
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: alpha(opacity=0);
+  opacity: 0;
+  content: '';
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: #74A6BD;
+  top: 2px;
+  left: 2px;
+
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+}
+
+
+label.radio .check:hover::after/* ,
+label .checks:hover::after */ {
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+  filter: alpha(opacity=30);
+  opacity: 0.3;
+}
+
+label.radio input[type="radio"]:checked + .check,
+label input[type="radio"]:checked + .check{
+  background: #FFFFFF;
+  border-color: #74A6BD;
+}
+
+label.radio input[type="radio"]:checked + .check:after,
+label input[type="radio"]:checked + .check:after {
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+  filter: alpha(opacity=100);
+  opacity: 1;
+}
+
+label.radio input[disabled="disabled"] + .checks/* ,
+label input[disabled="disabled"] + .checks */{
+  cursor: default;
+  background: #FFFFFF;
+  border-color: #ECF0F1;
+}
+
+label.disabled{
+  cursor: default;
+  color: #CCCCCC;
+}
+
+label.radio.disabled .check:after/* ,
+label.disabled .checks:after */ {
+  background: #ECF0F1;
+}
+
+label.disabled input[type="radio"] + .check,
+label.disabled input[type="radio"]:checked + .check,
+label.radio.disabled input[type="radio"]:checked + .check {
+  cursor: default;
+  background: #FFFFFF;
+  border-color: #ECF0F1;
+}
+
+.radio.inline input[type="radio"],
+.checkbox.inline input[type="checkbox"]{
+  padding-bottom: 2px;
+}
+
+.radio.inline .check,
+.checkbox.inline .check{
+  top: 3px;
+}
+
+label.checkbox i.fa,label.radio i.fa{font-size:30px;margin-bottom:10px;padding:10px 10px 0 0;display:block;text-align:right;}
+.media-form .img-box,.files-form .files-box{float:left;border:1px solid #DDD;margin-right:20px;margin-bottom:20px;padding:0;}
+.media-form .img-box label span,.files-form .files-box label span{margin-left:10px;margin-top:10px;}
+.media-form .img-box label,.files-form .files-box label{width:135px;height:135px;background-repeat:no-repeat;background-position:center center;padding-top:0;}
+.files-form .files-box label{padding:0;text-align:center;}

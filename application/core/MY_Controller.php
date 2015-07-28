@@ -1,14 +1,23 @@
 <?php if ( ! defined ( 'BASEPATH' ) ) exit ( 'No direct script access allowed' );
 
-if ( ! defined ( 'INIT' ) ) {
+if ( ! defined ( 'INITPATH' ) ) {
 	show_error ( '<strong>INIT ERROR :</strong> Initialization file not set properly. Call it before system load bootstrap file.' );
+}
+
+if ( isset ( $root_files ) ) {
+	foreach ( $root_files as $_file ) {
+		$_filepath = FCPATH . $_file . EXT;
+		if ( file_exists ( $_filepath ) ) {
+			@require_once $_filepath;
+		}
+	}
 }
 
 if ( isset ( $core_files ) ) {
 	foreach ( $core_files as $_file ) {
-		$_filepath = dirname ( __FILE__ ) . '/initiate/' . $_file . EXT;
+		$_filepath = INITPATH . $_file . EXT;
 		if ( file_exists ( $_filepath ) ) {
-			require_once $_filepath;
+			@require_once $_filepath;
 		}
 	}
 }
