@@ -3,13 +3,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class MY_Loader extends CI_Loader {
 
+	protected $_ci;
 	protected $_ci_modules = array();
 	protected $_ci_controllers = array();
 
 	public $theme_config = array();
-	public $theme_part = NULL;
-	public $theme_dir = NULL;
-	public $views_file = NULL;
+	public $theme_part = null;
+	public $theme_dir = null;
+	public $views_file = null;
 	public $views_data = array();
 
 	public $enqueue_style = array();
@@ -17,7 +18,7 @@ class MY_Loader extends CI_Loader {
 	public $enqueue_script = array();
 	public $enqueue_script_id = array();
 
-	public $current_controller = NULL;
+	public $current_controller = null;
 
 	public function __construct() {
 		parent::__construct();
@@ -26,9 +27,10 @@ class MY_Loader extends CI_Loader {
 			$this->add_module ( $router->module );
 		}
 		$this->current_controller = $this->get_current_controller();
+		$this->_ci =& get_instance();
 	}
 
-	public function controller ( $uri, $params = array(), $return = FALSE ) {
+	public function controller ( $uri, $params = array(), $return = false ) {
 		list ( $module ) = $this->detect_module ( $uri );
 		if ( ! isset ( $module ) ) {
 			$router =& $this->_ci_get_component ( 'router' );
@@ -46,7 +48,7 @@ class MY_Loader extends CI_Loader {
 		return $void;
 	}
 
-	public function library ( $library = '', $params = NULL, $object_name = NULL ) {
+	public function library ( $library = '', $params = null, $object_name = null ) {
 		if ( is_array ( $library ) ) {
 			foreach ( $library as $lib ) {
 				$this->library ( $lib, $params );
@@ -67,7 +69,7 @@ class MY_Loader extends CI_Loader {
 		}
 	}
 
-	public function model ( $model, $name = '', $db_conn = FALSE ) {
+	public function model ( $model, $name = '', $db_conn = false ) {
 		if ( is_array ( $model ) ) {
 			foreach ( $model as $mod ) {
 				$this->model ( $mod );
@@ -88,7 +90,7 @@ class MY_Loader extends CI_Loader {
 		}
 	}
 
-	public function view ( $view, $vars = array(), $return = FALSE ) {
+	public function view ( $view, $vars = array(), $return = false ) {
 		if ( $this->detect_module ( $view ) && list ( $module, $class ) = $this->detect_module ( $view ) ) {
 			if ( in_array ( $module, $this->_ci_modules ) ) {
 				return parent::view ( $class, $vars, $return );
@@ -103,15 +105,15 @@ class MY_Loader extends CI_Loader {
 		}
 	}
 
-	public function file ( $path, $vars = array(), $return = FALSE ) {
+	public function file ( $path, $vars = array(), $return = false ) {
 		return $this->_ci_load ( array (
 			'_ci_path' => $path,
 			'_ci_vars' => $this->_ci_object_to_array ( $vars ),
 			'_ci_return' => $return
 			) );
 	}
-	
-	public function config ( $file = '', $use_sections = FALSE, $fail_gracefully = FALSE ) {
+
+	public function config ( $file = '', $use_sections = false, $fail_gracefully = false ) {
 		if ( list ( $module, $class ) = $this->detect_module ( $file ) ) {
 			if ( in_array ( $module, $this->_ci_modules ) ) {
 				return parent::config ( $class, $use_sections, $fail_gracefully );
@@ -124,6 +126,34 @@ class MY_Loader extends CI_Loader {
 		else {
 			parent::config ( $file, $use_sections, $fail_gracefully );
 		}
+	}
+
+	public function database ( $params = '', $return = FALSE, $active_record = NULL ) {
+		$router =& $this->_ci_get_component ( 'router' );
+
+		if ( empty ( $router->module ) ) {
+			return parent::database ( $params, $return, $active_record );
+		}
+
+		// Do we even need to load the database class?
+		if ( class_exists ( 'CI_DB' ) AND $return == FALSE AND $active_record == NULL AND isset ( $_ci->db ) AND is_object ( $_ci->db ) )
+		{
+			return FALSE;
+		}
+
+		// require_once(BASEPATH.'database/DB.php');
+
+		if ( $return === TRUE )
+		{
+			return $this->_ci_get_database ( $params, $active_record );
+		}
+
+		// Initialize the db variable.  Needed to prevent
+		// reference errors with some configurations
+		$_ci->db = '';
+
+		// Load the DB class
+		$_ci->db =& $this->_ci_get_database ( $params, $active_record );
 	}
 
 	public function helper ( $helper = array() ) {
@@ -170,15 +200,14 @@ class MY_Loader extends CI_Loader {
 
 	// THEME ROUTING
 	public function theme_initiate() {
-
 		$router =& $this->_ci_get_component ( 'router' );
 
-		$backend_theme_path = config_item ( 'backend_theme_path' ) != FALSE ?
+		$backend_theme_path = config_item ( 'backend_theme_path' ) != false ?
 			FCPATH . config_item ( 'backend_theme_path' ) : APPPATH .'themes/';
 
-		$frontend_theme_path = config_item ( 'frontend_theme_path' ) != FALSE ?
+		$frontend_theme_path = config_item ( 'frontend_theme_path' ) != false ?
 			FCPATH . config_item ( 'frontend_theme_path' ) : FCPATH . 'themes/';
-		
+
 		if ( isset ( $this->theme_config['frontend'] ) ) {
 			$theme_name = $this->theme_config['frontend'];
 			$this->theme_dir = is_dir ( $frontend_theme_path . $theme_name ) ?
@@ -205,18 +234,32 @@ class MY_Loader extends CI_Loader {
 			'stylesheet_url' => $config->base_url ( str_replace ( FCPATH, '', $this->theme_dir ) . 'style.css' )
 			) );
 
-		if ( ! isset ( $this->views_file ) AND is_null ( $this->theme_part ) ) {
-			show_error ( '<p><strong>THEME NOTICE:</strong> It\'s seems theme content aren\'t set properly or it\'s missing.</p>' );
+		// if ( ! isset ( $this->views_file ) AND is_null ( $this->theme_part ) ) {
+		// 	show_error ( '<p><strong>THEME NOTICE:</strong> It\'s seems theme content aren\'t set properly or it\'s missing.</p>' );
+		// }
+		$path_view = $config->_config_paths[0] . 'views/';
+
+		if ( is_null ( $this->views_file ) OR empty ( $this->views_file ) ) {
+			if ( $router->method == 'index' AND is_file ( $path_view . $router->class . '/main' . EXT ) ) {
+				$this->views_file = $router->class . '/main';
+			} elseif ( is_file ( $path_view . $router->class . '/' . $router->method . EXT ) ) {
+				$this->views_file = $router->class . '/' . $router->method;
+			} elseif ( is_file ( $path_view . $router->class . EXT ) ) {
+				$this->views_file = $router->class;
+			}
+		} elseif ( is_file ( $path_view . $router->class . '/' . $this->views_file . EXT ) ) {
+			$this->views_file = $router->class . '/' . $this->views_file;
+		} elseif ( is_file ( $path_view . $this->views_file . '/main' . EXT ) ) {
+			$this->views_file = $this->views_file . '/main';
 		}
 	}
 
-	public function theme ( $vars = array(), $_ci_return = FALSE ) {
-
+	public function theme ( $vars = array(), $_ci_return = false ) {
 		$this->theme_initiate();
 
 		if ( ! is_null ( $this->views_file ) AND $this->views_file !== false ) {
 			$vars = array_merge ( $vars, array (
-				'content' => $this->view ( $this->views_file, $this->views_data, TRUE )
+				'content' => $this->view ( $this->views_file, $this->views_data, true )
 				) );
 		}
 
@@ -229,11 +272,11 @@ class MY_Loader extends CI_Loader {
 		}
 
 		foreach ( $theme_files as $index_file ) {
-			if ( file_exists ( $index_path = $this->theme_dir . $index_file . EXT ) !== FALSE ) break;
-			else $index_path = FALSE;
+			if ( file_exists ( $index_path = $this->theme_dir . $index_file . EXT ) !== false ) break;
+			else $index_path = false;
 		}
 
-		( $index_path !== FALSE ) OR show_error ( '<p><strong>' . strtoupper ( key ( $this->theme_config ) ) .
+		( $index_path !== false ) OR show_error ( '<p><strong>' . strtoupper ( key ( $this->theme_config ) ) .
 			' THEME NOTICE:</strong> There\'s no index file on your theme.</p>' );
 
 		! file_exists ( $theme_functions = $this->theme_dir . 'functions' . EXT ) OR @include_once $theme_functions;
@@ -250,13 +293,13 @@ class MY_Loader extends CI_Loader {
 		extract ( $this->_ci_cached_vars );
 
 		ob_start();
-		if ( (bool) @ini_get ( 'short_open_tag' ) === FALSE AND config_item ( 'rewrite_short_tags' ) == TRUE ) :
+		if ( (bool) @ini_get ( 'short_open_tag' ) === false AND config_item ( 'rewrite_short_tags' ) == true ) :
 			echo eval ( '?>' . preg_replace ( "/;*\s*\?>/", "; ?>", str_replace ( '<?=', '<?php echo ', file_get_contents ( $index_path ) ) ) );
 		else : include ( $index_path ); endif;
 
 		log_message ( 'debug', 'File loaded: '.$index_path );
 
-		if ( $_ci_return === TRUE ) {
+		if ( $_ci_return === true ) {
 			$buffer = ob_get_contents();
 			@ob_end_clean();
 			return $buffer;
@@ -271,7 +314,7 @@ class MY_Loader extends CI_Loader {
 		}
 	}
 
-	public function enqueue_style ( $id, $file = NULL, $require = array(), $version = NULL ) {
+	public function enqueue_style ( $id, $file = null, $require = array(), $version = null ) {
 		$this->enqueue_style[$id] = array (
 			'file' => $file,
 			'require' => $require,
@@ -279,7 +322,7 @@ class MY_Loader extends CI_Loader {
 			);
 	}
 
-	public function enqueue_script ( $id, $file = NULL, $require = array(), $version = NULL, $in_footer = FALSE ) {
+	public function enqueue_script ( $id, $file = null, $require = array(), $version = null, $in_footer = false ) {
 		$this->enqueue_script[$id] = array (
 			'file' => $file,
 			'require' => $require,
@@ -288,7 +331,7 @@ class MY_Loader extends CI_Loader {
 			);
 	}
 
-	public function theme_enqueue_head ( $return = NULL ) {
+	public function theme_enqueue_head ( $return = null ) {
 		$assets_css_path = APPPATH . 'core/assets/css/';
 		$assets_js_path = APPPATH . 'core/assets/js/';
 
@@ -301,24 +344,32 @@ class MY_Loader extends CI_Loader {
 			list ( $file, $require, $version ) = $e;
 
 			$requires = isset ( $require ) ? $require : array();
-			$filepath = get_template_directory_uri ( $file . '?ver=' . ( isset ( $version ) ? $version : NULL ) );
+			$filepath = get_template_directory_uri ( $file . '?ver=' . ( isset ( $version ) ? $version : null ) );
+			$rel = 'stylesheet';
 
-			if ( $this->is_anystyle_required ( $requires ) === FALSE ) {
+			if ( strpos ( $file, 'http://' ) !== false ) {
+				$filepath = $file . '?ver=' . ( isset ( $version ) ? $version : NULL );
+			}
+
+			if ( strpos($file, '.less')!==false){
+				$rel = 'stylesheet/less';
+			}
+			if ( $this->is_anystyle_required ( $requires ) === false ) {
 				foreach ( $requires as $r ) {
-					$r = file_exists( $assets_css_path . $r . '.min.css' ) ? $r . '.min' : $r; 
+					$r = file_exists( $assets_css_path . $r . '.min.css' ) ? $r . '.min' : $r;
 					if ( file_exists ( $assets_css_path . $r . '.css' ) ) {
 						$require_file = base_url ( $assets_css_path . $r . '.css' );
-						$return .= sprintf ( '<link rel="stylesheet" id="%s-css" href="%s" />',	$r, $require_file ) . "\n\t";
+						$return .= sprintf ( '<link rel="%s" id="%s-css" href="%s" />',	$rel, $r, $require_file ) . "\n\t";
 						$this->enqueue_style_id[] = $r;
 					}
 				}
 			}
 
-			if ( $id !== 'style' AND $this->is_anystyle_required ( $requires ) !== FALSE ) {
-				$return .= sprintf ( '<link rel="stylesheet" id="%s-css" href="%s" />',	$id, $filepath ) . "\n\t";
+			if ( $id !== 'style' AND $this->is_anystyle_required ( $requires ) !== false ) {
+				$return .= sprintf ( '<link rel="%s" id="%s-css" href="%s" />',	$rel, $id, $filepath ) . "\n\t";
 				$this->enqueue_style_id[] = $id;
 			} else {
-				$stylesheet = sprintf ( '<link rel="stylesheet" id="%s-css" href="%s" />',	$id, $filepath ) . "\n\t";
+				$stylesheet = sprintf ( '<link rel="%s" id="%s-css" href="%s" />', $rel, $id, $filepath ) . "\n\t";
 			}
 		}
 
@@ -337,11 +388,16 @@ class MY_Loader extends CI_Loader {
 
 			list ( $file, $require, $version, $in_footer ) = $s;
 
-			$filepath = get_template_directory_uri ( $file .'?ver='. ( isset ( $version ) ? $version : NULL ) );
-			$requires = isset ( $require ) ? $require : array();
-			$for_footer = isset ( $in_footer ) ? $in_footer : FALSE;
+			$filepath = get_template_directory_uri ( $file .'?ver='. ( isset ( $version ) ? $version : null ) );
 
-			if ( $this->is_anyscript_required ( $requires ) === FALSE ) {
+			if ( strpos ( $file, 'http://' ) !== false ){
+				$filepath = $file .'?ver='. ( isset ( $version ) ? $version : NULL );
+			}
+
+			$requires = isset ( $require ) ? $require : array();
+			$for_footer = isset ( $in_footer ) ? $in_footer : false;
+
+			if ( $this->is_anyscript_required ( $requires ) === false ) {
 				foreach ( $requires as $r ) {
 
 					$x = $r === 'tinymce' ? 'tinymce/tinymce' : $r;
@@ -349,7 +405,7 @@ class MY_Loader extends CI_Loader {
 
 					if ( ( $r == 'jquery' OR $r == 'tinymce' ) AND file_exists ( $assets_js_path . $re . '.js' ) ) {
 						$require_file = base_url ( $assets_js_path . $re . '.js' );
-						if ( $this->is_anyscript_required ( array ( $r ) ) === FALSE ) {
+						if ( $this->is_anyscript_required ( array ( $r ) ) === false ) {
 							$return .= sprintf ( '<script id="%s" src="%s"></script>', $r, $require_file ) . "\n\t";
 							$this->enqueue_script_id[] = $r;
 						}
@@ -357,7 +413,7 @@ class MY_Loader extends CI_Loader {
 				}
 			}
 
-			if ( ! $for_footer AND ! in_array ( $id, $force_load_last ) AND $this->is_anyscript_required ( $require ) !== FALSE ) {
+			if ( ! $for_footer AND ! in_array ( $id, $force_load_last ) AND $this->is_anyscript_required ( $require ) !== false ) {
 				$return .= sprintf ( '<script id="%s" src="%s"></script>', $id, $filepath ) ."\n\t";
 				$this->enqueue_script_id[] = $id;
 			}
@@ -385,11 +441,16 @@ class MY_Loader extends CI_Loader {
 
 			list ( $file, $require, $version, $in_footer ) = $e;
 
-			$filepath = get_template_directory_uri ( $file .'?ver='. ( isset ( $version ) ? $version : NULL ) );
-			$requires = isset ( $require ) ? $require : array();
-			$for_footer = isset ( $in_footer ) ? $in_footer : FALSE;
+			$filepath = get_template_directory_uri ( $file .'?ver='. ( isset ( $version ) ? $version : null ) );
 
-			if ( $this->is_anyscript_required ( $requires ) === FALSE ) {
+			if ( strpos ( $file, 'http://' ) !== false ){
+				$filepath = $file .'?ver='. ( isset ( $version ) ? $version : NULL );
+			}
+
+			$requires = isset ( $require ) ? $require : array();
+			$for_footer = isset ( $in_footer ) ? $in_footer : false;
+
+			if ( $this->is_anyscript_required ( $requires ) === false ) {
 				foreach ( $requires as $r ) {
 
 					// $x = $r === 'tinymce' ? 'tinymce/tinymce' : $r;
@@ -403,7 +464,7 @@ class MY_Loader extends CI_Loader {
 					}
 				}
 			}
-			if ( $for_footer AND ! in_array ( $id, $force_load_last ) AND $this->is_anyscript_required ( $requires ) !== FALSE ) {
+			if ( $for_footer AND ! in_array ( $id, $force_load_last ) AND $this->is_anyscript_required ( $requires ) !== false ) {
 				$return .= sprintf ( '<script id="%s" src="%s"></script>', $id, $filepath ) . "\n";
 				$this->enqueue_script_id[] = $id;
 			} else {
@@ -425,35 +486,35 @@ class MY_Loader extends CI_Loader {
 	private function is_anystyle_required ( $require = array() ) {
 		foreach ( $require as $r ) {
 			if ( ! isset ( $this->enqueue_style_id ) OR ! in_array ( $r, $this->enqueue_style_id ) ) {
-				return FALSE;
+				return false;
 			}
 		}
-		return TRUE;
+		return true;
 	}
 
 	private function is_anyscript_required ( $require = array() ) {
 		foreach ( $require as $r ) {
 			if ( ! in_array ( $r, $this->enqueue_script_id ) ) {
-				return FALSE;
+				return false;
 			}
 		}
-		return TRUE;
+		return true;
 	}
 
 	/* PRIVATE FUNCTION */
-	private function add_module ( $module, $view_cascade = TRUE ) {
+	private function add_module ( $module, $view_cascade = true ) {
 		if ( $path = $this->find_module ( $module ) ) {
 			array_unshift ( $this->_ci_modules, $module );
 			parent::add_package_path ( $path, $view_cascade );
 		}
 	}
 
-	private function remove_module ( $module = '', $remove_config = TRUE ) {
+	private function remove_module ( $module = '', $remove_config = true ) {
 		if ( $module == '' ) {
 			array_shift ( $this->_ci_modules );
 			parent::remove_package_path ( '', $remove_config );
 		}
-		elseif ( ( $key = array_search ( $module, $this->_ci_modules ) ) !== FALSE ) {
+		elseif ( ( $key = array_search ( $module, $this->_ci_modules ) ) !== false ) {
 			if ( $path = $this->find_module ( $module ) ) {
 				unset ( $this->_ci_modules[$key] );
 				parent::remove_package_path($path, $remove_config);
@@ -461,14 +522,14 @@ class MY_Loader extends CI_Loader {
 		}
 	}
 
-	private function _load_controller ( $uri = '', $params = array(), $return = FALSE ) {
+	private function _load_controller ( $uri = '', $params = array(), $return = false ) {
 		$router = & $this->_ci_get_component ( 'router' );
 		$backup = array();
 		foreach ( array ( 'directory', 'class', 'method', 'module' ) as $prop ) {
 			$backup[$prop] = $router->{$prop};
 		}
 		$segments = $router->locate ( explode ( '/', $uri ) );
-		$class = isset ( $segments[0] ) ? $segments[0] : FALSE;
+		$class = isset ( $segments[0] ) ? $segments[0] : false;
 		$method = isset ( $segments[1] ) ? $segments[1] : "index";
 		if ( ! $class ) return;
 		if ( ! array_key_exists ( strtolower ( $class ), $this->_ci_controllers ) ) {
@@ -476,15 +537,15 @@ class MY_Loader extends CI_Loader {
 				include_once ( APPPATH . 'controllers/' . $router->fetch_directory() . $class . '.php' );
 			elseif ( file_exists ( APPPATH . 'controllers/' . $class . '.php' ) )
 				include_once ( APPPATH . 'controllers/' . $class . '.php' );
-			if ( ! class_exists ( $class ) ) echo '390'; show_404 ( "{$class}/{$method}" );
+			if ( ! class_exists ( $class ) ) show_404 ( "MY Loader:528 {$class}/{$method}" );
 			$this->_ci_controllers[strtolower($class)] = new $class();
 		}
 		$controller = $this->_ci_controllers[strtolower($class)];
-		if ( ! method_exists ( $controller, $method ) ) echo '395';show_404 ( "{$class}/{$method}" );
+		if ( ! method_exists ( $controller, $method ) ) show_404 ( "MY Loader:532 {$class}/{$method}" );
 		foreach ( $backup as $prop => $value ) $router->{$prop} = $value;
 		ob_start();
 		$result = call_user_func_array ( array ( $controller, $method ), $params );
-		if ( $return === TRUE ) {
+		if ( $return === true ) {
 			$buffer = ob_get_contents();
 			@ob_end_clean();
 			return $buffer;
@@ -495,28 +556,164 @@ class MY_Loader extends CI_Loader {
 
 	private function detect_module ( $class ) {
 		$class = str_replace ( '.php', '', trim ( $class, '/' ) );
-		if ( ( $first_slash = strpos ( $class, '/' ) ) !== FALSE ) {
+		if ( ( $first_slash = strpos ( $class, '/' ) ) !== false ) {
 			$module = substr ( $class, 0, $first_slash );
 			$class = substr ( $class, $first_slash + 1 );
 			if ( $this->find_module ( $module ) ) return array ( $module, $class );
 		}
 		if ( $this->find_module ( $class ) ) return array ( $class );
-		return FALSE;
+		return false;
 	}
 
 	private function find_module ( $module ) {
 		$config =& $this->_ci_get_component ( 'config' );
-		$module_path = current ( $config->item ( 'modules_locations' ) ) . rtrim ( $module, '/' ) . '/';
-		$controllers_path = APPPATH . 'controllers/';
-		if ( is_dir ( $module_path ) ) return $module_path;
-		elseif ( is_dir ( $controllers_path . $module ) ) return $controllers_path . $module;
-		elseif ( is_file ( $controllers_path . $module . EXT ) ) return $controllers_path;
-		return FALSE;
+        foreach ( $config->item ( 'modules_locations' ) as $location => $realpath ) {
+            $path = $location . rtrim ( $module, '/' ) . '/';
+            if ( is_dir ( $path ) ) {
+                return $path;
+            }
+        }
+        return FALSE;
 	}
 
 	private function get_current_controller() {
 		$router = & $this->_ci_get_component ( 'router' );
 		return APPPATH . 'controllers/' . $router->directory . $router->class . EXT;
+	}
+
+	private function &_ci_get_database ( $params = '', $active_record_override = NULL ) {
+		$router =& $this->_ci_get_component ( 'router' );
+		$config =& $this->_ci_get_component ( 'config' );
+
+		// Load the DB config file if a DSN string wasn't passed
+		if ( is_string ( $params ) AND strpos ( $params, '://' ) === FALSE )
+		{
+			// Is the config file in the environment folder?
+			if ( ! defined('ENVIRONMENT') OR
+				! file_exists ( $file_path = APPPATH . 'config/' . ENVIRONMENT . '/database.php' ) OR
+				! file_exists ( $file_path = $config->_config_paths[0] . 'config/database.php' ) )
+			{
+				if ( ! file_exists ( $file_path = APPPATH . 'config/database.php' ) OR ! file_exists ( $file_path = $config->_config_paths[0] . 'config/database.php' ) ) {
+					show_error ( 'MY Loader:583 The configuration file database.php does not exist. ' .$file_path );
+				}
+			}
+
+			include ( $file_path );
+
+			if ( ! isset ( $db ) OR count ( $db ) == 0 )
+			{
+				show_error('No database connection settings were found in the database config file.');
+			}
+
+			if ( $params != '' )
+			{
+				$active_group = $params;
+			}
+
+			if ( ! isset ( $active_group ) OR ! isset ( $db[$active_group] ) )
+			{
+				show_error ( 'You have specified an invalid database connection group.' );
+			}
+
+			$params = $db[$active_group];
+		}
+		elseif ( is_string ( $params ) )
+		{
+
+			/* parse the URL from the DSN string
+			 *  Database settings can be passed as discreet
+			 *  parameters or as a data source name in the first
+			 *  parameter. DSNs must have this prototype:
+			 *  $dsn = 'driver://username:password@hostname/database';
+			 */
+
+			if ( ( $dns = @parse_url ( $params ) ) === FALSE )
+			{
+				show_error ( 'Invalid DB Connection String' );
+			}
+
+			$params = array (
+								'dbdriver'	=> $dns['scheme'],
+								'hostname'	=> ( isset ( $dns['host'] ) ) ? rawurldecode ( $dns['host'] ) : '',
+								'username'	=> ( isset ( $dns['user'] ) ) ? rawurldecode ( $dns['user'] ) : '',
+								'password'	=> ( isset ( $dns['pass'] ) ) ? rawurldecode ( $dns['pass'] ) : '',
+								'database'	=> ( isset ( $dns['path'] ) ) ? rawurldecode ( substr ( $dns['path'], 1 ) ) : ''
+							);
+
+			// were additional config items set?
+			if ( isset ( $dns['query'] ) )
+			{
+				parse_str ( $dns['query'], $extra );
+
+				foreach ( $extra as $key => $val )
+				{
+					// booleans please
+					if ( strtoupper ( $val ) == "TRUE" )
+					{
+						$val = TRUE;
+					}
+					elseif ( strtoupper ( $val ) == "FALSE" )
+					{
+						$val = FALSE;
+					}
+
+					$params[$key] = $val;
+				}
+			}
+		}
+
+		// No DB specified yet?  Beat them senseless...
+		if ( ! isset ( $params['dbdriver'] ) OR $params['dbdriver'] == '' )
+		{
+			show_error ( 'You have not selected a database type to connect to.' );
+		}
+
+		// Load the DB classes.  Note: Since the active record class is optional
+		// we need to dynamically create a class that extends proper parent class
+		// based on whether we're using the active record class or not.
+		// Kudos to Paul for discovering this clever use of eval()
+
+		if ( $active_record_override !== NULL )
+		{
+			$active_record = $active_record_override;
+		}
+
+		require_once ( BASEPATH . 'database/DB_driver.php' );
+
+		if ( ! isset ( $active_record ) OR $active_record == TRUE )
+		{
+			require_once ( BASEPATH . 'database/DB_active_rec.php' );
+
+			if ( ! class_exists ( 'CI_DB' ) )
+			{
+				eval ( 'class CI_DB extends CI_DB_active_record { }' );
+			}
+		}
+		else
+		{
+			if ( ! class_exists ( 'CI_DB' ) )
+			{
+				eval ( 'class CI_DB extends CI_DB_driver { }' );
+			}
+		}
+
+		require_once ( BASEPATH.'database/drivers/' . $params['dbdriver'] . '/' . $params['dbdriver'] . '_driver.php');
+
+		// Instantiate the DB adapter
+		$driver = 'CI_DB_' . $params['dbdriver'] . '_driver';
+		$DB = new $driver ( $params );
+
+		if ( $DB->autoinit == TRUE )
+		{
+			$DB->initialize();
+		}
+
+		if ( isset ( $params['stricton'] ) && $params['stricton'] == TRUE )
+		{
+			$DB->query ( 'SET SESSION sql_mode="STRICT_ALL_TABLES"' );
+		}
+
+		return $DB;
 	}
 
 }

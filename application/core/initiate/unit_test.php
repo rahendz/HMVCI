@@ -15,20 +15,20 @@ if ( ! function_exists ( 'is_false' ) ) {
 }
 
 if ( ! function_exists ( 'echo_r' ) ) {
-	function echo_r ( $data, $exit = FALSE, $dump = FALSE )
+	function echo_r ( $data, $exit = false, $dump = false )
 	{
 		if ( $exit === 'json' ) {
 			header ( 'Content-Type: application/json' );
 			exit ( json_encode ( $data ) );
 		}
-		echo $dump ? NULL : '<pre>';
+		echo $dump ? null : '<pre>';
 		if ( $dump ) {
 			var_dump ( $data ); 
 		}
 		else { 
 			print_r ( $data );
 		}
-		echo $dump ? NULL : '</pre>';
+		echo $dump ? null : '</pre>';
 		if ( $exit ) {
 			exit;
 		}

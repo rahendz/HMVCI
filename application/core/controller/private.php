@@ -2,7 +2,7 @@
 
 abstract class Private_Controller extends MY_Controller {
 
-	protected $backend = 'default';
+	protected $theme = 'default';
 	protected $theme_part = NULL;
 	protected $data_theme = array();
 	protected $content_theme = NULL;
@@ -15,7 +15,7 @@ abstract class Private_Controller extends MY_Controller {
 	}
 
 	protected function render_theme ( $vars = array(), $return = FALSE ) {
-		$this->load->theme_config['backend'] = $this->backend;
+		$this->load->theme_config['backend'] = $this->theme;
 		$this->load->enqueue_style = $this->enqueue_style;
 		$this->load->enqueue_script = $this->enqueue_script;
 		$this->load->views_data = $this->data_theme;

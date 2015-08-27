@@ -4,15 +4,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class MY_Model extends CI_Model {
 
 	// private $db;
-	public $table = NULL;
-	public $native = FALSE;
-	public $return_id = FALSE;
-	public $select = NULL;
-	public $select_max = NULL;
-	public $select_min = NULL;
-	public $select_avg = NULL;
-	public $select_sum = NULL;
-	public $distinct = FALSE;
+	public $table = null;
+	public $native = false;
+	public $return_id = false;
+	public $select = null;
+	public $select_max = null;
+	public $select_min = null;
+	public $select_avg = null;
+	public $select_sum = null;
+	public $distinct = false;
 	public $set = array();
 	public $join = array();
 	public $where = array();
@@ -27,15 +27,15 @@ class MY_Model extends CI_Model {
 	public $or_not_like = array();
 	public $having = array();
 	public $or_having = array();
-	public $limit = NULL;
-	public $offset = NULL;
-	public $group_by = NULL;
-	public $order_by = NULL;
-	public $string = NULL;
+	public $limit = null;
+	public $offset = null;
+	public $group_by = null;
+	public $order_by = null;
+	public $string = null;
 	public $values = array();
-	public $key = NULL;
+	public $key = null;
 	public $rules = array();
-	public $errors = FALSE;
+	public $errors = false;
 	public $format = array();
 	public $exists = array();
 	public $platform;
@@ -45,20 +45,27 @@ class MY_Model extends CI_Model {
 	public function __construct() {
 		parent::__construct();
 		isset ( $this->db ) OR $this->load->database();
+		$this->db->cache_off();
+		$this->db->save_queries = false;
 		$this->platform = $this->db->platform();
 		$this->version = $this->db->version();
 		$this->conn_id = $this->db->conn_id;
 	}
 
 	public function __destruct() {
-		$this->db->save_queries = FALSE;
+		$this->db->close();
 	}
 
-	public function prefix ( $table_name ) {
-		return $this->db->dbprefix ( $table_name );
+	public function prefix ( $table = null ) {
+		return $this->db->dbprefix ( $table );
 	}
 
 	private function initiate_query ( $method ) {
+		if ( ! $this->table AND ! $this->db->table_exists ( $this->db->dbprefix ( $this->table ) ) ) {
+			show_error ( 'Ups! Table not selected' );
+		} else {
+			$this->table = $this->db->dbprefix ( $this->table );
+		}
 		// Select Query
 		if ( in_array ( $method, array ( 'get' ) ) ) {
 			if ( ! is_null ( $this->select ) ) {
@@ -76,14 +83,14 @@ class MY_Model extends CI_Model {
 			elseif ( ! is_null ( $this->select_sum ) ) {
 				$this->db->select_sum ( $this->select_sum );
 			}
-			elseif ( $this->distinct !== FALSE ) {
+			elseif ( $this->distinct !== false ) {
 				$this->db->distinct();
 			}
 		}
 
 		// From Query
 		if ( in_array ( $method, array ( 'get', 'count', 'delete', 'empty_table', 'truncate' ) ) ) {
-			$this->db->from ( $this->db->dbprefix ( $this->table ) );
+			$this->db->from ( $this->table );
 		}
 
 		// Join Query
@@ -91,10 +98,10 @@ class MY_Model extends CI_Model {
 			if ( isset ( $this->join[0] ) ) {
 				if ( is_array ( $this->join[0] ) ) {
 					foreach ( $this->join as $j ) {
-						$this->db->join ( $j[0], $j[1], ( isset ( $j[2] ) ? $j[2] : NULL ) );
+						$this->db->join ( $j[0], $j[1], ( isset ( $j[2] ) ? $j[2] : null ) );
 					}
 				} else {
-					$this->db->join ( $this->join[0], $this->join[1], ( isset ( $this->join[2] ) ? $this->join[2] : NULL ) );
+					$this->db->join ( $this->join[0], $this->join[1], ( isset ( $this->join[2] ) ? $this->join[2] : null ) );
 				}
 			}
 		}
@@ -201,91 +208,120 @@ class MY_Model extends CI_Model {
 
 	public function get_one ( $object = TRUE ) {
 		if ( $object ) {
-			return $this->get()->row();
+			$result = $this->get()->row();
 		} else {
-			return $this->get()->row_array();
+			$result = $this->get()->row_array();
 		}
+		$this->reset_query();
+		return $result;
 	}
 
 	public function get_all ( $object = TRUE ) {
 		if ( $object ) {
-			return $this->get()->result();
+			$result = $this->get()->result();
 		} else {
-			return $this->get()->result_array();
+			$result = $this->get()->result_array();
 		}
+		$this->reset_query();
+		return $result;
 	}
 
 	public function count() {
 		$this->initiate_query ( __FUNCTION__ );
-		return $this->db->count_all_results();
+		$result = $this->db->count_all_results();
+		$this->reset_query();
+		return $result;
 	}
 
 	public function count_all() {
-		return $this->db->count_all ( $this->db->dbprefix ( $this->table ) );
+		$result = $this->db->count_all ( $this->table );
+		$this->reset_query();
+		return $result;
 	}
 
 	public function insert() {
 		$return = ! $this->return_id ? 'affected_rows' : 'insert_id';
 		$this->initiate_query ( __FUNCTION__ );
-		$this->db->insert ( $this->db->dbprefix ( $this->table ), $this->values );
-		return $this->db->$return();
+		$this->db->insert ( $this->table, $this->values );
+		$result = $this->db->$return();
+		$this->reset_query();
+		return $result;
 	}
 
 	public function insert_batch() {
-		if ( FALSE !== $this->native ) {
+		if ( false !== $this->native ) {
 			$insert_id = array();
 			foreach ( $this->values as $val ) {
 				$this->values = $val;
 				$insert_id[] = $this->insert();
 			}
+			$this->reset_query();
 			return $insert_id;
 		}
 		$this->db->trans_start();
-		$this->db->insert_batch ( $this->db->dbprefix ( $this->table ), $this->values );
+		$this->db->insert_batch ( $this->table, $this->values );
 		$this->db->trans_complete();
-		return $this->db->trans_status();
+		$result = $this->db->trans_status();
+		$this->reset_query();
+		return $result;
 	}
 
 	public function insert_string() {
-		return $this->db->insert_string ( $this->db->dbprefix ( $this->table ), $this->values );
+		$result = $this->db->insert_string ( $this->table, $this->values );
+		$this->reset_query();
+		return $result;
 	}
 
 	public function update() {
 		$this->initiate_query ( __FUNCTION__ );
-		$this->db->update ( $this->db->dbprefix ( $this->table ), $this->values );
-		return $this->db->affected_rows();
+		$this->db->update ( $this->table, $this->values );
+		$result = $this->db->affected_rows();
+		$this->reset_query();
+		return $result;
 	}
 
 	public function update_batch() {
 		$this->db->trans_start();
-		$this->db->update_batch ( $this->db->dbprefix ( $this->table ), $this->values, $this->key );
+		$this->db->update_batch ( $this->table, $this->values, $this->key );
 		$this->db->trans_complete();
-		return $this->db->trans_status();
+		$result = $this->db->trans_status();
+		$this->reset_query();
+		return $result;
 	}
 
 	public function update_string() {
-		return $this->db->update_string ( $this->db->dbprefix ( $this->table ), $this->values, $this->where );
+		$result = $this->db->update_string ( $this->table, $this->values, $this->where );
+		$this->reset_query();
+		return $result;
 	}
 
 	public function replace() {
 		$this->initiate_query ( __FUNCTION__ );
-		$this->db->replace ( $this->db->dbprefix ( $this->table ), $this->values );
-		return $this->db->affected_rows();
+		$this->db->replace ( $this->table, $this->values );
+		$result = $this->db->affected_rows();
+		$this->reset_query();
+		return $result;
 	}
 
 	public function delete() {
 		$this->initiate_query ( __FUNCTION__ );
-		return $this->db->delete ( $this->db->dbprefix ( $this->table ) );
+		$result = $this->db->delete ( $this->table );
+		$this->reset_query();
+		return $result;
 	}
 
 	public function empty_table() {
 		$this->initiate_query ( __FUNCTION__ );
-		return $this->db->empty_table ( $this->db->dbprefix ( $this->table ) );
+		$result = $this->db->empty_table ( $this->table );
+		$this->reset_query();
+		return $result;
 	}
 
 	public function truncate() {
 		$this->initiate_query ( __FUNCTION__ );
-		return $this->db->truncate();
+		$result = $this->db->truncate();
+		$this->reset_query();
+		return $result;
 	}
 
 	public function cache ( $trigger ) {
@@ -299,23 +335,29 @@ class MY_Model extends CI_Model {
 
 	public function query() {
 		if ( ! is_null ( $this->string ) ) {
-			return $this->db->query ( $this->string );
+			$result = $this->db->query ( $this->string );
+			$this->reset_query();
+			return $result;
 		}
 	}
 
 	public function simple_query() {
 		if ( ! is_null ( $this->string ) ) {
-			return $this->db->simple_query ( $this->string );
+			$result = $this->db->simple_query ( $this->string );
+			$this->reset_query();
+			return $result;
 		}
 	}
 
-	public function transaction ( $state, $param = FALSE ) {
+	public function transaction ( $state, $param = false ) {
 		$method = 'trans_'.$state;
 		return $this->db->$method($param);
 	}
 
 	public function call() {
-		return call_user_func_array ( array ( &$this->db, 'call_function' ), func_get_args() );
+		return call_user_func_array ( array ( 
+			&$this->db, 'call_function' 
+			), func_get_args() );
 	}
 
 	public function dbcache ( $state, $param = array() ) {
@@ -333,26 +375,51 @@ class MY_Model extends CI_Model {
 
 		$this->validation->set_message ( $this->format );
 
-		if ( $this->validation->run() == FALSE AND $this->validation->error_string() !== '' ) {
+		if ( $this->validation->run() == false AND $this->validation->error_string() !== '' ) {
 			$this->errors['string'] = $this->validation->error_string();
 			foreach ( $this->rules as $r ) {
 				$this->errors[$r['field']] = $this->validation->error($r['field']);
 			}
-			return FALSE;
+			return false;
 		}
 		return TRUE;
 	}
 
+	public function list_fields() {
+		$lists = $this->db->list_fields ( $this->table );
+		$this->reset_query();
+		return $lists;
+	}
+
+	public function data_fields() {
+		$result = null;
+		$query = $this->db->query ( 'SHOW COLUMNS FROM ' . $this->table );
+		if ( $query->num_rows() > 0 ) {
+			$result = array_map ( function ( $f ) {
+				$return['name'] = $f->Field;
+				$return['type'] = current(explode('(', $f->Type));
+				$return['length'] = end(explode('(',rtrim($f->Type,')')));
+				$return['null'] = $f->Null === 'NO' ? false : true;
+				$return['key'] = $f->Key === 'PRI' ? 'Primary' : ( $f->Key === 'UNI' ? 'Unique' : null );
+				$return['default'] = $f->Default;
+				$return['ai'] = $f->Extra === 'auto_increment' ? true : false;
+				return $return;
+				}, $query->result() );
+		}
+		$this->reset_query();
+		return $result;
+	}
+
 	public function reset_query() {
-		// $this->table = NULL;
-		$this->native = FALSE;
-		$this->return_id = FALSE;
-		$this->select = NULL;
-		$this->select_max = NULL;
-		$this->select_min = NULL;
-		$this->select_avg = NULL;
-		$this->select_sum = NULL;
-		$this->distinct = FALSE;
+		// $this->table = null;
+		$this->native = false;
+		$this->return_id = false;
+		$this->select = null;
+		$this->select_max = null;
+		$this->select_min = null;
+		$this->select_avg = null;
+		$this->select_sum = null;
+		$this->distinct = false;
 		$this->set = array();
 		$this->join = array();
 		$this->where = array();
@@ -367,15 +434,15 @@ class MY_Model extends CI_Model {
 		$this->or_not_like = array();
 		$this->having = array();
 		$this->or_having = array();
-		$this->limit = NULL;
-		$this->offset = NULL;
-		$this->group_by = NULL;
-		$this->order_by = NULL;
-		$this->string = NULL;
+		$this->limit = null;
+		$this->offset = null;
+		$this->group_by = null;
+		$this->order_by = null;
+		$this->string = null;
 		$this->values = array();
-		$this->key = NULL;
+		$this->key = null;
 		$this->rules = array();
-		$this->errors = FALSE;
+		$this->errors = false;
 		$this->format = array();
 		$this->exists = array();
 		$this->db->flush_cache();

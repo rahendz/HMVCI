@@ -16,7 +16,7 @@
 // This can be removed if you use __autoload() in config.php OR use Modular Extensions
 // require APPPATH.'/libraries/REST_Controller.php';
 
-class Example extends Public_Controller
+class Example extends Api_Controller
 {
 	function __construct()
     {

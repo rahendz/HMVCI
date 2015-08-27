@@ -59,19 +59,19 @@ if ( ! function_exists ( '__status_header' ) ) :
 			__die ( 'No status text available.  Please check your status code number or supply your own message text.', 500 );
 		}
 
-		$server_protocol = ( isset ( $_SERVER['SERVER_PROTOCOL'] ) ) ? $_SERVER['SERVER_PROTOCOL'] : FALSE;
+		$server_protocol = ( isset ( $_SERVER['SERVER_PROTOCOL'] ) ) ? $_SERVER['SERVER_PROTOCOL'] : false;
 
 		if ( substr ( php_sapi_name(), 0, 3 ) == 'cgi' )
 		{
-			header ( "Status: {$code} {$text}", TRUE );
+			header ( "Status: {$code} {$text}", true );
 		}
 		elseif ( $server_protocol == 'HTTP/1.1' OR $server_protocol == 'HTTP/1.0' )
 		{
-			header ( $server_protocol . " {$code} {$text}", TRUE, $code );
+			header ( $server_protocol . " {$code} {$text}", true, $code );
 		}
 		else
 		{
-			header ( "HTTP/1.1 {$code} {$text}", TRUE, $code );
+			header ( "HTTP/1.1 {$code} {$text}", true, $code );
 		}
 	}
 endif;
@@ -86,34 +86,34 @@ endif;
 if ( ! function_exists ( 'load_controller' ) ) :
 	function &load_controller ( $controller ) {
 		// $_ci =& get_instance();
-		$name = FALSE;
+		$name = false;
 
 		$controllers_file = APPPATH . 'controllers/' . $controller . EXT;
 		if ( file_exists ( $controllers_file ) )
 		{
 			$name = $controller;
-			if ( class_exists ( $name ) === FALSE )
+			if ( class_exists ( $name ) === false )
 			{
 				require_once $controllers_file;
 			}
 		}
 
 		if ( $modules_locations = config_item ( 'modules_locations' ) ) {
-			if ( strpos ( $controller, '/' ) !== FALSE )
+			if ( strpos ( $controller, '/' ) !== false )
 				list ( $module, $controller ) = explode ( '/', $controller );
 			$controllers_file = current ( $modules_locations ) . ( isset ( $module ) ? $module : $controller ) . '/controllers/'. $controller . EXT;
 			// $controllers_file = key ( $_ci->config->item ( 'modules_locations' ) ) . 'controllers/' . $controller . EXT;
 			if ( file_exists ( $controllers_file ) )
 			{
 				$name = $controller;
-				if ( class_exists ( $name ) === FALSE )
+				if ( class_exists ( $name ) === false )
 				{
 					include_once $controllers_file;
 				}
 			}
 		}
 
-		if ( $name === FALSE )
+		if ( $name === false )
 		{
 			__die ( 'Unable to locate the specified class: ' . $controllers_file, 404 );
 		}
@@ -128,7 +128,7 @@ endif;
 if ( ! function_exists ( 'load_library' ) ) :
 	function &load_library ( $library ) {
 		$_ci =& get_instance();
-		$subname = $basename = FALSE;
+		$subname = $basename = false;
 		$modules_locations = config_item ( 'modules_locations' );
 
 		$sub_library_file = APPPATH . 'libraries/' . ucfirst ( $library ) . EXT;
@@ -165,16 +165,16 @@ if ( ! function_exists ( 'load_model' ) ) {
 }
 
 if ( ! function_exists ( 'get_current_path' ) ) {
-	function get_current_path ( $type = NULL, $realpath = FALSE ) {
+	function get_current_path ( $type = null, $realpath = false ) {
 		$_ci =& get_instance();
 		$debug = current ( debug_backtrace() );
 		$current_path = str_replace ( array ( FCPATH, '\\' ), array ( '', '/' ), $debug['file'] );
 
-		if ( 'views' == $type AND strpos ( $current_path, $type ) !== FALSE ) {
+		if ( 'views' == $type AND strpos ( $current_path, $type ) !== false ) {
 			return $current_path;
 		}
 
-		elseif ( 'views' == $type AND strpos ( $current_path, $type ) === FALSE ) {
+		elseif ( 'views' == $type AND strpos ( $current_path, $type ) === false ) {
 			return '<small>It\'s not a views file!</small>';
 		}
 
@@ -197,17 +197,17 @@ if ( ! function_exists ( 'redirect' ) ) :
 		switch ( $method ) :
 			case 'refresh' : header ( "Refresh:0;url=" . $uri ); break;
 			case 'meta' : return '<meta http-equiv="refresh" content="' . $http_response_code . '; url=' . $uri . '">' . "\n"; break;
-			case 'redirect' : header ( "Location: " . $uri . $redirect_to, TRUE, $http_response_code ); break;
-			default : header ( "Location: " . $uri, TRUE, $http_response_code ); break;
+			case 'redirect' : header ( "Location: " . $uri . $redirect_to, true, $http_response_code ); break;
+			default : header ( "Location: " . $uri, true, $http_response_code ); break;
 		endswitch; exit;
 	}
 endif;
 
 if ( ! function_exists ( 'get_input' ) ) :
-	function get_input ( $type = NULL, $name = NULL ) {
+	function get_input ( $type = null, $name = null ) {
 		if ( is_null ( $type ) ) {
 			parse_str ( $_SERVER['QUERY_STRING'], $parse );
-			return is_null ( key ( $parse ) ) ? FALSE : key ( $parse );
+			return is_null ( key ( $parse ) ) ? false : key ( $parse );
 		}
 		$_ci =& get_instance();
 		$type = strtolower ( $type );
@@ -234,15 +234,15 @@ if ( ! function_exists ( 'get_input' ) ) :
 		}
 
 		if ( ! array_key_exists ( $type, $func ) ) {
-			return FALSE;
+			return false;
 		}
 
 		$input_method = $func[$type];
 
 		if ( $type == 'md5' ) {
-			return md5 ( $_ci->input->$input_method ( $name, TRUE ) );
+			return md5 ( $_ci->input->$input_method ( $name, true ) );
 		}
-		return $_ci->input->$input_method ( $name, TRUE );
+		return $_ci->input->$input_method ( $name, true );
 	}
 endif;
 
@@ -255,7 +255,7 @@ if ( ! function_exists ( 'on_input' ) ) :
 		} elseif ( $type === 'both' AND ( isset ( $_GET[$name] ) OR isset ( $_POST[$name] ) ) ) {
 			return $name;
 		} else {
-			return FALSE;
+			return false;
 		}
 	}
 endif;
@@ -270,24 +270,24 @@ endif;
 if ( ! function_exists ( 'get_views' ) ) :
 	function get_views ( $view_path, $vars = array() ) {
 		$_ci =& get_instance();
-		return $_ci->load->view ( $view_path, $vars, TRUE );
+		return $_ci->load->view ( $view_path, $vars, true );
 	}
 endif;
 
 if ( ! function_exists ( 'is_input' ) ) :
-	function is_input ( $type, $name = NULL, $value = NULL ) {
+	function is_input ( $type, $name = null, $value = null ) {
 		if ( ! is_null ( $value ) ) {
-			return get_input ( $type, $name ) !== $value ? FALSE : TRUE;
+			return get_input ( $type, $name ) !== $value ? false : true;
 		}
-		return ! get_input ( $type, $name ) ? FALSE : TRUE;
+		return ! get_input ( $type, $name ) ? false : true;
 	}
 endif;
 
 if ( ! function_exists ( 'is_post' ) AND ! function_exists ( 'is_get' ) ) {
-	function is_post ( $name, $value = NULL ) {
+	function is_post ( $name, $value = null ) {
 		return is_input ( 'post', $name, $value );
 	}
-	function is_get ( $name, $value = NULL ) {
+	function is_get ( $name, $value = null ) {
 		return is_input ( 'get', $name, $value );
 	}
 }
@@ -302,9 +302,9 @@ if ( ! function_exists ( 'current_url_string' ) ) :
 endif;
 
 if ( ! function_exists ( 'site_url' ) ) :
-	function site_url ( $path = NULL ) {
+	function site_url ( $path = null ) {
 		$_ci =& get_instance();
-		if ( is_null ( $path ) ) $url = NULL;
+		if ( is_null ( $path ) ) $url = null;
 		elseif ( ! $path ) $url = current_url_string();
 		else $url = $path;
 		return $_ci->config->site_url ( $url );
@@ -312,7 +312,7 @@ if ( ! function_exists ( 'site_url' ) ) :
 endif;
 
 if ( ! function_exists ( 'base_url' ) ) :
-	function base_url ( $path = NULL ) {
+	function base_url ( $path = null ) {
 		$_ci =& get_instance();
 		return $_ci->config->base_url ( $path );
 	}
@@ -416,12 +416,12 @@ if ( ! function_exists ( 'recursive_array_search' ) ) :
 				$inside = recursive_array_search ( $needle, $value );
 			}
 
-			if ( $needle === $value OR ( isset ( $inside ) AND $inside !== FALSE ) ) {
+			if ( $needle === $value OR ( isset ( $inside ) AND $inside !== false ) ) {
 				return $value;
 			}
 		}
 
-		return FALSE;
+		return false;
 	}
 endif;
 
@@ -432,12 +432,12 @@ if ( ! function_exists ( 'recursive_array_search_key' ) ) :
 				$inside = recursive_array_search_key ( $needle, $value );
 			}
 
-			if ( $needle === $value OR ( isset ( $inside ) AND $inside !== FALSE ) ) {
+			if ( $needle === $value OR ( isset ( $inside ) AND $inside !== false ) ) {
 				return $key;
 			}
 		}
 
-		return FALSE;
+		return false;
 	}
 endif;
 
@@ -470,7 +470,7 @@ if ( ! function_exists ( 'benchmark_time' ) ) :
 endif;
 
 if ( ! function_exists ( 'date_range' ) ) :
-	function date_range ( $date1, $date2, $duration = FALSE ) {
+	function date_range ( $date1, $date2, $duration = false ) {
 		$date1 = strtotime ( $date1 );
 		$date2 = strtotime ( $date2 );
 		if ( $date1 == $date2 AND $duration ) return array();
@@ -488,30 +488,31 @@ endif;
 
 if ( ! function_exists ( 'date_duration' ) ) :
 	function date_duration ( $date1, $date2 ) {
-		return date_range ( $date1, $date2, TRUE );
+		return date_range ( $date1, $date2, true );
 	}
 endif;
 
 if ( ! function_exists ( 'pagination' ) ) :
-	function pagination ( $page_name = 'page', $uri_segment = 3, $per_page = 10, $num_links = 3, $total_rows = 100 ) {
+	function pagination ( $page_name = 'page', $uri_segment = 3, $per_page = 10, $num_links = 3, $total_rows = 100, $page_query_string = false ) {
 		$_ci =& get_instance();
 		if ( is_array ( $page_name ) ) extract ( $page_name );
-		if ( ! isset ( $_ci->paged ) ) $_ci->load->library ( 'pagination', NULL, 'paged' );
+		if ( ! isset ( $_ci->paged ) ) $_ci->load->library ( 'pagination', null, 'paged' );
 		$offset = $_ci->uri->segment ( $uri_segment ) ? ( $per_page * $_ci->uri->segment ( $uri_segment ) ) - $per_page : 0;
 		$url = isset ( $uri_string ) ? $uri_string : $_ci->uri->uri_string();
-		if ( strpos ( $url, $page_name ) !== FALSE )
+		if ( ! is_array ( $page_name ) AND strpos ( $url, $page_name ) !== false ) {
 			list ( $url, $page ) = explode ( $page_name, $url );
+		}
 		$paging['base_url']	= $_ci->config->site_url (  $url . '/' . $page_name );
-		if ( $_ci->input->get ( 'submit', TRUE ) == 'search' ) :
-			$paging['first_url'] = $_ci->config->site_url (  $url ) .'?'. http_build_query ( $_ci->input->get ( NULL, TRUE ) );
-			$paging['suffix'] = '?'. http_build_query ( $_ci->input->get ( NULL, TRUE ) );
+		if ( $_ci->input->get ( 'submit', true ) == 'search' OR $page_query_string !== false ) :
+			$paging['first_url'] = $_ci->config->site_url (  $url ) .'?'. http_build_query ( $_ci->input->get ( null, true ) );
+			$paging['suffix'] = '?'. http_build_query ( $_ci->input->get ( null, true ) );
 		endif;
-		$paging['total_rows'] = $total_rows;
-		$paging['per_page'] = $per_page;
-		$paging['num_links'] = $num_links - 1;
-		$paging['uri_segment'] = $uri_segment;
-		$paging['use_page_numbers'] = isset ( $use_page_numbers ) ? $use_page_numbers : FALSE;
-		$paging['page_query_string'] = isset ( $page_query_string ) ? $page_query_string : FALSE;
+		$paging['total_rows'] = isset ( $total_rows ) ? $total_rows : 100;
+		$paging['per_page'] = isset ( $per_page ) ? $per_page : 10;
+		$paging['num_links'] = isset ( $num_links ) ? $num_links - 1 : 2;
+		$paging['uri_segment'] = isset ( $uri_segment ) ? $uri_segment : 3;
+		$paging['use_page_numbers'] = isset ( $use_page_numbers ) ? $use_page_numbers : false;
+		$paging['page_query_string'] = isset ( $page_query_string ) ? $page_query_string : false;
 		$paging['full_tag_open'] = isset ( $full_tag_open ) ? $full_tag_open : '<ul class="pagination">';
 		$paging['full_tag_close'] = isset ( $full_tag_close ) ? $full_tag_close : '</ul>';
 		$paging['first_link'] = isset ( $first_link ) ? $first_link : 'First';
@@ -532,9 +533,9 @@ if ( ! function_exists ( 'pagination' ) ) :
 		$paging['num_tag_close'] = isset ( $num_tag_close ) ? $num_tag_close : '</li>';
 		if ( isset ( $display_pages ) ) $paging['display_pages'] = $display_pages;
 		$_ci->paged->initialize ( $paging );
-		$current_offset = $paging['use_page_numbers'] !== FALSE ? $offset : $_ci->uri->segment ( $uri_segment );
-		$current_num = $paging['use_page_numbers'] !== FALSE ? $offset + 1 : $_ci->uri->segment ( $uri_segment ) + 1;
-		$last_per_page = $total_rows < ($current_num * $per_page) ? $total_rows : $current_num * $per_page;
+		$current_offset = $paging['use_page_numbers'] !== false ? $offset : $_ci->uri->segment ( $uri_segment );
+		$current_num = $paging['use_page_numbers'] !== false ? $offset + 1 : $_ci->uri->segment ( $uri_segment ) + 1;
+		$last_per_page = $total_rows < ( $current_num * $per_page ) ? $total_rows : $current_num * $per_page;
 		return ( object ) array (
 			'limit' => $per_page,
 			'offset' => $current_offset,
@@ -552,7 +553,7 @@ if ( ! function_exists ( 'do_upload' ) ) :
 		if ( ! isset ( $CI->upload ) ) {
 			$CI->load->library ( 'upload' );
 		}
-		
+
 		if ( is_array ( $path ) ) {
 			foreach ( $path as $opt => $val ) {
 				$cfg[$opt] = $val;
@@ -565,12 +566,12 @@ if ( ! function_exists ( 'do_upload' ) ) :
 
 		$CI->upload->initialize($cfg);
 
-		if ( ! is_dir ( $cfg['upload_path'] ) AND ! mkdir ( $cfg['upload_path'], 0777, TRUE ) ) {
-			return array ( 'error' => TRUE, 'msg' => 'Ups! Something wrong with directory upload' );
+		if ( ! is_dir ( $cfg['upload_path'] ) AND ! mkdir ( $cfg['upload_path'], 0777, true ) ) {
+			return array ( 'error' => true, 'msg' => 'Ups! Something wrong with directory upload' );
 		}
 
-		if ( $CI->upload->do_upload ( $name ) === FALSE ) {
-			return array ( 'error' => TRUE, 'msg' => $CI->upload->error_msg );
+		if ( $CI->upload->do_upload ( $name ) === false ) {
+			return array ( 'error' => true, 'msg' => $CI->upload->error_msg );
 		}
 		else {
 			return $CI->upload->data();
@@ -581,10 +582,11 @@ endif;
 if ( ! function_exists ( 'initiate_db' ) ) :
 	function &initiate_db() {
 		$_ci =& get_instance();
-		$_ci->load->config ( 'database', FALSE, TRUE );
+		$_ci->load->config ( 'database', false, true );
 		$dbparam = ! config_item ( 'default' ) ? '' : config_item ( 'default' );
 		unset ( $_ci->db );
-		return $_ci->load->database ( $dbparam, TRUE );
+		$db = $_ci->load->database ( $dbparam, true );
+		return $db;
 	}
 endif;
 
@@ -596,9 +598,9 @@ if ( ! function_exists ( 'list_tables' ) ) :
 endif;
 
 if ( ! function_exists ( 'table_exists' ) ) :
-	function table_exists ( $table_name ) {
+	function table_exists ( $table ) {
 		$_db =& initiate_db();
-		return $_db->table_exists ( $table_name );
+		return $_db->table_exists ( $_db->dbprefix ( $table ) );
 	}
 endif;
 
@@ -612,14 +614,26 @@ endif;
 if ( ! function_exists ( 'field_exists' ) ) :
 	function field_exists ( $field, $table ) {
 		$_db =& initiate_db();
-		return $_db->field_exists ( $field, $table );
+		return $_db->field_exists ( $field, $_db->dbprefix ( $table ) );
 	}
 endif;
 
 if ( ! function_exists ( 'field_data' ) ) :
-	function field_data ( $table = NULL ) {
+	function field_data ( $table = null ) {
 		$_db =& initiate_db();
-		return $_db->field_data ( $table );
+		return $_db->field_data ( $_db->dbprefix ( $table ) );
+	}
+endif;
+
+if ( ! function_exists ( 'fields_data' ) ) :
+	function fields_data ( $table = null ) {
+		$_db =& initiate_db();
+		$query = $_db->query ( 'SHOW COLUMNS FROM ' . $_db->dbprefix ( $table ) );
+		if ( $query->num_rows() > 0 ) {
+			// while ( $row = $query->result() ) {
+			echo_r ( $query->result() );
+			// }
+		}
 	}
 endif;
 
@@ -629,8 +643,8 @@ endif;
 	create_database 	Database name 						-
 	drop_database 		Database name 						-
 	add_field 			Field preference (array/string)		-
-	add_key				Field name 							Primary Key (TRUE/FALSE)
-	create_table		Table name 							IF NOT EXISTS (TRUE/FALSE)
+	add_key				Field name 							Primary Key (true/false)
+	create_table		Table name 							IF NOT EXISTS (true/false)
 	drop_table			Table name 							-
 	rename_table		Old table name 						New table name
 	add_column 			Table name 							Field preference
@@ -643,18 +657,18 @@ endif;
 			'name'				=> New name for modifying column only
 			'type'				=> INT/VARCHAR/TEXT etc.
 			'constraint'		=> Based-type size
-			'unsigned'			=> TRUE/FALSE
-			'auto_increment'	=> TRUE/FALSE
-			'null'				=> TRUE/FALSE
+			'unsigned'			=> true/false
+			'auto_increment'	=> true/false
+			'null'				=> true/false
 			'default'			=> ''
 			)
 		);
 
-	Third parameter are used for the backup function to handle a force download, default is FALSE
+	Third parameter are used for the backup function to handle a force download, default is false
 	Fourth parameter are used for the backup filename, default is backup.gz
 */
 if ( ! function_exists ( 'db_tools' ) ) :
-	function db_tools ( $func, $data, $param = FALSE ) {
+	function db_tools ( $func, $data, $param = false ) {
 		$_ci =& get_instance();
 		$_ci->load->dbforge();
 		return $_ci->dbforge->$func ( $data, $param );
@@ -679,16 +693,16 @@ endif;
 		'ignore'      => array(),           			// List of tables to omit from the backup
 		'format'      => 'txt',             			// gzip, zip, txt
 		'filename'    => 'mybackup.sql',    			// File name - NEEDED ONLY WITH ZIP FILES
-		'add_drop'    => TRUE,              			// Whether to add DROP TABLE statements to backup file
-		'add_insert'  => TRUE,              			// Whether to add INSERT data to backup file
+		'add_drop'    => true,              			// Whether to add DROP TABLE statements to backup file
+		'add_insert'  => true,              			// Whether to add INSERT data to backup file
 		'newline'     => "\n"               			// Newline character used in backup file
 		);
 
-	Third parameter are used for the backup function to handle a force download, default is FALSE
+	Third parameter are used for the backup function to handle a force download, default is false
 	Fourth parameter are used for the backup filename, default is backup.gz
 */
 if ( ! function_exists ( 'db_utility' ) ) :
-	function db_utility ( $func, $param = array(), $download = FALSE, $filepath = 'backup.gz' ) {
+	function db_utility ( $func, $param = array(), $download = false, $filepath = 'backup.gz' ) {
 		$_ci =& get_instance();
 		$_ci->load->dbutil();
 
@@ -710,7 +724,7 @@ if ( ! function_exists ( 'get_remote' ) ) :
 	function get_remote ( $source ) {
 		$server = config_item ( 'api_baseurl' ) .'/';
 
-		if ( config_item ( 'api_logins' ) !== FALSE ) {
+		if ( config_item ( 'api_logins' ) !== false ) {
 			$username = key ( config_item ( 'api_logins' ) );
 			$password = current ( config_item ( 'api_logins' ) );
 		}
@@ -734,9 +748,9 @@ endif;
 
 if ( ! function_exists ( 'post_remote' ) ) :
 	function post_remote ( $source, $value = array() ) {
-		$server = config_item ( 'api_baseurl' ) .'/';
+		$server = config_item ( 'api_baseurl' ) !== false ? config_item ( 'api_baseurl' ) .'/' : null;
 
-		if ( config_item ( 'api_logins' ) !== FALSE ) {
+		if ( config_item ( 'api_logins' ) !== false ) {
 			$username = key ( config_item ( 'api_logins' ) );
 			$password = current ( config_item ( 'api_logins' ) );
 		}
@@ -760,14 +774,14 @@ if ( ! function_exists ( 'post_remote' ) ) :
 endif;
 
 if ( ! function_exists ( 'get_template_dir' ) ) {
-	function get_template_dir ( $path = NULL ) {
+	function get_template_dir ( $path = null ) {
 		$_ci =& get_instance();
 		return $_ci->load->theme_dir . $path;
 	}
 }
 
 if ( ! function_exists ( 'call_login_form' ) ) {
-	function call_login_form ( $alert = NULL ) {
+	function call_login_form ( $alert = null ) {
 		$_ci =& get_instance();
 		extract ( $_ci->load->views_data );
 
@@ -790,11 +804,11 @@ if ( ! function_exists ( 'call_login_form' ) ) {
 if ( ! function_exists ( 'is_updated' ) ) {
 	function is_updated() {
 		if ( is_get ( 'status_updated', 'true' ) OR is_get ( 'status_added', 'true' ) OR is_get ( 'status_trashed', 'true' ) OR is_get ( 'status_restored', 'true' ) ) {
-			return TRUE;
+			return true;
 		} elseif ( is_get ( 'status_updated', 'false' ) OR is_get ( 'status_added' ,'false' ) OR is_get ( 'status_trashed', 'false' ) OR is_get ( 'status_restored', 'false' ) ) {
-			return FALSE;
+			return false;
 		} else {
-			return NULL;
+			return null;
 		}
 	}
 }
