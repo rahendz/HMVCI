@@ -1,4 +1,4 @@
-<?php
+<?php if ( ! defined ( 'BASEPATH' ) ) exit ( 'No direct script access allowed' );
 
 /*
  * --------------------------------------------------------------------
@@ -25,7 +25,7 @@
 	// $routing['directory'] = '';
 
 	// The controller class file name.  Example:  Mycontroller
-	// $routing['controller'] = '';
+	// $routing['controller'] = 'telo';
 
 	// The controller function you wish to be called.
 	// $routing['function']	= '';

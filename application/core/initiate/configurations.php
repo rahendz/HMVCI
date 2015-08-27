@@ -10,5 +10,6 @@
 |	Default: APPPATH . 'modules/'
 |
 */
-$my_config['modules_locations'] = array ( MODULESPATH );
+$modules_directory = str_replace ( APPPATH, '../', MODULESPATH );
+$my_config['modules_locations'] = array ( MODULESPATH => $modules_directory );
 $my_config['app_name'] = 'HMVCI';

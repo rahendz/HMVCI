@@ -9,11 +9,12 @@ class MY_Router extends CI_Router {
 		$locations = $this->config->item ( 'modules_locations' );
 
 		if ( ! $locations ) {
-			$locations = array ( APPPATH . 'modules/' );
+			$locations = array ( APPPATH . 'modules/' => '../modules/' );
 		}
 
 		elseif ( ! is_array ( $locations ) ) {
 			$locations = array ( $locations );
+			$this->config->set_item ( 'modules_locations', $locations );
 		}
 
 		foreach ( $locations as &$location ) {
@@ -21,8 +22,6 @@ class MY_Router extends CI_Router {
 			$location = str_replace ( '\\', '/', $location );
 			$location = rtrim ( $location, '/' ) . '/';
 		}
-
-		$this->config->set_item ( 'modules_locations', $locations );
 
 		parent::__construct();
 	}
@@ -43,14 +42,14 @@ class MY_Router extends CI_Router {
 			}
 		}
 
-		echo '46'; show_404 ( $segments[0] );
+		echo 'MY_Router : 46'; show_404 ( $segments[0] );
 	}
 
 	function _parse_routes() {
 		$segstart = ( intval ( substr ( CI_VERSION, 0, 1 ) ) > 2 ) ? 1 : 0;
 
 		if ( $module = $this->uri->segment ( $segstart ) ) {
-			foreach ( $this->config->item ( 'modules_locations' ) as $location ) {
+			foreach ( $this->config->item ( 'modules_locations' ) as $location => $realpath ) {
 				if ( is_file ( $file = $location . $module . '/config/routes.php' ) ) {
 					include ( $file );
 
@@ -68,8 +67,8 @@ class MY_Router extends CI_Router {
 	{
 		$_ucfirst = function ( $cn ) { return ( intval ( substr ( CI_VERSION, 0, 1 ) ) > 2 ) ? ucfirst ( $cn ) : $cn; };
 		list ( $module, $directory, $controller ) = array_pad ( $segments, 3, NULL );
-		foreach ( $this->config->item ( 'modules_locations' ) as $location ) {
-			$relative = $location;
+		foreach ( $this->config->item ( 'modules_locations' ) as $location => $relative ) {
+			// $relative = $location;
 			$start = rtrim ( realpath ( APPPATH ), '/' );
 			$parts = explode ( '/', str_replace ( '\\', '/', $start ) );
 
@@ -79,7 +78,7 @@ class MY_Router extends CI_Router {
 				array_pop ( $parts );
 				if ( $count ) break;
 			}
-
+			
 			if ( is_dir ( $source = $location . $module . '/controllers/' ) )
 			{
 				$this->module = $module;
@@ -165,5 +164,44 @@ class MY_Router extends CI_Router {
 	function fetch_module()
 	{
 		return $this->module;
+	}
+	function set_directory ( $dir )
+	{
+		$this->directory = $dir;
+	}
+	function _set_overrides ( $routing ) {
+		if ( ! is_array ( $routing ) ) {
+			return;
+		}
+
+		extract ( $routing );
+
+		if ( isset ( $directory ) ) {
+			$slash = empty ( $directory ) ? null : '/';
+			$class = ( isset ( $controller ) AND ! empty ( $controller ) ) ? $controller : $this->class;
+
+			if ( is_dir ( MODULESPATH . $class . '/controllers/' . $directory ) ) {
+				$dir = '../../' . MODULESPATH . $class . '/controllers/' . $directory . $slash;
+			} else {
+				$dir = str_replace ( array ( '/', '.' ), '', $directory ) . $slash;
+			}
+
+			$this->set_directory ( $dir );
+		} else {
+			$class = ( isset ( $controller ) AND ! empty ( $controller ) ) ? $controller : $this->class;
+			if ( file_exists ( MODULESPATH . $class . '/controllers/' . $class . '.php' ) ) {
+				$this->set_directory ( '../../' . MODULESPATH . $class . '/controllers/' );
+			}
+		}
+
+		if ( isset ( $controller ) AND $controller != '' ) {
+			$this->set_class ( $controller );
+			$this->module = $controller;
+		}
+
+		if ( isset ( $function ) ) {
+			$function = ( $function == '' ) ? 'index' : $function;
+			$this->set_method ( $function );
+		}
 	}
 }

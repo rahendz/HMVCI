@@ -91,8 +91,6 @@ $modules_folder = 'modules';
 	// The path to the "application" folder
 	if ( is_dir ( $modules_folder ) ) {
 		define ( 'MODULESPATH', $modules_folder . '/' );
-	} elseif ( is_dir ( BASEPATH . $modules_folder . '/' ) ) {
-		define ( 'MODULESPATH', BASEPATH . $modules_folder . '/' );
 	} elseif ( is_dir ( APPPATH . $modules_folder . '/' ) ) {
 		define ( 'MODULESPATH', APPPATH . $modules_folder . '/' );
 	} else {

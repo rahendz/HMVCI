@@ -13,16 +13,16 @@
  * @link			https://github.com/chriskacerguis/codeigniter-restserver
  * @version         3.0.0-pre
  */
-class MY_Controller extends CI_Controller {
+class REST_Controller extends CI_Controller {
 
 	/**
 	 * This defines the rest format.
 	 *
 	 * Must be overridden it in a controller so that it is set.
 	 *
-	 * @var string|null
+	 * @var string|null json|jsonp|xml|html|serialized|php|csv
 	 */
-	protected $rest_format          = null;
+	protected $rest_format          = 'json';
 
 	/**
 	 * Defines the list of method properties such as limit, log and level

@@ -1,25 +1,25 @@
 <?php if ( ! defined ( 'BASEPATH' ) ) exit ( 'No direct script access allowed' );
 
 if ( ! function_exists ( 'get_header' ) ) :
-	function get_header ( $slug = NULL ) {
+	function get_header ( $slug = null ) {
 		return get_template_part ( 'header', $slug );
 	}
 endif;
 
 if ( ! function_exists ( 'get_navbar' ) ) :
-	function get_navbar ( $slug = NULL ) {
+	function get_navbar ( $slug = null ) {
 		return get_template_part ( 'navbar', $slug );
 	}
 endif;
 
 if ( ! function_exists ( 'get_footer' ) ) :
-	function get_footer ( $slug = NULL ) {
+	function get_footer ( $slug = null ) {
 		return get_template_part ( 'footer', $slug );
 	}
 endif;
 
 if ( ! function_exists ( 'get_sidebar' ) ) :
-	function get_sidebar ( $slug = NULL ) {
+	function get_sidebar ( $slug = null ) {
 		return get_template_part ( 'sidebar', $slug );
 	}
 endif;
@@ -38,9 +38,9 @@ if ( ! function_exists ( 'content' ) ) :
 endif;
 
 if ( ! function_exists ( 'get_template_part' ) ) :
-	function get_template_part ( $name, $slug = NULL ) {
+	function get_template_part ( $name, $slug = null ) {
 		$_ci =& get_instance();
-		$theme_file = $name . ( is_null ( $slug ) ? NULL : '-' . $slug );
+		$theme_file = $name . ( is_null ( $slug ) ? null : '-' . $slug );
 		$_ci->load->theme_part = $theme_file;
 		if ( 'header' !== $name ) echo "\n";
 		$_ci->load->theme();
@@ -49,7 +49,7 @@ if ( ! function_exists ( 'get_template_part' ) ) :
 endif;
 
 if ( ! function_exists ( 'get_template_directory_uri' ) ) :
-	function get_template_directory_uri ( $filepath = NULL ) {
+	function get_template_directory_uri ( $filepath = null ) {
 		$_ci =& get_instance();
 		$uri_string = trim ( get_appinfo ( 'template_path ' ), '/' ) .'/'. trim ( $filepath, '/' );
 		return $_ci->config->base_url ( get_appinfo ( 'template_path' ) . $filepath );
@@ -57,7 +57,7 @@ if ( ! function_exists ( 'get_template_directory_uri' ) ) :
 endif;
 
 if ( ! function_exists ( 'get_template_directory' ) ) :
-	function get_template_directory ( $filepath = NULL ) {
+	function get_template_directory ( $filepath = null ) {
 		return FCPATH . trim ( get_appinfo ( 'template_path' ), '/' ) .'/'. trim ( $filepath, '/' );
 	}
 endif;
@@ -69,28 +69,28 @@ if ( ! function_exists ( 'get_stylesheet_uri' ) ) :
 endif;
 
 if ( ! function_exists( 'get_enqueue_style' ) ) :
-	function get_enqueue_style ( $id, $file, $require = array(), $version = NULL ) {
+	function get_enqueue_style ( $id, $file, $require = array(), $version = null ) {
 		$_ci =& get_instance();
 		$_ci->load->enqueue_style ( $id, $file, $require, $version );
 	}
 endif;
 
 if ( ! function_exists( 'get_enqueue_script' ) ) :
-	function get_enqueue_script ( $id, $file, $require = array(), $version = NULL, $in_footer = FALSE ) {
+	function get_enqueue_script ( $id, $file, $require = array(), $version = null, $in_footer = FALSE ) {
 		$_ci =& get_instance();
 		$_ci->load->enqueue_script ( $id, $file, $require, $version, $in_footer );
 	}
 endif;
 
 if ( ! function_exists( 'theme_enqueue_head' ) ) :
-	function theme_enqueue_head ( $return = NULL ) {
+	function theme_enqueue_head ( $return = null ) {
 		$_ci =& get_instance();
 		$_ci->load->theme_enqueue_head ( $return );
 	}
 endif;
 
 if ( ! function_exists( 'theme_enqueue_foot' ) ) :
-	function theme_enqueue_foot ( $return = NULL ) {
+	function theme_enqueue_foot ( $return = null ) {
 		$_ci =& get_instance();
 		$_ci->load->theme_enqueue_foot ( $return );
 	}
@@ -250,7 +250,7 @@ if ( ! function_exists ( 'get_logout_url' ) AND ! function_exists ( 'logout_url'
 if ( ! function_exists ( 'get_login_url' ) AND ! function_exists ( 'login_url' ) AND ! function_exists ( 'login_link') ) {
 	function get_login_url(){
 		$_ci =& get_instance();
-		$query = ( isset ( $_SERVER['QUERY_STRING'] ) AND ! empty ( $_SERVER['QUERY_STRING'] ) ) ? '?' . $_SERVER['QUERY_STRING'] : NULL;
+		$query = ( isset ( $_SERVER['QUERY_STRING'] ) AND ! empty ( $_SERVER['QUERY_STRING'] ) ) ? '?' . $_SERVER['QUERY_STRING'] : null;
 		return $_ci->config->site_url ( 'sign?in&redirect=' . urlencode ( $_ci->config->site_url ( $_ci->uri->uri_string() . $query ) ) );
 	}
 	function login_url(){
@@ -315,7 +315,7 @@ if ( ! function_exists ( 'is_attachment' ) ) {
 }
 
 if ( ! function_exists ( 'navbar_menu' ) ) {
-	function navbar_menu ( $str = NULL, $navbar = null ) {
+	function navbar_menu ( $str = null, $navbar = null ) {
 		$echo = 1;
 		$hover = 1;
 
@@ -348,7 +348,7 @@ if ( ! function_exists ( 'navbar_menu' ) ) {
 			$pslug = isset ( $p->slug ) ? $p->slug : $p->linkid;
 			if ( isset ( $p->children ) ) {
 				if ( ! isset ( $priviledges->$pslug ) OR ( isset ( $lid ) AND in_array ( $lid, $priviledges->$pslug->level ) ) ) {
-					$navbar .= '<li class="dropdown' . ( (bool) $hover ? ' hover' : NULL) . ( $page === $pslug ? ' active' : null ) . 
+					$navbar .= '<li class="dropdown' . ( (bool) $hover ? ' hover' : null) . ( $page === $pslug ? ' active' : null ) . 
 						'"><a href="' . ( isset ( $p->url ) ? str_replace ( '%root%', site_url(), $p->url ) : site_url() .'/'. $pslug ) . '" class="dropdown-toggle"' .( (bool) $hover ? null : ' data-toggle="dropdown"'). 
 						'>' . $p->title . ' <span class="caret"></span></a>';
 

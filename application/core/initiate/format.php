@@ -263,7 +263,7 @@ class Format {
 	// Output as a string representing the PHP structure
 	public function to_php()
 	{
-		return var_export($this->_data, TRUE);
+		return var_export($this->_data, true);
 	}
 
 	// Format XML for output

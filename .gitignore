@@ -1,9 +1,10 @@
 .DS_Store
 
-application/cache
+application/cache/*
+!application/cache/index.html
 
-application/config/*
-!application/config/themes.php
+application/config/config.php
+application/config/database.php
 
 application/controllers/*
 !application/controllers/api
@@ -16,11 +17,20 @@ application/errors/*
 !application/errors/error_general.php
 !application/errors/error_php.php
 
-application/helpers
-application/hooks
-application/language
-application/libraries
-application/logs
+application/helpers/*
+!application/helpers/index.html
+
+application/hooks/*
+!application/hooks/index.html
+
+application/language/*
+!application/language/index.html
+
+application/libraries/*
+!application/libraries/index.html
+
+application/logs/*
+!application/logs/index.html
 
 application/models/*
 !application/models/M_Welcome.php
@@ -31,7 +41,8 @@ application/modules/*
 application/themes/*
 !application/themes/default
 
-application/third_party
+application/third_party/*
+!application/third_party/index.html
 
 application/views/*
 !application/views/test_form.php
@@ -41,5 +52,8 @@ themes/*
 !themes/default
 
 /index.php
+
+less
+*.less
 
 composer.*
