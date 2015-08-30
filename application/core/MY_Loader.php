@@ -600,13 +600,15 @@ class MY_Loader extends CI_Loader {
 		if ( is_string ( $params ) AND strpos ( $params, '://' ) === FALSE )
 		{
 			// Is the config file in the environment folder?
-			if ( ! defined('ENVIRONMENT') OR
-				! file_exists ( $file_path = APPPATH . 'config/' . ENVIRONMENT . '/database.php' ) OR
-				! file_exists ( $file_path = $config->_config_paths[0] . 'config/database.php' ) )
+			if ( ( ! defined ( 'ENVIRONMENT' ) AND
+					! file_exists ( $file_path = APPPATH . 'config/' . ENVIRONMENT . '/database.php' ) ) OR
+				( ! file_exists ( $file_path = APPPATH . 'config/database.php' ) AND
+	 				! file_exists ( $file_path = $config->_config_paths[0] . 'config/database.php' ) ) )
 			{
-				if ( ! file_exists ( $file_path = APPPATH . 'config/database.php' ) OR ! file_exists ( $file_path = $config->_config_paths[0] . 'config/database.php' ) ) {
-					show_error ( 'MY Loader:583 The configuration file database.php does not exist. ' .$file_path );
+				if ( defined ( 'APP_DEBUG' ) AND APP_DEBUG == true ) {
+					echo '<!-- ' .$file_path. ' MY_Loader:609 -->';
 				}
+				show_error ( 'The configuration file database.php does not exist. ' );
 			}
 
 			include ( $file_path );

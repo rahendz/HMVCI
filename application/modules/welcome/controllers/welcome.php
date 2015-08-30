@@ -7,8 +7,7 @@ class Welcome extends Public_Controller {
 		parent::__construct();
 	}
 
-	public function index()
-	{
+	public function index() {
 		$this->enqueue_style = array (
 			'style' => array ( 'style.css', array(), '1.0.0' )
 			);
@@ -19,6 +18,14 @@ class Welcome extends Public_Controller {
 
 		$this->content_theme = 'welcome_message';
 		return $this->render_theme();
+	}
+
+	public function testdb() {
+		$this->load->database();
+	}
+
+	public function testapi() {
+		echo get_remote ( 'http://codeigniter.dev/hmvci/rahendz/index.php/api/example/users' );
 	}
 
 }

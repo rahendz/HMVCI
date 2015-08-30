@@ -42,7 +42,10 @@ class MY_Router extends CI_Router {
 			}
 		}
 
-		echo 'MY_Router : 46'; show_404 ( $segments[0] );
+		if ( defined ( 'APP_DEBUG' ) AND APP_DEBUG == true ) {
+			echo '<!-- MY_Router:46 -->';
+		}
+		show_404 ( $segments[0] );
 	}
 
 	function _parse_routes() {
@@ -78,7 +81,7 @@ class MY_Router extends CI_Router {
 				array_pop ( $parts );
 				if ( $count ) break;
 			}
-			
+
 			if ( is_dir ( $source = $location . $module . '/controllers/' ) )
 			{
 				$this->module = $module;

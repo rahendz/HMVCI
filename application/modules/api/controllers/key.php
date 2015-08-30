@@ -8,8 +8,6 @@
  * @package		CodeIgniter
  * @subpackage	Rest Server
  * @category	Controller
- * @author		Phil Sturgeon
- * @link		http://philsturgeon.co.uk/code/
 */
 
 // This can be removed if you use __autoload() in config.php

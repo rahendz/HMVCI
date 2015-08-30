@@ -721,10 +721,10 @@ if ( ! function_exists ( 'db_utility' ) ) :
 endif;
 
 if ( ! function_exists ( 'get_remote' ) ) :
-	function get_remote ( $source ) {
-		$server = config_item ( 'api_baseurl' ) .'/';
+	function get_remote ( $source, $format = 'json' ) {
+		$server = config_item ( 'api_baseurl' ) ? config_item ( 'api_baseurl' ) .'/' : null;
 
-		if ( config_item ( 'api_logins' ) !== false ) {
+		if ( config_item ( 'api_logins' ) ) {
 			$username = key ( config_item ( 'api_logins' ) );
 			$password = current ( config_item ( 'api_logins' ) );
 		}
@@ -735,9 +735,9 @@ if ( ! function_exists ( 'get_remote' ) ) :
 
 		if ( isset ( $username ) AND isset ( $password ) ) {
 			curl_setopt ( $curl_handle, CURLOPT_USERPWD, $username . ':' . $password );
+			curl_setopt ( $curl_handle,  CURLOPT_HTTPAUTH, CURLAUTH_DIGEST );
 		}
 
-		curl_setopt ( $curl_handle,  CURLOPT_HTTPAUTH, CURLAUTH_DIGEST );
 		$buffer = curl_exec ( $curl_handle );
 		curl_close ( $curl_handle );
 
@@ -747,10 +747,10 @@ if ( ! function_exists ( 'get_remote' ) ) :
 endif;
 
 if ( ! function_exists ( 'post_remote' ) ) :
-	function post_remote ( $source, $value = array() ) {
-		$server = config_item ( 'api_baseurl' ) !== false ? config_item ( 'api_baseurl' ) .'/' : null;
+	function post_remote ( $source, $value = array(), $format = 'json' ) {
+		$server = config_item ( 'api_baseurl' ) ? config_item ( 'api_baseurl' ) .'/' : null;
 
-		if ( config_item ( 'api_logins' ) !== false ) {
+		if ( config_item ( 'api_logins' ) ) {
 			$username = key ( config_item ( 'api_logins' ) );
 			$password = current ( config_item ( 'api_logins' ) );
 		}
@@ -763,12 +763,13 @@ if ( ! function_exists ( 'post_remote' ) ) :
 
 		if ( isset ( $username ) AND isset ( $password ) ) {
 			curl_setopt ( $curl_handle, CURLOPT_USERPWD, $username . ':' . $password );
+			curl_setopt ( $curl_handle,  CURLOPT_HTTPAUTH, CURLAUTH_DIGEST );
 		}
 
-		curl_setopt ( $curl_handle,  CURLOPT_HTTPAUTH, CURLAUTH_DIGEST );
 		$buffer = curl_exec ( $curl_handle );
 		curl_close ( $curl_handle );
 
+		header('Content-Type: application/json');
 		return $buffer;
 	}
 endif;
