@@ -1,10 +1,7 @@
 .DS_Store
 
 /application/cache
-/application/config/*
-!/application/config/config-sample.php
-!/application/config/database-sample.php
-
+/application/config
 /application/controllers
 /application/errors
 /application/helpers
@@ -17,21 +14,24 @@
 !/application/models/M_Welcome.php
 
 /application/modules/*
-!/application/modules/telo
 !/application/modules/welcome
 !/application/modules/api
 !/application/modules/oauth
 
 /application/themes/*
 !/application/themes/default
+!/application/themes/index.html
 
 /application/third_party
 /application/views
 
 /themes/*
 !/themes/default
+!/themes/index.html
 
 /uploads/*
+!/uploads/index.html
+
 /assets
 /system
 
