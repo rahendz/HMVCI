@@ -32,6 +32,6 @@
  */
 	define ( 'APP_DEBUG', true );
 
-	// END OF EDITING FILE
-	// Load system
-	include 'system.php';
+// END OF EDITING FILE
+// Load system
+include 'system.php';
