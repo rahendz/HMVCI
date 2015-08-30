@@ -26,3 +26,6 @@ How-To
 1.  Download HMVCI
 2.  Download Codeigniter v2.x from official site
 3.  Put system folder from Official Codeigniter inside HMVCI folder
+4.  in root directory, rename `index-sample.php` into `index.php`
+4.  in `application/config` directory, rename `config-sample.php` into `config.php`
+4.  in `application/config` directory, rename `database-sample.php` into `database.php`
