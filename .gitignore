@@ -1,6 +1,10 @@
 .DS_Store
 
 /application/cache
+
+/application/config/config.php
+/application/config/database.php
+
 /application/controllers
 /application/helpers
 /application/hooks
