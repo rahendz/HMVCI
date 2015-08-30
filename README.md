@@ -6,7 +6,7 @@ Under-developed Features:
 - HMVC Modular
 - Wordpress-like Theme Structure
 - Simple RESTful API server and client
-- Scaffolding from CI v1.7.x
+- Scaffolding-like from CI v1.7.x (will integrate soon)
 - OAUTH 2.0 (coming soon)
 
 Included Assets:
