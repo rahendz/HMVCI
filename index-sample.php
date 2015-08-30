@@ -10,7 +10,7 @@
  * as this file.
  *
  */
-	define ( 'SYSTEM_PATH', 'system' );
+	define ( 'SYSTEM_PATH', '../../cores/3.0.1' );
 
 /*
  *---------------------------------------------------------------
@@ -32,6 +32,9 @@
  */
 	define ( 'APP_DEBUG', true );
 
-// END OF EDITING FILE
-// Load system
-include 'system.php';
+	// END OF EDITING FILE
+	// The name of THIS file
+	define ( 'SELF', pathinfo ( __FILE__, PATHINFO_BASENAME ) );
+
+	// Load system
+	include 'system.php';

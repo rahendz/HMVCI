@@ -1,4 +1,5 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Welcome extends Public_Controller {
 
@@ -19,7 +20,8 @@ class Welcome extends Public_Controller {
 		$this->content_theme = 'welcome_message';
 		return $this->render_theme();
 	}
+
 }
 
 /* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */
+/* Location: ./application/modules/welcome/controllers/welcome.php */

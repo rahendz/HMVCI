@@ -1,55 +1,39 @@
 .DS_Store
 
-application/cache/*
-!application/cache/index.html
+/application/cache
+/application/config/*
+!/application/config/config-sample.php
+!/application/config/database-sample.php
 
-application/config/config.php
-application/config/database.php
+/application/controllers
+/application/errors
+/application/helpers
+/application/hooks
+/application/language
+/application/libraries
+/application/logs
 
-application/controllers/*
-!application/controllers/api
-!application/controllers/oauth2.php
-!application/controllers/welcome.php
+/application/models/*
+!/application/models/M_Welcome.php
 
-application/errors/*
-!application/errors/error_404.php
-!application/errors/error_db.php
-!application/errors/error_general.php
-!application/errors/error_php.php
+/application/modules/*
+!/application/modules/telo
+!/application/modules/welcome
+!/application/modules/api
+!/application/modules/oauth
 
-application/helpers/*
-!application/helpers/index.html
+/application/themes/*
+!/application/themes/default
 
-application/hooks/*
-!application/hooks/index.html
+/application/third_party
+/application/views
 
-application/language/*
-!application/language/index.html
+/themes/*
+!/themes/default
 
-application/libraries/*
-!application/libraries/index.html
-
-application/logs/*
-!application/logs/index.html
-
-application/models/*
-!application/models/M_Welcome.php
-
-application/modules/*
-!application/modules/telo
-
-application/themes/*
-!application/themes/default
-
-application/third_party/*
-!application/third_party/index.html
-
-application/views/*
-!application/views/test_form.php
-!application/views/welcome_message.php
-
-themes/*
-!themes/default
+/uploads/*
+/assets
+/system
 
 /index.php
 

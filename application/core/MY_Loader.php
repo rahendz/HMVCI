@@ -19,6 +19,7 @@ class MY_Loader extends CI_Loader {
 	public $enqueue_script_id = array();
 
 	public $current_controller = null;
+	public $current_module_path = null;
 
 	public function __construct() {
 		parent::__construct();
@@ -26,6 +27,7 @@ class MY_Loader extends CI_Loader {
 		if ( $router->module ) {
 			$this->add_module ( $router->module );
 		}
+		$this->current_module_path = $this->get_current_module_path();
 		$this->current_controller = $this->get_current_controller();
 		$this->_ci =& get_instance();
 	}
@@ -576,9 +578,18 @@ class MY_Loader extends CI_Loader {
         return FALSE;
 	}
 
+	private function get_current_module_path() {
+		return current ( $this->get_package_paths() );
+	}
+
 	private function get_current_controller() {
+		// return $this->get_package_paths();
 		$router = & $this->_ci_get_component ( 'router' );
-		return APPPATH . 'controllers/' . $router->directory . $router->class . EXT;
+		// $config = & $this->_ci_get_component ( 'config' );
+		// return $config;
+		return $this->current_module_path . 'controllers/' . $router->class . EXT;
+		// return $controller_path;
+		// return APPPATH . 'controllers/' . $router->directory . $router->class . EXT;
 	}
 
 	private function &_ci_get_database ( $params = '', $active_record_override = NULL ) {

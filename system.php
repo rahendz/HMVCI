@@ -1,24 +1,42 @@
 <?php
-$env = 'development';
 // ERROR REPORTING
 if ( defined ( 'APP_DEBUG' ) ) {
 	switch ( APP_DEBUG ) {
 		case true:
 			error_reporting ( E_ALL );
+			ini_set ( 'display_errors', 1 );
+			$environment = 'development';
 			break;
 
 		case false:
 			error_reporting ( 0 );
+			ini_set ( 'display_errors', 0 );
+			$environment = 'production';
+			break;
+
+		case 'testing':
+			ini_set ( 'display_errors', 0 );
+			$environment = 'testing';
+			if ( version_compare ( PHP_VERSION, '5.3', '>=' ) ) {
+				error_reporting ( E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED );
+			} else {
+				error_reporting ( E_ALL & ~E_NOTICE & ~E_STRICT & ~E_USER_NOTICE );
+			}
 			break;
 
 		default:
-			exit ( 'The application state is not set correctly.' );
+			header ( 'HTTP/1.1 503 Service Unavailable.', TRUE, 503 );
+			echo 'The application state is not set correctly.';
+			exit(1); // EXIT_ERROR
 	}
-	$env = APP_DEBUG;
+} else {
+	header ( 'HTTP/1.1 503 Service Unavailable.', TRUE, 503 );
+	echo 'The application debug is not set correctly.';
+	exit(1); // EXIT_ERROR
 }
 
-// for v3.0.0
-define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : $env);
+// for v3.x
+define ( 'ENVIRONMENT', isset ( $_SERVER['CI_ENV'] ) ? $_SERVER['CI_ENV'] : $environment );
 
 // SYSTEM PATH
 $system_path = SYSTEM_PATH;
@@ -26,7 +44,7 @@ $system_path = SYSTEM_PATH;
 // APP PATH
 $application_folder = 'application';
 
-// VIEW PATH v3.0.0
+// VIEW PATH for v3.x
 $view_folder = '';
 
 // MODULES PATH
@@ -58,7 +76,7 @@ $modules_folder = 'modules';
 
 	// Is the system path correct?
 	if ( ! is_dir ( $system_path ) ) {
-		exit ( "Your system folder path does not appear to be set correctly. Please open the following file and correct this: " . pathinfo ( __FILE__, PATHINFO_BASENAME ) );
+		exit ( 'Your system folder path does not appear to be set correctly. Please open the following file and correct this: ' . pathinfo ( __FILE__, PATHINFO_BASENAME ) );
 	}
 
 /*
@@ -66,8 +84,6 @@ $modules_folder = 'modules';
  *  Now that we know the path, set the main path constants
  * -------------------------------------------------------------------
  */
-	// The name of THIS file
-	define ( 'SELF', pathinfo ( __FILE__, PATHINFO_BASENAME ) );
 
 	// The PHP file extension
 	// this global constant is deprecated.
@@ -94,7 +110,7 @@ $modules_folder = 'modules';
 		define ( 'APPPATH', BASEPATH . $application_folder . '/' );
 	}
 
-	// VIEW PATH for v3.0.0
+	// VIEW PATH for v3.x
 
 	// The path to the "views" folder
 	if ( ! is_dir($view_folder))
