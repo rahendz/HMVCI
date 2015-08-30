@@ -90,7 +90,7 @@ $modules_folder = 'modules';
 
 	// The PHP file extension
 	// this global constant is deprecated.
-	define ( 'EXT', '.php' );
+	define ( 'EXT', '.' .pathinfo ( __FILE__, PATHINFO_EXTENSION ) );
 
 	// Path to the system folder
 	define ( 'BASEPATH', str_replace ( "\\", "/", $system_path ) );
@@ -114,7 +114,6 @@ $modules_folder = 'modules';
 	}
 
 	// VIEW PATH for v3.x
-
 	// The path to the "views" folder
 	if ( ! is_dir($view_folder))
 	{

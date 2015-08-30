@@ -9,6 +9,10 @@ if ( isset ( $root_files ) ) {
 		$_filepath = FCPATH . $_file . EXT;
 		if ( file_exists ( $_filepath ) ) {
 			@require_once $_filepath;
+		} else {
+			header ( 'HTTP/1.1 404 Not Found.', TRUE, 404 );
+			echo 'The requirement file are missing. ' . $_filepath;
+			exit(1); // EXIT_ERROR
 		}
 	}
 }
@@ -18,15 +22,23 @@ if ( isset ( $core_files ) ) {
 		$_filepath = INITPATH . $_file . EXT;
 		if ( file_exists ( $_filepath ) ) {
 			@require_once $_filepath;
+		} else {
+			header ( 'HTTP/1.1 404 Not Found.', TRUE, 404 );
+			echo 'The requirement file are missing. ' . $_filepath;
+			exit(1); // EXIT_ERROR
 		}
 	}
 }
 
 if ( isset ( $base_files ) ) {
 	foreach ( $base_files as $bc ) {
-		$filepath_controller = APPPATH .'core/controller/'. $bc . EXT;
-		if ( file_exists ( $filepath_controller ) ) {
-			@require_once $filepath_controller;
+		$_filepath = APPPATH .'core/controller/'. $bc . EXT;
+		if ( file_exists ( $_filepath ) ) {
+			@require_once $_filepath;
+		} else {
+			header ( 'HTTP/1.1 404 Not Found.', TRUE, 404 );
+			echo 'The requirement file are missing. ' . $_filepath;
+			exit(1); // EXIT_ERROR
 		}
 	}
 }
