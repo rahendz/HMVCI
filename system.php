@@ -85,6 +85,9 @@ $modules_folder = 'modules';
  * -------------------------------------------------------------------
  */
 
+	// The name of THIS file
+	define ( 'SELF', pathinfo ( __FILE__, PATHINFO_BASENAME ) );
+
 	// The PHP file extension
 	// this global constant is deprecated.
 	define ( 'EXT', '.php' );

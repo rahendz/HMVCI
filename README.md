@@ -23,8 +23,6 @@ Included Assets:
 
 How-To
 ==============================
-1.  Download Codeigniter v2.x from official site
-2.  Download HMVCI and copy, paste and replace all folders and files inside HMVCI (application, themes, etc) into your CI project folder
-3.  rename into else or remove your `index.php` file
-4.  Rename `index-sample.php` into `index.php`
-5. 	Change system folder path in index.php into yours (if your system is outside the CI project folder)
+1.  Download HMVCI
+2.  Download Codeigniter v2.x from official site
+3.  Put system folder from Official Codeigniter inside HMVCI folder

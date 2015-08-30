@@ -1,9 +1,7 @@
 .DS_Store
 
 /application/cache
-/application/config
 /application/controllers
-/application/errors
 /application/helpers
 /application/hooks
 /application/language
@@ -23,7 +21,8 @@
 !/application/themes/index.html
 
 /application/third_party
-/application/views
+/application/views/*
+!/application/views/errors
 
 /themes/*
 !/themes/default
