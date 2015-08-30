@@ -10,7 +10,7 @@
  * as this file.
  *
  */
-	define ( 'SYSTEM_PATH', 'system/2.2.4' );
+	define ( 'SYSTEM_PATH', 'system' );
 
 /*
  *---------------------------------------------------------------
