@@ -2,7 +2,7 @@
 
 abstract class Private_Controller extends MY_Controller {
 
-	protected $theme = 'default';
+	protected $theme = 'admin';
 	protected $theme_part = NULL;
 	protected $data_theme = array();
 	protected $content_theme = NULL;
@@ -11,7 +11,7 @@ abstract class Private_Controller extends MY_Controller {
 
 	public function __construct() {
 		parent::__construct();
-		$this->user_priviledge();
+		// $this->user_priviledge();
 	}
 
 	protected function render_theme ( $vars = array(), $return = FALSE ) {

@@ -138,6 +138,46 @@ if ( ! function_exists ( 'get_appinfo' ) ) :
 	}
 endif;
 
+if ( ! function_exists ( 'get_template_dir' ) ) {
+	function get_template_dir ( $path = null ) {
+		$_ci =& get_instance();
+		return $_ci->load->theme_dir . $path;
+	}
+}
+
+if ( ! function_exists ( 'call_login_form' ) ) {
+	function call_login_form ( $alert = null ) {
+		$_ci =& get_instance();
+		extract ( $_ci->load->views_data );
+
+		$default_login = 'login';
+
+		if ( isset ( $alert_msg ) ) {
+			$alert = '<div class="alert alert-warning alert-thin text-center">' . $alert_msg . '</div>';
+		} elseif ( is_get ( 'logged_out', 'true' ) ) {
+			$alert = '<div class="alert alert-warning alert-thin text-center">Anda berhasil keluar.</div>';
+		}
+
+		if ( file_exists ( get_template_dir ( $default_login . EXT ) ) ) {
+			include get_template_dir ( $default_login . EXT );
+		} else {
+			include INIT_VIEWS . 'login_form' . EXT;
+		}
+	}
+}
+
+if ( ! function_exists ( 'is_updated' ) ) {
+	function is_updated() {
+		if ( is_get ( 'status_updated', 'true' ) OR is_get ( 'status_added', 'true' ) OR is_get ( 'status_trashed', 'true' ) OR is_get ( 'status_restored', 'true' ) ) {
+			return true;
+		} elseif ( is_get ( 'status_updated', 'false' ) OR is_get ( 'status_added' ,'false' ) OR is_get ( 'status_trashed', 'false' ) OR is_get ( 'status_restored', 'false' ) ) {
+			return false;
+		} else {
+			return null;
+		}
+	}
+}
+
 if ( ! function_exists ( 'appinfo' ) ) :
 	function appinfo ( $show = 'name' ) {
 		echo get_appinfo($show);
@@ -348,8 +388,8 @@ if ( ! function_exists ( 'navbar_menu' ) ) {
 			$pslug = isset ( $p->slug ) ? $p->slug : $p->linkid;
 			if ( isset ( $p->children ) ) {
 				if ( ! isset ( $priviledges->$pslug ) OR ( isset ( $lid ) AND in_array ( $lid, $priviledges->$pslug->level ) ) ) {
-					$navbar .= '<li class="dropdown' . ( (bool) $hover ? ' hover' : null) . ( $page === $pslug ? ' active' : null ) . 
-						'"><a href="' . ( isset ( $p->url ) ? str_replace ( '%root%', site_url(), $p->url ) : site_url() .'/'. $pslug ) . '" class="dropdown-toggle"' .( (bool) $hover ? null : ' data-toggle="dropdown"'). 
+					$navbar .= '<li class="dropdown' . ( (bool) $hover ? ' hover' : null) . ( $page === $pslug ? ' active' : null ) .
+						'"><a href="' . ( isset ( $p->url ) ? str_replace ( '%root%', site_url(), $p->url ) : site_url() .'/'. $pslug ) . '" class="dropdown-toggle"' .( (bool) $hover ? null : ' data-toggle="dropdown"').
 						'>' . $p->title . ' <span class="caret"></span></a>';
 
 					$navbar .= '<ul class="dropdown-menu">';

@@ -29,6 +29,16 @@ class Example extends Api_Controller
         $this->methods['user_get']['limit'] = 500; //500 requests per hour per user/key
         $this->methods['user_post']['limit'] = 100; //100 requests per hour per user/key
         $this->methods['user_delete']['limit'] = 50; //50 requests per hour per user/key
+        // $this->authenticate_key();
+    }
+
+    private function authenticate_key() {
+        $this->load->model('m_key');
+        if ( $this->get('key') == '' OR $this->get('key') == false ) {
+            return $this->response(array('status'=>false,'key'=>$this->get('key')));
+        } elseif ( ! $this->m_key->key_exists ( $this->get('key') ) ) {
+            return $this->response(array('status'=>false,'key'=>$this->get('key')));
+        }
     }
 
     function test_get(){

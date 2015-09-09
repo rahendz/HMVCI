@@ -4,10 +4,15 @@
 @set_time_limit ( 3600 );
 @ini_set ( 'memory_limit', '1024M' );
 
+// @require_once dirname ( __FILE__ ) .'/autoloader.php';
 @require_once dirname ( __FILE__ ) .'/defines.php';
 @require_once dirname ( __FILE__ ) .'/unit_test.php';
 @require_once dirname ( __FILE__ ) .'/configurations.php';
 @require_once dirname ( __FILE__ ) .'/routing.php';
+
+if ( class_exists ( 'Autoloader' ) ) {
+	Autoloader::getInstance()->register();
+}
 
 $root_files = array ( 'config' );
 $core_files = array ( 'functions', 'themes', 'auth', 'format', 'controller', 'rest' );

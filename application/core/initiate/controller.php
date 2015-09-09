@@ -5,7 +5,7 @@ class MY_Controller extends CI_Controller {
 	public $ignored = array ( 'inheritance', 'test', 'sign' );
 	private $aControllers;
 	private $hideMethod = array();
-	
+
 	public function __construct(){
 		parent::__construct();
 		$this->hideMethod = array('views','model','getControllers','setControllerMethods','setControllers','render_theme','user_priviledge');
@@ -13,7 +13,7 @@ class MY_Controller extends CI_Controller {
 	}
 
 	protected function &model ( $name ) {
-		$this->load->model($name);
+		$this->load->model ( $name );
 		return $this->$name;
 	}
 
@@ -31,21 +31,21 @@ class MY_Controller extends CI_Controller {
 	private function setControllers() {
 		// Loop through the controller directory
 		foreach(glob(APPPATH . 'controllers/*') as $controller) {
-			
+
 			// if the value in the loop is a directory loop through that directory
 			if(is_dir($controller)) {
 				// Get name of directory
 				$dirname = basename($controller, EXT);
-				
+
 				// Loop through the subdirectory
 				foreach(glob(APPPATH . 'controllers/'.$dirname.'/*') as $subdircontroller) {
 					// Get the name of the subdir
 					$subdircontrollername = basename($subdircontroller, EXT);
-					
+
 					// Load the controller file in memory if it's not load already
-					if(!class_exists($subdircontrollername)) {				
+					if(!class_exists($subdircontrollername)) {
 						$this->load->file($subdircontroller);
-					}					
+					}
 					// Add the controllername to the array with its methods
 					$aMethods = get_class_methods($subdircontrollername);
 					$aUserMethods = array();
@@ -54,18 +54,18 @@ class MY_Controller extends CI_Controller {
 							$aUserMethods[] = $method;
 						}
 					}
-					$this->setControllerMethods($subdircontrollername, $aUserMethods);					 					
+					$this->setControllerMethods($subdircontrollername, $aUserMethods);
 				}
 			}
 			else if(pathinfo($controller, PATHINFO_EXTENSION) == "php"){
-				// value is no directory get controller name				
+				// value is no directory get controller name
 			    $controllername = basename($controller, EXT);
-									
+
 				// Load the class in memory (if it's not loaded already)
 				if(!class_exists($controllername)) {
 					$this->load->file($controller);
-				}				
-					
+				}
+
 				// Add controller and methods to the array
 				$aMethods = get_class_methods($controllername);
 				$aUserMethods = array();
@@ -76,9 +76,9 @@ class MY_Controller extends CI_Controller {
 						}
 					}
 				}
-									
-				$this->setControllerMethods($controllername, $aUserMethods);								
+
+				$this->setControllerMethods($controllername, $aUserMethods);
 			}
-		}	
+		}
 	}
 }

@@ -1,7 +1,7 @@
 <?php if ( ! defined ( 'BASEPATH' ) ) exit ( 'No direct script access allowed' );
 
 abstract class Public_Controller extends MY_Controller {
-	
+
 	protected $theme = 'default';
 	protected $theme_part = null;
 	protected $data_theme = array();

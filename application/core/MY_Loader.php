@@ -9,7 +9,7 @@ class MY_Loader extends CI_Loader {
 
 	public $theme_config = array();
 	public $theme_part = null;
-	public $theme_dir = null;
+	public $theme_dir = false;
 	public $views_file = null;
 	public $views_data = array();
 
@@ -21,12 +21,18 @@ class MY_Loader extends CI_Loader {
 	public $current_controller = null;
 	public $current_module_path = null;
 
+	public $_router = array();
+	public $_config = array();
+
 	public function __construct() {
 		parent::__construct();
-		$router =& $this->_ci_get_component ( 'router' );
-		if ( $router->module ) {
-			$this->add_module ( $router->module );
+		$this->_router =& $this->_ci_get_component ( 'router' );
+		$this->_config =& $this->_ci_get_component ( 'config' );
+
+		if ( $this->_router->module ) {
+			$this->add_module ( $this->_router->module );
 		}
+
 		$this->current_module_path = $this->get_current_module_path();
 		$this->current_controller = $this->get_current_controller();
 		$this->_ci =& get_instance();
@@ -116,24 +122,33 @@ class MY_Loader extends CI_Loader {
 	}
 
 	public function config ( $file = '', $use_sections = false, $fail_gracefully = false ) {
-		if ( list ( $module, $class ) = $this->detect_module ( $file ) ) {
-			if ( in_array ( $module, $this->_ci_modules ) ) {
-				return parent::config ( $class, $use_sections, $fail_gracefully );
+		// echo 'telo';
+		// echo_r($this->detect_module ( $file, 'config' ),true,true);
+		// echo_r($this->current_module_path . 'config/' . $file . EXT);
+		// if ( strpos($file, '/') === false AND is_file ( $this->current_module_path . 'config/' . $file . EXT ) ) {
+		// 	$file = $this->_ci->router->fetch_module() . '/config/' . $file;
+		// 	echo_r($file);
+		// }
+		// foreach ( array ( $this->_ci->router->fetch_module() . '/config/' . $file, $file ) as $file ) {
+			if ( list ( $module, $class ) = $this->detect_module ( $file ) ) {
+				if ( in_array ( $module, $this->_ci_modules ) ) {
+					return parent::config ( $class, $use_sections, $fail_gracefully );
+				}
+				$this->add_module ( $module );
+				$void = parent::config ( $class, $use_sections, $fail_gracefully );
+				$this->remove_module();
+				return $void;
 			}
-			$this->add_module ( $module );
-			$void = parent::config ( $class, $use_sections, $fail_gracefully );
-			$this->remove_module();
-			return $void;
-		}
-		else {
-			parent::config ( $file, $use_sections, $fail_gracefully );
-		}
+			else {
+				return parent::config ( $file, $use_sections, $fail_gracefully );
+			}
+		// }
 	}
 
 	public function database ( $params = '', $return = FALSE, $active_record = NULL ) {
-		$router =& $this->_ci_get_component ( 'router' );
+		$CI =& get_instance();
 
-		if ( empty ( $router->module ) ) {
+		if ( empty ( $this->_router->module ) ) {
 			return parent::database ( $params, $return, $active_record );
 		}
 
@@ -152,10 +167,10 @@ class MY_Loader extends CI_Loader {
 
 		// Initialize the db variable.  Needed to prevent
 		// reference errors with some configurations
-		$_ci->db = '';
+		$CI->db = '';
 
 		// Load the DB class
-		$_ci->db =& $this->_ci_get_database ( $params, $active_record );
+		$CI->db =& $this->_ci_get_database ( $params, $active_record );
 	}
 
 	public function helper ( $helper = array() ) {
@@ -201,30 +216,48 @@ class MY_Loader extends CI_Loader {
 	}
 
 	// THEME ROUTING
+	public function theme_validate() {
+		if ( isset ( $this->theme_config['backend'] ) ) {
+			$type = 'backend';
+		} elseif ( isset ( $this->theme_config['frontend'] ) ) {
+			$type = 'frontend';
+		} else {
+			return false;
+		}
+		// echo $type;
+		$theme_name = isset ( $this->theme_config[$type] ) ? $this->theme_config[$type] : 'default';
+		$theme_path = config_item ( $type . '_theme_path' ) ? trim ( config_item ( $type . '_theme_path' ), '/' ) . '/' : $this->get_package_paths();
+
+		if ( ! is_array ( $theme_path ) ) {
+			if ( is_dir ( FCPATH . $theme_path . $theme_name ) ) {
+				$this->theme_dir = FCPATH . $theme_path . $theme_name . '/'; break;
+			} elseif ( is_dir ( $theme_path . $theme_name ) ) {
+				$this->theme_dir = $theme_path . $theme_name . '/'; break;
+			} elseif ( is_dir ( $theme_path . 'default' ) ) {
+				$this->theme_dir = $theme_path . 'default/'; break;
+			}
+		} elseif ( $type == 'frontend' AND is_dir ( FCPATH . 'themes/' . $theme_name ) ) {
+			$this->theme_dir = 'themes/' . $theme_name . '/';
+		} else {
+			foreach ( $theme_path as $bt ) {
+				if ( is_dir ( FCPATH . $bt . 'themes/' . $theme_name ) ) {
+					$this->theme_dir = $bt . 'themes/' . $theme_name . '/'; break;
+				} elseif ( is_dir ( FCPATH . $bt . 'themes/default' ) ) {
+					$this->theme_dir = $bt . 'themes/default/'; break;
+				}
+			}
+		}
+
+		return ! $this->theme_dir ? false : true;
+	}
+
 	public function theme_initiate() {
 		$router =& $this->_ci_get_component ( 'router' );
 
-		$backend_theme_path = config_item ( 'backend_theme_path' ) != false ?
-			FCPATH . config_item ( 'backend_theme_path' ) : APPPATH .'themes/';
+		$this->theme_validate();
 
-		$frontend_theme_path = config_item ( 'frontend_theme_path' ) != false ?
-			FCPATH . config_item ( 'frontend_theme_path' ) : FCPATH . 'themes/';
-
-		if ( isset ( $this->theme_config['frontend'] ) ) {
-			$theme_name = $this->theme_config['frontend'];
-			$this->theme_dir = is_dir ( $frontend_theme_path . $theme_name ) ?
-				$frontend_theme_path . $theme_name . '/' : array (
-					'dir' => $frontend_theme_path . $theme_name );
-		} elseif ( $this->theme_config['backend'] ) {
-			$theme_name = $this->theme_config['backend'];
-			$this->theme_dir = is_dir ( $backend_theme_path . $theme_name ) ?
-				$backend_theme_path . $theme_name . '/' : array (
-					'dir' => $backend_theme_path . $theme_name );
-		}
-
-		! is_array ( $this->theme_dir ) OR show_error ( '<p><strong>' . strtoupper ( key ( $this->theme_config ) ) .
-			' THEME NOTICE:</strong> It\'s seems theme directory aren\'t set yet or missing.</p><code>' .
-			str_replace ( '/', '\\', $this->theme_dir['dir'] ) . '</code>' );
+		( $this->theme_dir != false ) OR show_error ( '<p><strong>' . strtoupper ( key ( $this->theme_config ) ) .
+			' THEME NOTICE:</strong> It\'s seems theme directory aren\'t set yet or missing.</p>' );
 
 		$config =& $this->_ci_get_component ( 'config' );
 
@@ -561,25 +594,32 @@ class MY_Loader extends CI_Loader {
 		if ( ( $first_slash = strpos ( $class, '/' ) ) !== false ) {
 			$module = substr ( $class, 0, $first_slash );
 			$class = substr ( $class, $first_slash + 1 );
-			if ( $this->find_module ( $module ) ) return array ( $module, $class );
+			if ( $this->find_module ( $module ) ) {
+				return array ( $module, $class );
+			}
 		}
-		if ( $this->find_module ( $class ) ) return array ( $class );
+		if ( $this->find_module ( $class ) ) {
+			return array ( $class );
+		}
 		return false;
 	}
 
 	private function find_module ( $module ) {
-		$config =& $this->_ci_get_component ( 'config' );
-        foreach ( $config->item ( 'modules_locations' ) as $location => $realpath ) {
-            $path = $location . rtrim ( $module, '/' ) . '/';
-            if ( is_dir ( $path ) ) {
-                return $path;
-            }
-        }
-        return FALSE;
+		foreach ( config_item ( 'modules_locations' ) as $location => $realpath ) {
+			$path = $location . rtrim ( $module, '/' ) . '/';
+			if ( is_dir ( $path ) ) {
+				return $path;
+			}
+		}
+		return false;
 	}
 
 	private function get_current_module_path() {
-		return current ( $this->get_package_paths() );
+		$mod_path = current ( $this->get_package_paths() );
+		if ( strpos ( $mod_path, '../' ) ) {
+			return end ( explode ( '../', $mod_path ) );
+		}
+		return $mod_path;
 	}
 
 	private function get_current_controller() {
@@ -593,17 +633,14 @@ class MY_Loader extends CI_Loader {
 	}
 
 	private function &_ci_get_database ( $params = '', $active_record_override = NULL ) {
-		$router =& $this->_ci_get_component ( 'router' );
-		$config =& $this->_ci_get_component ( 'config' );
-
 		// Load the DB config file if a DSN string wasn't passed
 		if ( is_string ( $params ) AND strpos ( $params, '://' ) === FALSE )
 		{
 			// Is the config file in the environment folder?
-			if ( ( ! defined ( 'ENVIRONMENT' ) AND
-					! file_exists ( $file_path = APPPATH . 'config/' . ENVIRONMENT . '/database.php' ) ) OR
-				( ! file_exists ( $file_path = APPPATH . 'config/database.php' ) AND
-	 				! file_exists ( $file_path = $config->_config_paths[0] . 'config/database.php' ) ) )
+			if ( ( ! defined ( 'ENVIRONMENT' ) OR
+					! file_exists ( $file_path = APPPATH . 'config/' . ENVIRONMENT . '/database.php' ) ) AND
+				( ! file_exists ( $file_path = $this->current_module_path . 'config/database.php' ) AND
+					! file_exists ( $file_path = APPPATH . 'config/database.php' ) ) )
 			{
 				if ( defined ( 'APP_DEBUG' ) AND APP_DEBUG == true ) {
 					echo '<!-- ' .$file_path. ' MY_Loader:609 -->';

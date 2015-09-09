@@ -12,6 +12,7 @@ abstract class Api_Controller extends REST_Controller {
 	public function __construct() {
 		parent::__construct();
 		// $this->user_priviledge();
+		// $this->rest_authentication();
 	}
 
 	protected function render_theme ( $vars = array(), $return = FALSE ) {

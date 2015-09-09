@@ -13,7 +13,7 @@
 // This can be removed if you use __autoload() in config.php
 // require(APPPATH.'/libraries/REST_Controller.php');
 
-class Key extends Public_Controller
+class Key extends Api_Controller
 {
 	protected $methods = array(
 		'index_put' => array('level' => 10, 'limit' => 10),
@@ -21,6 +21,13 @@ class Key extends Public_Controller
 		'level_post' => array('level' => 10),
 		'regenerate_post' => array('level' => 10),
 	);
+
+	public function __construct() {
+		parent::__construct();
+		// $this->load->config('rest');
+		$this->load->database();
+		// $this->config->set_item('rest_enable_keys',true);
+	}
 
 	/**
 	 * Key Create
@@ -192,8 +199,7 @@ class Key extends Public_Controller
 
 	private function _generate_key()
 	{
-		//$this->load->helper('security');
-
+		$this->load->helper('security');
 		do
 		{
 			$salt = do_hash(time().mt_rand());
@@ -219,7 +225,9 @@ class Key extends Public_Controller
 
 	private function _key_exists($key)
 	{
+		// $this->load->model('m_key');
 		return $this->db->where(config_item('rest_key_column'), $key)->count_all_results(config_item('rest_keys_table')) > 0;
+		// return $this->m_key->key_exists($key);
 	}
 
 	// --------------------------------------------------------------------
@@ -229,7 +237,7 @@ class Key extends Public_Controller
 
 		$data[config_item('rest_key_column')] = $key;
 		$data['date_created'] = function_exists('now') ? now() : time();
-
+		// echo_r(config_item('rest_keys_table'));
 		return $this->db->set($data)->insert(config_item('rest_keys_table'));
 	}
 
