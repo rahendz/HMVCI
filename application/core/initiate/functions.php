@@ -53,30 +53,31 @@ endif;
 
 // Basic Helper
 if ( ! function_exists ( 'ci_version' ) ) {
-	function ci_version ( $version = null, $operator = null ) {
+	function ci_version ( $operator = null, $version = null ) {
 		if ( is_null ( $version ) ) {
 			return CI_VERSION;
 		}
 
 		switch ( $operator ) {
+			default:
 			case '<':
-				return $version > CI_VERSION ? true : false;
+				return CI_VERSION < $version ? true : false;
 				break;
 
 			case '>':
-				return $version < CI_VERSION ? true : false;
+				return CI_VERSION > $version ? true : false;
 				break;
 
 			case '<=':
-				return $version >= CI_VERSION ? true : false;
+				return CI_VERSION <= $version ? true : false;
 				break;
 
 			case '>=':
-				return $version <= CI_VERSION ? true : false;
+				return CI_VERSION >= $version ? true : false;
 				break;
 
 			case '=':
-				return $version == CI_VERSION ? true : false;
+				return CI_VERSION == $version ? true : false;
 				break;
 		}
 	}

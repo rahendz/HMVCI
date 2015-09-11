@@ -56,15 +56,13 @@ class MY_Model extends CI_Model {
 		$this->db->close();
 	}
 
-	public function prefix ( $table = null ) {
-		return $this->db->dbprefix ( $table );
+	public function prefix() {
+		return $this->db->dbprefix ( $this->table );
 	}
 
 	private function initiate_query ( $method ) {
-		if ( ! $this->table AND ! $this->db->table_exists ( $this->db->dbprefix ( $this->table ) ) ) {
+		if ( ! $this->table AND ! $this->db->table_exists ( $this->prefix() ) ) {
 			show_error ( 'Ups! Table not selected' );
-		} else {
-			$this->table = $this->db->dbprefix ( $this->table );
 		}
 		// Select Query
 		if ( in_array ( $method, array ( 'get' ) ) ) {
@@ -90,7 +88,7 @@ class MY_Model extends CI_Model {
 
 		// From Query
 		if ( in_array ( $method, array ( 'get', 'count', 'delete', 'empty_table', 'truncate' ) ) ) {
-			$this->db->from ( $this->table );
+			$this->db->from ( $this->prefix() );
 		}
 
 		// Join Query
@@ -234,7 +232,7 @@ class MY_Model extends CI_Model {
 	}
 
 	public function count_all() {
-		$result = $this->db->count_all ( $this->table );
+		$result = $this->db->count_all ( $this->prefix() );
 		$this->reset_query();
 		return $result;
 	}
@@ -242,7 +240,7 @@ class MY_Model extends CI_Model {
 	public function insert() {
 		$return = ! $this->return_id ? 'affected_rows' : 'insert_id';
 		$this->initiate_query ( __FUNCTION__ );
-		$this->db->insert ( $this->table, $this->values );
+		$this->db->insert ( $this->prefix(), $this->values );
 		$result = $this->db->$return();
 		$this->reset_query();
 		return $result;
@@ -251,7 +249,8 @@ class MY_Model extends CI_Model {
 	public function insert_batch() {
 		if ( false !== $this->native ) {
 			$insert_id = array();
-			foreach ( $this->values as $val ) {
+			$loop = $this->values;
+			foreach ( $loop as $val ) {
 				$this->values = $val;
 				$insert_id[] = $this->insert();
 			}
@@ -259,7 +258,7 @@ class MY_Model extends CI_Model {
 			return $insert_id;
 		}
 		$this->db->trans_start();
-		$this->db->insert_batch ( $this->table, $this->values );
+		$this->db->insert_batch ( $this->prefix(), $this->values );
 		$this->db->trans_complete();
 		$result = $this->db->trans_status();
 		$this->reset_query();
@@ -267,22 +266,32 @@ class MY_Model extends CI_Model {
 	}
 
 	public function insert_string() {
-		$result = $this->db->insert_string ( $this->table, $this->values );
+		$result = $this->db->insert_string ( $this->prefix(), $this->values );
 		$this->reset_query();
 		return $result;
 	}
 
 	public function update() {
 		$this->initiate_query ( __FUNCTION__ );
-		$this->db->update ( $this->table, $this->values );
+		$this->db->update ( $this->prefix(), $this->values );
 		$result = $this->db->affected_rows();
 		$this->reset_query();
 		return $result;
 	}
 
 	public function update_batch() {
+		if ( false !== $this->native ) {
+			$affected_rows = array();
+			$loop = $this->values;
+			foreach ( $loop as $val ) {
+				$this->values = $val;
+				$affected_rows[] = $this->update();
+			}
+			$this->reset_query();
+			return $affected_rows;
+		}
 		$this->db->trans_start();
-		$this->db->update_batch ( $this->table, $this->values, $this->key );
+		$this->db->update_batch ( $this->prefix(), $this->values, $this->key );
 		$this->db->trans_complete();
 		$result = $this->db->trans_status();
 		$this->reset_query();
@@ -290,14 +299,14 @@ class MY_Model extends CI_Model {
 	}
 
 	public function update_string() {
-		$result = $this->db->update_string ( $this->table, $this->values, $this->where );
+		$result = $this->db->update_string ( $this->prefix(), $this->values, $this->where );
 		$this->reset_query();
 		return $result;
 	}
 
 	public function replace() {
 		$this->initiate_query ( __FUNCTION__ );
-		$this->db->replace ( $this->table, $this->values );
+		$this->db->replace ( $this->prefix(), $this->values );
 		$result = $this->db->affected_rows();
 		$this->reset_query();
 		return $result;
@@ -305,14 +314,14 @@ class MY_Model extends CI_Model {
 
 	public function delete() {
 		$this->initiate_query ( __FUNCTION__ );
-		$result = $this->db->delete ( $this->table );
+		$result = $this->db->delete ( $this->prefix() );
 		$this->reset_query();
 		return $result;
 	}
 
 	public function empty_table() {
 		$this->initiate_query ( __FUNCTION__ );
-		$result = $this->db->empty_table ( $this->table );
+		$result = $this->db->empty_table ( $this->prefix() );
 		$this->reset_query();
 		return $result;
 	}
@@ -355,8 +364,8 @@ class MY_Model extends CI_Model {
 	}
 
 	public function call() {
-		return call_user_func_array ( array ( 
-			&$this->db, 'call_function' 
+		return call_user_func_array ( array (
+			&$this->db, 'call_function'
 			), func_get_args() );
 	}
 
@@ -369,16 +378,21 @@ class MY_Model extends CI_Model {
 	}
 
 	public function validate() {
+		$obj = 'validation';
 		if ( ! isset ( $this->validation ) ) {
-			$this->load->library ( 'form_validation', $this->rules, 'validation' );
+			if ( ! isset ( $this->form_validation ) ) {
+				$this->load->library ( 'form_validation', $this->rules, $obj );
+			} else {
+				$obj = 'form_validation';
+			}
 		}
 
-		$this->validation->set_message ( $this->format );
+		$this->$obj->set_message ( $this->format );
 
-		if ( $this->validation->run() == false AND $this->validation->error_string() !== '' ) {
-			$this->errors['string'] = $this->validation->error_string();
+		if ( $this->$obj->run() == false AND $this->$obj->error_string() !== '' ) {
+			$this->errors['string'] = $this->$obj->error_string();
 			foreach ( $this->rules as $r ) {
-				$this->errors[$r['field']] = $this->validation->error($r['field']);
+				$this->errors[$r['field']] = $this->$obj->error($r['field']);
 			}
 			return false;
 		}
@@ -386,14 +400,14 @@ class MY_Model extends CI_Model {
 	}
 
 	public function list_fields() {
-		$lists = $this->db->list_fields ( $this->table );
+		$lists = $this->db->list_fields ( $this->prefix() );
 		$this->reset_query();
 		return $lists;
 	}
 
 	public function data_fields() {
 		$result = null;
-		$query = $this->db->query ( 'SHOW COLUMNS FROM ' . $this->table );
+		$query = $this->db->query ( 'SHOW COLUMNS FROM ' . $this->prefix() );
 		if ( $query->num_rows() > 0 ) {
 			$result = array_map ( function ( $f ) {
 				$return['name'] = $f->Field;
