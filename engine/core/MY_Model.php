@@ -16,7 +16,9 @@ class MY_Model extends CI_Model {
 	public $set = array();
 	public $join = array();
 	public $where = array();
+	public $where_or = array();
 	public $or_where = array();
+	public $or_where_and = array();
 	public $where_in = array();
 	public $or_where_in = array();
 	public $where_not_in = array();
@@ -62,8 +64,9 @@ class MY_Model extends CI_Model {
 
 	private function initiate_query ( $method ) {
 		if ( ! $this->table AND ! $this->db->table_exists ( $this->prefix() ) ) {
-			show_error ( 'Ups! Table not selected' );
+			show_error ( 'Ups! Database Table was not selected' );
 		}
+
 		// Select Query
 		if ( in_array ( $method, array ( 'get' ) ) ) {
 			if ( ! is_null ( $this->select ) ) {
@@ -106,7 +109,7 @@ class MY_Model extends CI_Model {
 
 		// Set Query
 		if ( in_array ( $method, array ( 'insert', 'update', 'replace' ) ) ) {
-			if ( ! is_null ( $this->set ) AND count ( $this->set ) > 0 ) {
+			if ( ! is_null ( $this->set ) OR ( is_array ( $this->set ) AND count ( $this->set ) > 0 ) ) {
 				$this->db->set ( $this->set );
 			}
 		}
@@ -115,6 +118,19 @@ class MY_Model extends CI_Model {
 		if ( in_array ( $method, array ( 'get', 'count', 'update', 'delete' ) ) ) {
 			if ( ! is_null ( $this->where ) AND count ( $this->where ) > 0 ) {
 				$this->db->where ( $this->where );
+			}
+
+			if ( ! is_null ( $this->where_or ) AND count ( $this->where_or ) > 0 ) {
+				$where_or_value = '(';
+				if ( is_array ( $this->where_or ) ) {
+					foreach ( $this->where_or as $index => $value ) {
+						$where_or_value .= ( strpos ( $index, ' ') !== false ? $index .' \'' : $index . ' = \'') . $value .'\' OR ';
+					}
+				} else {
+					$where_or_value .= ltrim ( rtrim ( $this->where_or, ')' ), '(' );
+				}
+				$where_or_value .= rtrim ( $where_or_value, 'OR ' ) . ')';
+				$this->db->where ( $where_or_value );
 			}
 
 			if ( ! is_null ( $this->or_where ) AND count ( $this->or_where ) > 0 ) {
@@ -437,6 +453,7 @@ class MY_Model extends CI_Model {
 		$this->set = array();
 		$this->join = array();
 		$this->where = array();
+		$this->where_or = array();
 		$this->or_where = array();
 		$this->where_in = array();
 		$this->or_where_in = array();

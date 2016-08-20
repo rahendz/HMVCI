@@ -205,6 +205,7 @@ class REST_Controller extends CI_Controller {
 		// This library is bundled with REST_Controller 2.5+, but will eventually be part of CodeIgniter itself
 		// $this->load->library('format');
 		// @require_once APPPATH .'core/initiate/format'. EXT;
+		// echo_r(class_exists('Format'),true,true);
 		$this->format = new Format;
 
 		// init objects

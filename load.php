@@ -42,7 +42,7 @@ define ( 'ENVIRONMENT', isset ( $_SERVER['CI_ENV'] ) ? $_SERVER['CI_ENV'] : $env
 $system_path = SYSTEM_PATH;
 
 // APP PATH
-$application_folder = 'application';
+$application_folder = 'engine';
 
 // VIEW PATH for v3.x
 $view_folder = '';

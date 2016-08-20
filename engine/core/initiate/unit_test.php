@@ -83,6 +83,7 @@ if ( ! function_exists ( '__die' ) ) {
 		include_once APPPATH . $path_error . '/' . $file_error . EXT; exit;
 	}
 }
+
 if ( ! function_exists ( 'is_true' ) ) {
 	function is_true ( $test ) {
 		return ( is_bool ( $test ) AND $test === true ) ? true : false;

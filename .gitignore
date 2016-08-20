@@ -38,6 +38,11 @@
 /assets
 /system
 
+/modules/*
+!/modules/welcome
+!/modules/api
+*/modules/oauth
+
 /index.php
 
 less
