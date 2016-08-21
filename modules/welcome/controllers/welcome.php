@@ -21,24 +21,24 @@ class Welcome extends Public_Controller {
 	}
 
 	public function testdb() {
-		$this->load->database();
 		$welcome =& $this->model('m_welcome');
 		$welcome->where = array ('id'=>'1');
 		echo_r($welcome->test());
-		echo_r($welcome->test_2());
-		echo_r($welcome->version);
+		echo_r($welcome->sql_platform);
 	}
 
 	public function testapi() {
 		// $this->load->config('rest_api');
 		// echo_r(config_item('api_logins'));
-		$value['secret'] = '40acf3555ec968ecab9542ffeaf7bc281bb4af0f';
-		echo get_remote ( 'example/users', $value );//
+		$api = 'http://codeigniter.dev/hmvci/rahendz/index.php/api/';
+		$value['secret'] = '65bb14860bff913a5cff848b5e6abc79e031350c';
+		echo get_remote ( $api . 'example/users', $value );
+		// echo config_item ( 'api_base_url' );
 	}
 
 	public function request() {
-		$url = 'http://codeigniter.dev/hmvci/rahendz/index.php/api/key/index';
-		echo put_remote($url,array('keys'=>'masbottt'));
+		$api = 'http://codeigniter.dev/hmvci/rahendz/index.php/api/';
+		echo put_remote($api . 'key/index',array('keys'=>'rahendz'));
 	}
 
 	public function testmail() {

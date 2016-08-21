@@ -83,19 +83,19 @@ $my_config['rest_keys_table'] = 'keys';
 
 # REST Enable Keys
 /*
-|
-| Default table schema:
-|   CREATE TABLE `keys` (
-|       `id` INT(11) NOT NULL AUTO_INCREMENT,
-|       `key` VARCHAR(40) NOT NULL,
-|       `level` INT(2) NOT NULL,
-|       `ignore_limits` TINYINT(1) NOT NULL DEFAULT '0',
-|       `is_private_key` TINYINT(1)  NOT NULL DEFAULT '0',
-|       `ip_addresses` TEXT NULL DEFAULT NULL,
-|       `date_created` INT(11) NOT NULL,
-|       PRIMARY KEY (`id`)
-|   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-|
+
+Default table schema:
+CREATE TABLE `keys` (
+   `id` INT(11) NOT NULL AUTO_INCREMENT,
+   `key` VARCHAR(40) NOT NULL,
+   `level` INT(2) NOT NULL,
+   `ignore_limits` TINYINT(1) NOT NULL DEFAULT '0',
+   `is_private_key` TINYINT(1)  NOT NULL DEFAULT '0',
+   `ip_addresses` TEXT NULL DEFAULT NULL,
+  `date_created` INT(11) NOT NULL,
+   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 */
 $my_config['rest_enable_keys'] = REST_API_KEYS;
 

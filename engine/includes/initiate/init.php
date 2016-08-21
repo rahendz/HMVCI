@@ -7,7 +7,7 @@
 // @require_once dirname ( __FILE__ ) .'/autoloader.php';
 @require_once dirname ( __FILE__ ) .'/defines.php';
 @require_once dirname ( __FILE__ ) .'/unit_test.php';
-@require_once dirname ( __FILE__ ) .'/configurations.php';
+@require_once dirname ( __FILE__ ) .'/configure.php';
 @require_once dirname ( __FILE__ ) .'/routing.php';
 
 if ( class_exists ( 'Autoloader' ) ) {

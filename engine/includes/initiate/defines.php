@@ -5,11 +5,11 @@ defined ( 'EXT' ) OR define ( 'EXT', '.' . pathinfo ( __FILE__, PATHINFO_EXTENSI
 define ( 'INITPATH', dirname(__FILE__) .'\\' );
 define ( 'INITVIEWS', INITPATH . '/views/' );
 
-define ( 'REST_API', false );
+define ( 'REST_API', true ); // set 'true' if gonna use api restful
 define ( 'REST_API_REALM', 'REST API' );
 define ( 'REST_API_USERNAME', 'admin' );
 define ( 'REST_API_PASSWORD', '1234' );
-define ( 'REST_API_KEYS', true );
+define ( 'REST_API_KEYS', true ); // had to be 'false' when request keys
 // set api base url `false` to use this system as a rest server
 define ( 'REST_API_BASE_URL', false );
 

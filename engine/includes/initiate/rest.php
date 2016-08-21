@@ -372,7 +372,7 @@ class REST_Controller extends CI_Controller {
 				$this->_log_request();
 			}
 
-			$this->response(array(config_item('rest_status_field_name') => false, config_item('rest_message_field_name') => 'Invalid API Key '.$this->rest->key), 403);
+			$this->response(array(config_item('rest_status_field_name') => false, config_item('rest_message_field_name') => 'Invalid API Key. '.$this->_allow), 403);
 		}
 
 		// Check to see if this key has access to the requested controller.

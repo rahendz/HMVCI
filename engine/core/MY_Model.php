@@ -2,8 +2,6 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class MY_Model extends CI_Model {
-
-	// private $db;
 	public $table = null;
 	public $native = false;
 	public $return_id = false;
@@ -40,8 +38,8 @@ class MY_Model extends CI_Model {
 	public $errors = false;
 	public $format = array();
 	public $exists = array();
-	public $platform;
-	public $version;
+	public $sql_platform;
+	public $sql_version;
 	public $conn_id;
 
 	public function __construct() {
@@ -49,8 +47,8 @@ class MY_Model extends CI_Model {
 		isset ( $this->db ) OR $this->load->database();
 		$this->db->cache_off();
 		$this->db->save_queries = false;
-		$this->platform = $this->db->platform();
-		$this->version = $this->db->version();
+		$this->sql_platform = $this->db->platform();
+		$this->sql_version = $this->db->version();
 		$this->conn_id = $this->db->conn_id;
 	}
 

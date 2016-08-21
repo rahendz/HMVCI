@@ -76,7 +76,7 @@ class Key extends Api_Controller
 		if ( ! self::_key_exists($key))
 		{
 			// NOOOOOOOOO!
-			$this->response(array('status' => 0, 'error' => 'Invalid API Key.'), 400);
+			$this->response(array('status' => 0, 'error' => 'Invalid API Key. (79)'), 400);
 		}
 
 		// Kill it
@@ -105,7 +105,7 @@ class Key extends Api_Controller
 		if ( ! self::_key_exists($key))
 		{
 			// NOOOOOOOOO!
-			$this->response(array('error' => 'Invalid API Key.'), 400);
+			$this->response(array('error' => 'Invalid API Key. (108)'), 400);
 		}
 
 		// Update the key level
@@ -138,7 +138,7 @@ class Key extends Api_Controller
 		if ( ! self::_key_exists($key))
 		{
 			// NOOOOOOOOO!
-			$this->response(array('error' => 'Invalid API Key.'), 400);
+			$this->response(array('error' => 'Invalid API Key. (141)'), 400);
 		}
 
 		// Update the key level
@@ -172,7 +172,7 @@ class Key extends Api_Controller
 		if ( ! $key_details)
 		{
 			// NOOOOOOOOO!
-			$this->response(array('status' => 0, 'error' => 'Invalid API Key.'), 400);
+			$this->response(array('status' => 0, 'error' => 'Invalid API Key. (175)'), 400);
 		}
 
 		// Build a new key

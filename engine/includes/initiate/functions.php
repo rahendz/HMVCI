@@ -701,7 +701,7 @@ if ( ! function_exists ( 'db_utility' ) ) {
 // CURL Helper
 if ( ! function_exists ( 'get_remote' ) ) {
 	function get_remote ( $source, $value = array(), $format = 'json' ) {
-		$server = config_item ( 'api_baseurl' ) ? config_item ( 'api_baseurl' ) .'/' : null;
+		$server = config_item ( 'api_base_url' ) ? config_item ( 'api_base_url' ) .'/' : null;
 
 		if ( config_item ( 'api_logins' ) ) {
 			$username = key ( config_item ( 'api_logins' ) );
@@ -725,16 +725,16 @@ if ( ! function_exists ( 'get_remote' ) ) {
 
 		$buffer = curl_exec ( $curl_handle );
 		curl_close ( $curl_handle );
-
+		$format_type = isset($value['format'])?$value['format']:$format;
 		if ( ! $buffer ) {
 			$key_status = config_item ( 'rest_status_field_name' ) ? config_item ( 'rest_status_field_name' ) : 'status';
 			$key_message = config_item ( 'rest_message_field_name' ) ? config_item ( 'rest_message_field_name' ) : 'error';
-			$method = 'to_' . $value['format'];
+			$method = 'to_' . $format_type;
 			$format = new Format ( array ( $key_status => false, $key_message => 'Error on communicating to server' ) );
 			$buffer = $format->$method();
 		}
 
-		switch ( $value['format'] ) {
+		switch ( $format_type ) {
 			case 'json':
 				header('Content-Type: application/json');
 				break;
@@ -757,7 +757,7 @@ if ( ! function_exists ( 'get_remote' ) ) {
 
 if ( ! function_exists ( 'post_remote' ) ) {
 	function post_remote ( $source, $value = array(), $format = 'json' ) {
-		$server = config_item ( 'api_baseurl' ) ? config_item ( 'api_baseurl' ) .'/' : null;
+		$server = config_item ( 'api_base_url' ) ? config_item ( 'api_base_url' ) .'/' : null;
 
 		if ( config_item ( 'api_logins' ) ) {
 			$username = key ( config_item ( 'api_logins' ) );
@@ -777,16 +777,16 @@ if ( ! function_exists ( 'post_remote' ) ) {
 
 		$buffer = curl_exec ( $curl_handle );
 		curl_close ( $curl_handle );
-
+		$format_type = isset($value['format'])?$value['format']:$format;
 		if ( ! $buffer ) {
 			$key_status = config_item ( 'rest_status_field_name' ) ? config_item ( 'rest_status_field_name' ) : 'status';
 			$key_message = config_item ( 'rest_message_field_name' ) ? config_item ( 'rest_message_field_name' ) : 'error';
-			$method = 'to_' . $value['format'];
+			$method = 'to_' . $format_type;
 			$format = new Format ( array ( $key_status => false, $key_message => 'Error on communicating to server' ) );
 			$buffer = $format->$method();
 		}
 
-		switch ( $value['format'] ) {
+		switch ( $format_type ) {
 			case 'json':
 				header('Content-Type: application/json');
 				break;
@@ -809,7 +809,7 @@ if ( ! function_exists ( 'post_remote' ) ) {
 
 if ( ! function_exists ( 'put_remote' ) ) {
 	function put_remote ( $source, $value = array(), $format = 'json' ) {
-		$server = config_item ( 'api_baseurl' ) ? config_item ( 'api_baseurl' ) .'/' : null;
+		$server = config_item ( 'api_base_url' ) ? config_item ( 'api_base_url' ) .'/' : null;
 
 		if ( config_item ( 'api_logins' ) ) {
 			$username = key ( config_item ( 'api_logins' ) );
@@ -827,16 +827,16 @@ if ( ! function_exists ( 'put_remote' ) ) {
 
 		$buffer = curl_exec ( $curl_handle );
 		curl_close ( $curl_handle );
-
+		$format_type = isset($value['format'])?$value['format']:$format;
 		if ( ! $buffer ) {
 			$key_status = config_item ( 'rest_status_field_name' ) ? config_item ( 'rest_status_field_name' ) : 'status';
 			$key_message = config_item ( 'rest_message_field_name' ) ? config_item ( 'rest_message_field_name' ) : 'error';
-			$method = 'to_' . $value['format'];
+			$method = 'to_' . $format_type;
 			$format = new Format ( array ( $key_status => false, $key_message => 'Error on communicating to server' ) );
 			$buffer = $format->$method();
 		}
 
-		switch ( $value['format'] ) {
+		switch ( $format_type ) {
 			case 'json':
 				header('Content-Type: application/json');
 				break;
