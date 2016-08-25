@@ -21,7 +21,7 @@ using my hmvci. My Hmvci for CI version 3.x is still under developing.
 - Nestable
 - Less.js
 
-### How-To
+## How-To
 ==============================
 1.  Download HMVCI (codeigniter core system not included)
 2.  Download Codeigniter core system v2.x from official site (recommended to use v2.2.5 instead)
@@ -29,3 +29,9 @@ using my hmvci. My Hmvci for CI version 3.x is still under developing.
 4.  in root directory, duplicate and rename `index-sample.php` into `index.php`
 5.  in `application/config` directory, duplicate and rename `config-sample.php` into `config.php`
 6.  in `application/config` directory, duplicate and rename `database-sample.php` into `database.php`
+
+## Simple Documentation
+#### Theme Configuration
+	$this->theme_var['config']['frontend'] = 'default';
+Configuration for frontend theme, put it in `construct` each controller to have different theme on each of it. Or
+just set it on `application/includes/controller/public` for all of public controller.
