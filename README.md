@@ -48,3 +48,18 @@ just set it on `application/includes/controller/(public or private)` for all of 
 
 	$this->theme_var['config']['backend'] = 'default';
 *those are for backend*
+
+#### Load file asset css and js
+Push the **stylesheet** to theme
+
+	$this->enqueue_style( $id, $file, $dependency, $version );
+
+OR
+
+	$this->enqueue_style( array( $id => array ( $file, $dependency, $version ) ) );
+
+and then use
+
+	theme_enqueue_head();
+
+put it in tag head on your theme to load all your registered stylesheet.
