@@ -30,6 +30,9 @@ using my hmvci. My Hmvci for CI version 3.x is still under developing.
 6.  in `application/config` directory, duplicate and rename `database-sample.php` into `database.php`
 
 ## Simple Documentation
+You can check manually simple documentation that implemented in welcome controller at `application/modules/welcome`, 
+there will be 4 folders, config, controllers, models and views.
+
 #### Extends Controller
 There is 3 optional extends controller to use my modular and theme engine with properly.
 - Api Controller *for using restful service as server or client*
@@ -93,3 +96,22 @@ example:
 	$this->enqueue_script( 'scripts', 'js/scripts.js', array('jquery'), '1.1.0', true );
 
 and then use `theme_enqueue_foot();` put it in end of tag body on your theme to load all your registered script.
+
+#### Render Theme
+**Firstly**, set which file views to be render
+
+	$this->theme_var['content'] = 'path/file';
+
+example:
+
+	$this->theme_var['content'] = 'welcome_message';
+
+**Secondly**, set what data would be sent to theme
+
+	$this->theme_var['data'][$var] = 'lorem ipsum dolor sit amet';
+
+example:
+
+	$this->theme_var['data']['error_message'] = 'Username or password was wrong';
+
+**AND last**, let theme rendered by `$this->render_theme()` by putting it at the last line each function
