@@ -22,7 +22,6 @@ using my hmvci. My Hmvci for CI version 3.x is still under developing.
 - Less.js
 
 ## How-To
-==============================
 1.  Download HMVCI (codeigniter core system not included)
 2.  Download Codeigniter core system v2.x from official site (recommended to use v2.2.5 instead)
 3.  Put system folder from Official Codeigniter inside HMVCI folder
@@ -31,6 +30,13 @@ using my hmvci. My Hmvci for CI version 3.x is still under developing.
 6.  in `application/config` directory, duplicate and rename `database-sample.php` into `database.php`
 
 ## Simple Documentation
+#### Extends Controller
+There is 3 optional extends controller to use my modular and theme engine with properly.
+- Api Controller *for using restful service as server or client*
+- Private Controller *for backend purpose*
+- Public Controller *for frontend purpose*
+
+
 #### Theme Configuration
 Configuration for theme, put it in `construct` each controller to have different theme on each of it. Or
 just set it on `application/includes/controller/(public or private)` for all of public controller.
