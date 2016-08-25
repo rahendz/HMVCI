@@ -53,10 +53,10 @@ just set it on `application/includes/controller/(public or private)` for all of 
 #### Load file asset css and js
 > Push the **stylesheet** to theme using `enqueue_style` with 4 available parameter:
 
-- **$id**: Style id for registering.
-- **$file**: Stylesheet filename and path.
-- **$dependency**: File that needed for your stylesheet run properly.
-- **$version**: Optional. your stylesheet version.
+- **$id**: (*string/array*) Style id for registering.
+- **$file**: (*string*) Stylesheet filename and path.
+- **$dependency**: (*array*) File that needed for your stylesheet run properly, leave it blank array when your script doesn't have any dependency.
+- **$version**: (*string*) Optional. your stylesheet version.
 
 <!-- -->
 
@@ -68,22 +68,29 @@ OR
 
 example:
 
-	$this->enqueue_style( 'style', 'css/style.css', 'bootstrap', '1.1.2' );
+	$this->enqueue_style( 'style', 'css/style.css', array('bootstrap'), '1.1.2' );
 
-and then use
+and then use `theme_enqueue_head();` put it in tag head on your theme to load all your registered stylesheet.
 
-	theme_enqueue_head();
+> Push the **javascript** to theme using `enququ_script` with 4 available parameter:
 
-put it in tag head on your theme to load all your registered stylesheet.
+- **$id**: (*string/array*) Script id for registering.
+- **$file**: (*string*) Stylesheet filename and path.
+- **$dependency**: (*array*) File that needed for your stylesheet run properly, leave it blank array when your script doesn't have any dependency.
+- **$version**: (*string*) Optional. your stylesheet version.
+- **$footer**: (*boolean*) It set your script placement, will be loaded at footer or inside tag head, default value is **false**.
 
-
-Push the **javascript** to theme
+<!-- -->
 
 	$this->enqueue_script( $id, $file, $dependency, $version, $footer );
 
 OR
 
 	$this->enqueue_script( array( $id => array ( $file, $dependency, $version, $footer ) ) );
+
+example:
+
+	$this->enqueue_script( 'scripts', 'js/scripts.js', array('jquery'), '1.1.0', true );
 
 and then use
 
