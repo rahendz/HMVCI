@@ -56,7 +56,7 @@ Push the **stylesheet** to theme using `enqueue_style` with 4 available paramete
 - **$file**: Stylesheet filename and path.
 - **$dependency**: File that needed for your stylesheet run properly.
 - **$version**: Optional. your stylesheet version.
-**
+<b></b>
 
 	$this->enqueue_style( $id, $file, $dependency, $version );
 
