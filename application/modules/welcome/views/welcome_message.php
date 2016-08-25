@@ -1,4 +1,4 @@
-	<h1>Welcome to CodeIgniter!</h1>
+	<h1>Welcome to CodeIgniter Modular!</h1>
 
 	<div id="body">
 		<p>The page you are looking at is being generated dynamically by CodeIgniter.</p>
