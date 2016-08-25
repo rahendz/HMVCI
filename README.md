@@ -51,7 +51,8 @@ just set it on `application/includes/controller/(public or private)` for all of 
 
 ---
 #### Load file asset css and js
-Push the **stylesheet** to theme using `enqueue_style` with 4 available parameter:
+> Push the **stylesheet** to theme using `enqueue_style` with 4 available parameter:
+
 - **$id**: Style id for registering.
 - **$file**: Stylesheet filename and path.
 - **$dependency**: File that needed for your stylesheet run properly.
