@@ -4,7 +4,7 @@ using my hmvci. My Hmvci for CI version 3.x is still under developing.
 
 ### Features:
 - [x] HMVC Modular
-- [x] Wordpress-like Theme Structure
+- [x] Wordpress-like Theme Structure with different path for backend and frontend
 - [x] Simple RESTful API server and client
 - [ ] Scaffolding-like from CI v1.7.x (will integrate soon)
 - [ ] OAUTH 2.0 (coming soon)
@@ -25,9 +25,12 @@ using my hmvci. My Hmvci for CI version 3.x is still under developing.
 1.  Download HMVCI (codeigniter core system not included)
 2.  Download Codeigniter core system v2.x from official site (recommended to use v2.2.5 instead)
 3.  Put system folder from Official Codeigniter inside HMVCI folder
-4.  in root directory, duplicate and rename `index-sample.php` into `index.php`
-5.  in `application/config` directory, duplicate and rename `config-sample.php` into `config.php`
-6.  in `application/config` directory, duplicate and rename `database-sample.php` into `database.php`
+4.  in root directory, rename `index-sample.php` into `index.php`
+5.  in `application/config` directory, rename `config-sample.php` into `config.php`
+6.  in `application/config` directory, rename `database-sample.php` into `database.php`
+7.  By default the controller route is set to basic at `application/controller/basic.php`
+8.  Accessing home url (*http://localhost/index.php*) will show the `basic_message.php` that stored at `application/views`.
+9. To show the modular works just accesing (*http://localhost/index.php/welcome*), it will call the welcome controller which stored at `application/modules/welcome/controller/welcome.php`
 
 ## Simple Documentation
 You can check manually simple documentation that implemented in welcome controller at `application/modules/welcome`, 
