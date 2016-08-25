@@ -58,7 +58,7 @@ available parameter:
 - **$file**: Stylesheet filename and path.
 - **$dependency**: File that needed for your stylesheet run properly.
 - **$version**: Optional. your stylesheet version.
-
+  
 	$this->enqueue_style( $id, $file, $dependency, $version );
 
 OR
