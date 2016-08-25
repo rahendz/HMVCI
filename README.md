@@ -33,9 +33,9 @@ using my hmvci. My Hmvci for CI version 3.x is still under developing.
 ## Simple Documentation
 #### Theme Configuration
 	$this->theme_var['config']['frontend'] = 'default';
-*those are for frontend*
-OR
+*those are for frontend*  
+OR  
 	$this->theme_var['config']['backend'] = 'default';
-*those are for backend*
+*those are for backend*  
 Configuration for theme, put it in `construct` each controller to have different theme on each of it. Or
 just set it on `application/includes/controller/(public or private)` for all of public controller.
