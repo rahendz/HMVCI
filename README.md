@@ -72,8 +72,9 @@ example:
 
 and then use `theme_enqueue_head();` put it in tag head on your theme to load all your registered stylesheet.
 
+#
 
-> Push the **javascript** to theme using `enququ_script` with 4 available parameter:
+> Push the **javascript** to theme using `enquque_script` with 4 available parameter:
 
 - **$id**: (*string/array*) Script id for registering.
 - **$file**: (*string*) Stylesheet filename and path.
