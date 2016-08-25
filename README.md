@@ -53,14 +53,39 @@ just set it on `application/includes/controller/(public or private)` for all of 
 #### Load file asset css and js
 Push the **stylesheet** to theme
 
+available parameter:
+- **$id**: Style id for registering.
+- **$file**: Stylesheet filename and path.
+- **$dependency**: File that needed for your stylesheet run properly.
+- **$version**: Optional. your stylesheet version.
+
 	$this->enqueue_style( $id, $file, $dependency, $version );
 
 OR
 
 	$this->enqueue_style( array( $id => array ( $file, $dependency, $version ) ) );
 
+example:
+
+	$this->enqueue_style( 'style', 'css/style.css', 'bootstrap', '1.1.2' );
+
 and then use
 
 	theme_enqueue_head();
 
 put it in tag head on your theme to load all your registered stylesheet.
+
+
+Push the **javascript** to theme
+
+	$this->enqueue_script( $id, $file, $dependency, $version, $footer );
+
+OR
+
+	$this->enqueue_script( array( $id => array ( $file, $dependency, $version, $footer ) ) );
+
+and then use
+
+	theme_enqueue_foot();
+
+put it in end of tag body on your theme to load all your registered stylesheet.
