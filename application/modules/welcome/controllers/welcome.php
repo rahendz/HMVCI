@@ -5,18 +5,19 @@ class Welcome extends Public_Controller {
 
 	public function __construct() {
 		parent::__construct();
+		$this->theme_var['config']['frontend'] = 'default';
 	}
 
 	public function index() {
-		$this->enqueue_style = array (
+		$this->enqueue_style ( array (
 			'style' => array ( 'style.css', array(), '1.0.0' )
-			);
+			));
 
-		$this->enqueue_script = array (
+		$this->enqueue_script (array (
 			'meneh' => array ( 'meneh.js',array(),'3.2.0', TRUE )
-			);
+			));
 
-		$this->content_theme = 'welcome_message';
+		$this->theme_var['content'] = 'welcome_message';
 		return $this->render_theme();
 	}
 
@@ -88,16 +89,17 @@ class Welcome extends Public_Controller {
 		force_download($name,$data);
 	}
 
-	public function datatable() {
-		$this->enqueue_style = array (
+	public function testdatatable() {
+		$this->enqueue_style ( array (
 			'style' => array ( 'style.css', array(), '1.0.0' ),
 			'datatable' => array ( 'css/jquery.dataTables.min.css', array(), '1.10.9' )
-			);
+			));
+		// $this->enqueue_style('style','style.css',array(),'1.0.0');
 
-		$this->enqueue_script = array (
-			'datatable' => array ( 'js/jquery.dataTables.js', array ('jquery'), '1.10.9', true ),
-			'trigger' => array ( 'trigger.js',array(),'1.0.0', true )
-			);
+		$this->enqueue_script ( array (
+					'datatable' => array ( 'js/jquery.dataTables.js', array ('jquery'), '1.10.9', true ),
+					'trigger' => array ( 'trigger.js',array(),'1.0.0', true )
+					));
 
 		$this->content_theme = 'welcome_datatable';
 		return $this->render_theme();
@@ -115,6 +117,11 @@ class Welcome extends Public_Controller {
 			);
 		header('Content-Type: application/json');
 		echo json_encode($echo);
+	}
+
+	public function testjoss() {
+		$joss = $this->controller('joss');
+		echo $joss;
 	}
 
 }

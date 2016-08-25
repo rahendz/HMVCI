@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class MY_Loader extends CI_Loader {
+class Base_Loader extends CI_Loader {
 
 	protected $_ci;
 	protected $_ci_modules = array();
@@ -15,8 +15,10 @@ class MY_Loader extends CI_Loader {
 
 	public $enqueue_style = array();
 	public $enqueue_style_id = array();
+	public $enqueue_style_requires = array();
 	public $enqueue_script = array();
 	public $enqueue_script_id = array();
+	public $enqueue_script_requires = array();
 
 	public $current_controller = null;
 	public $current_module_path = null;
@@ -209,7 +211,7 @@ class MY_Loader extends CI_Loader {
 		} else {
 			return false;
 		}
-		// echo $type;
+
 		$theme_name = isset ( $this->theme_config[$type] ) ? $this->theme_config[$type] : 'default';
 		$theme_path = config_item ( $type . '_theme_path' ) ? trim ( config_item ( $type . '_theme_path' ), '/' ) . '/' : $this->get_package_paths();
 		if ( ! is_array ( $theme_path ) ) {
@@ -310,32 +312,29 @@ class MY_Loader extends CI_Loader {
 	}
 
 	public function enqueue_style ( $id, $file = null, $require = array(), $version = null ) {
-		$this->enqueue_style[$id] = array (
-			'file' => $file,
-			'require' => $require,
-			'ver' => $version
-			);
+		$this->enqueue_style[$id] = array ( $file, $version );
+		foreach($require as $req_id) {
+			$this->enqueue_style_requires[$req_id] = $id;
+		}
 	}
 
 	public function enqueue_script ( $id, $file = null, $require = array(), $version = null, $in_footer = false ) {
-		$this->enqueue_script[$id] = array (
-			'file' => $file,
-			'require' => $require,
-			'ver' => $version,
-			'in_footer' => $in_footer
-			);
+		$this->enqueue_script[$id] = array ( $file, $version, $in_footer );
+		foreach($require as $req_id) {
+			$this->enqueue_script_requires[$req_id] = $id;
+		}
 	}
 
 	public function theme_enqueue_head ( $return = null ) {
-		$assets_css_path = APPPATH . 'core/assets/css/';
-		$assets_js_path = APPPATH . 'core/assets/js/';
+		$assets_css_path = INCPATH . 'assets/css/';
+		$assets_js_path = INCPATH . 'assets/js/';
 		$return .= '<meta name="site_url" content="'. $this->config->site_url() .'" />'. "\n\t";
 		$return .= '<meta name="assets_path" content="'. $this->config->base_url ( APPPATH . 'core/assets' ) .'" />'. "\n\t";
 		$return .= '<meta name="template_directory_uri" content="'. get_template_directory_uri() .'" />'. "\n\t";
 		$return .= '<meta name="stylesheet_url" content="'. get_stylesheet_uri() .'" />'. "\n\t";
 		foreach ( $this->enqueue_style as $id => $e ) {
-			list ( $file, $require, $version ) = $e;
-			$requires = isset ( $require ) ? $require : array();
+			list ( $file, $version ) = $e; // $require,
+			// $requires = isset ( $require ) ? $require : array();
 			$filepath = get_template_directory_uri ( $file . '?ver=' . ( isset ( $version ) ? $version : null ) );
 			$rel = 'stylesheet';
 			if ( strpos ( $file, 'http://' ) !== false ) {
@@ -344,8 +343,8 @@ class MY_Loader extends CI_Loader {
 			if ( strpos($file, '.less')!==false){
 				$rel = 'stylesheet/less';
 			}
-			if ( $this->is_anystyle_required ( $requires ) === false ) {
-				foreach ( $requires as $r ) {
+			if ( $this->is_anystyle_required ( $this->enqueue_style_requires ) === false ) {
+				foreach ( $this->enqueue_style_requires as $r ) {
 					$r = file_exists( $assets_css_path . $r . '.min.css' ) ? $r . '.min' : $r;
 					if ( file_exists ( $assets_css_path . $r . '.css' ) ) {
 						$require_file = base_url ( $assets_css_path . $r . '.css' );
@@ -354,7 +353,7 @@ class MY_Loader extends CI_Loader {
 					}
 				}
 			}
-			if ( $id !== 'style' AND $this->is_anystyle_required ( $requires ) !== false ) {
+			if ( $id !== 'style' AND $this->is_anystyle_required ( $this->enqueue_style_requires ) !== false ) {
 				$return .= sprintf ( '<link rel="%s" id="%s-css" href="%s" />',	$rel, $id, $filepath ) . "\n\t";
 				$this->enqueue_style_id[] = $id;
 			} else {
@@ -371,15 +370,15 @@ class MY_Loader extends CI_Loader {
 			for ( $i = 4; $i > count($s); $i-- ) {
 				$s[] = '';
 			}
-			list ( $file, $require, $version, $in_footer ) = $s;
+			list ( $file, $version, $in_footer ) = $s; // $require,
 			$filepath = get_template_directory_uri ( $file .'?ver='. ( isset ( $version ) ? $version : null ) );
 			if ( strpos ( $file, 'http://' ) !== false ){
 				$filepath = $file .'?ver='. ( isset ( $version ) ? $version : NULL );
 			}
-			$requires = isset ( $require ) ? $require : array();
+			// $requires = isset ( $require ) ? $require : array();
 			$for_footer = isset ( $in_footer ) ? $in_footer : false;
-			if ( $this->is_anyscript_required ( $requires ) === false ) {
-				foreach ( $requires as $r ) {
+			if ( $this->is_anyscript_required ( $this->enqueue_script_requires ) === false ) {
+				foreach ( $this->enqueue_script_requires as $r => $for ) {
 					$x = $r === 'tinymce' ? 'tinymce/tinymce' : $r;
 					$re = file_exists ( $assets_js_path . $x . '.min.js' ) ? $x . '.min' : $x;
 					if ( ( $r == 'jquery' OR $r == 'tinymce' ) AND file_exists ( $assets_js_path . $re . '.js' ) ) {
@@ -391,7 +390,7 @@ class MY_Loader extends CI_Loader {
 					}
 				}
 			}
-			if ( ! $for_footer AND ! in_array ( $id, $force_load_last ) AND $this->is_anyscript_required ( $require ) !== false ) {
+			if ( ! $for_footer AND ! in_array ( $id, $force_load_last ) AND $this->is_anyscript_required ( $this->enqueue_script_requires ) !== false ) {
 				$return .= sprintf ( '<script id="%s" src="%s"></script>', $id, $filepath ) ."\n\t";
 				$this->enqueue_script_id[] = $id;
 			}
@@ -404,7 +403,7 @@ class MY_Loader extends CI_Loader {
 	}
 
 	public function theme_enqueue_foot ( $return = "\n" ) {
-		$assets_js_path = APPPATH . 'core/assets/js/';
+		$assets_js_path = INCPATH . 'core/assets/js/';
 		$force_load_last = array (
 			'trigger', 'admin-trigger', 'trigger-admin', 'trigger-backend', 'backend-trigger', 'trigger-frontend', 'frontend-trigger'
 			);
@@ -412,15 +411,15 @@ class MY_Loader extends CI_Loader {
 			for ( $i = 4; $i > count($e); $i-- ) {
 				$e[] = '';
 			}
-			list ( $file, $require, $version, $in_footer ) = $e;
+			list ( $file, $version, $in_footer ) = $e; // $require,
 			$filepath = get_template_directory_uri ( $file .'?ver='. ( isset ( $version ) ? $version : null ) );
 			if ( strpos ( $file, 'http://' ) !== false ){
 				$filepath = $file .'?ver='. ( isset ( $version ) ? $version : NULL );
 			}
-			$requires = isset ( $require ) ? $require : array();
+			// $requires = isset ( $require ) ? $require : array();
 			$for_footer = isset ( $in_footer ) ? $in_footer : false;
-			if ( $this->is_anyscript_required ( $requires ) === false ) {
-				foreach ( $requires as $r ) {
+			if ( $this->is_anyscript_required ( $this->enqueue_script_requires ) === false ) {
+				foreach ( $this->enqueue_script_requires as $r => $for ) {
 					// $x = $r === 'tinymce' ? 'tinymce/tinymce' : $r;
 					$re = file_exists ( $assets_js_path . $r . '.min.js' ) ? $r . '.min' : $r;
 					// echo $assets_js_path . $re . '<br/>';
@@ -431,7 +430,7 @@ class MY_Loader extends CI_Loader {
 					}
 				}
 			}
-			if ( $for_footer AND ! in_array ( $id, $force_load_last ) AND $this->is_anyscript_required ( $requires ) !== false ) {
+			if ( $for_footer AND ! in_array ( $id, $force_load_last ) AND $this->is_anyscript_required ( $this->enqueue_script_requires ) !== false ) {
 				$return .= sprintf ( '<script id="%s" src="%s"></script>', $id, $filepath ) . "\n";
 				$this->enqueue_script_id[] = $id;
 			} else {
@@ -446,24 +445,6 @@ class MY_Loader extends CI_Loader {
 
 	public function get_component ( $type ) {
 		return $this->_ci_get_component ( $type );
-	}
-
-	private function is_anystyle_required ( $require = array() ) {
-		foreach ( $require as $r ) {
-			if ( ! isset ( $this->enqueue_style_id ) OR ! in_array ( $r, $this->enqueue_style_id ) ) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private function is_anyscript_required ( $require = array() ) {
-		foreach ( $require as $r ) {
-			if ( ! in_array ( $r, $this->enqueue_script_id ) ) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 	/* PRIVATE FUNCTION */
@@ -784,6 +765,24 @@ class MY_Loader extends CI_Loader {
 		}
 		$DB->initialize();
 		return $DB;
+	}
+
+	private function is_anystyle_required ( $require = array() ) {
+		foreach ( $require as $r => $for ) {
+			if ( ! isset ( $this->enqueue_style_id ) OR ! in_array ( $r, $this->enqueue_style_id ) ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private function is_anyscript_required ( $require = array() ) {
+		foreach ( $require as $r => $for ) {
+			if ( ! in_array ( $r, $this->enqueue_script_id ) ) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
 /* End of file MY_Loader.php */

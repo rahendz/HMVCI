@@ -1,6 +1,6 @@
 <?php if ( ! defined ( 'BASEPATH' ) ) exit ( 'No direct script access allowed' );
-
-abstract class Api_Controller extends REST_Controller {
+// namespace Controller\Api;
+abstract class Api_Controller extends Rest_Controller {
 
 	// protected $theme = 'default';
 	// protected $theme_part = NULL;

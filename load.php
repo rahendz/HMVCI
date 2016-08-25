@@ -42,13 +42,13 @@ define ( 'ENVIRONMENT', isset ( $_SERVER['CI_ENV'] ) ? $_SERVER['CI_ENV'] : $env
 $system_path = SYSTEM_PATH;
 
 // APP PATH
-$application_folder = 'engine';
+$application_folder = 'application';
 
 // VIEW PATH for v3.x
 $view_folder = '';
 
-// MODULES PATH
-$modules_folder = '../modules';
+// MODULES PATH, default 'modules' will be at application folder
+$modules_folder = 'modules';
 
 
 
@@ -146,6 +146,15 @@ $modules_folder = '../modules';
 		exit ( "Your modules folder path does not appear to be set correctly. Please open the following file and correct this: " . SELF );
 	}
 
+// The path to the "application" folder
+	if ( is_dir ( 'includes' ) ) {
+		define ( 'INCPATH', 'includes/' );
+	} elseif ( is_dir ( APPPATH . 'includes' ) ) {
+		define ( 'INCPATH', APPPATH . 'includes/' );
+	} else {
+		exit ( "Includes folder are missing. Please open the following file and correct this: " . SELF );
+	}
+
 /*
  * --------------------------------------------------------------------
  * LOAD THE BOOTSTRAP FILE
@@ -154,7 +163,7 @@ $modules_folder = '../modules';
  * And away we go...
  *
  */
-require_once APPPATH . 'includes/initiate/init.php';
+require_once INCPATH . 'initiate/init.php';
 require_once BASEPATH . 'core/CodeIgniter.php';
 
 /* End of file index.php */

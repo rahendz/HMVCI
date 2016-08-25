@@ -13,7 +13,7 @@
  * @link			https://github.com/chriskacerguis/codeigniter-restserver
  * @version         3.0.0-pre
  */
-class REST_Controller extends CI_Controller {
+class Rest_Controller extends Base_Controller {
 
 	/**
 	 * This defines the rest format.
@@ -324,15 +324,13 @@ class REST_Controller extends CI_Controller {
 	 * Destructor function
 	 * @author Chris Kacerguis
 	 */
-	public function __destruct()
-	{
+	public function __destruct() {
 		// Record the "stop" time of the request
 		$this->_end_rtime = microtime(true);
 		// CK: if, we are logging, log the access time here, as we are done!
 		if (config_item('rest_enable_logging')) {
 			$this->_log_access_time();
 		}
-
 	}
 
 	/**

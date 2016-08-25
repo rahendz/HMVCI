@@ -3,16 +3,13 @@
 @date_default_timezone_set ( 'Asia/Jakarta' );
 @set_time_limit ( 3600 );
 @ini_set ( 'memory_limit', '1024M' );
+@ini_set ( 'post_max_size', '1024M' );
+@ini_set ( 'upload_max_filesize', '1024M' );
 
-// @require_once dirname ( __FILE__ ) .'/autoloader.php';
 @require_once dirname ( __FILE__ ) .'/defines.php';
 @require_once dirname ( __FILE__ ) .'/unit_test.php';
-@require_once dirname ( __FILE__ ) .'/configure.php';
+@require_once dirname ( __FILE__ ) .'/assign.php';
 @require_once dirname ( __FILE__ ) .'/routing.php';
-
-if ( class_exists ( 'Autoloader' ) ) {
-	Autoloader::getInstance()->register();
-}
 
 $root_files = array ( 'config' );
 $core_files = array ( 'functions', 'themes', 'auth', 'format', 'controller', 'rest' );
