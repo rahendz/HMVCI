@@ -36,7 +36,7 @@ There is 3 optional extends controller to use my modular and theme engine with p
 - Private Controller *for backend purpose*
 - Public Controller *for frontend purpose*
 
----
+<br>
 #### Theme Configuration
 Configuration for theme, put it in `construct` each controller to have different theme on each of it. Or
 just set it on `application/includes/controller/(public or private)` for all of public controller.
@@ -44,12 +44,12 @@ just set it on `application/includes/controller/(public or private)` for all of 
 	$this->theme_var['config']['frontend'] = 'default';
 *those are for frontend*
 
-##### OR
+OR
 
 	$this->theme_var['config']['backend'] = 'default';
 *those are for backend*
 
----
+<br>
 #### Registering file CSS to theme
 Push the **stylesheet** to theme using `enqueue_style` with 4 available parameter:
 - **$id**: (*string/array*) Style id for registering.
@@ -71,7 +71,7 @@ example:
 
 and then use `theme_enqueue_head();` put it in tag head on your theme to load all your registered stylesheet.
 
----
+<br>
 #### Registering file JS to theme
 Push the **script** to theme using `enquque_script` with 4 available parameter:
 - **$id**: (*string/array*) Script id for registering.
