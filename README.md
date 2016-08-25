@@ -73,7 +73,7 @@ and then use `theme_enqueue_head();` put it in tag head on your theme to load al
 
 ---
 #### Registering file JS to theme
-Push the **javascript** to theme using `enquque_script` with 4 available parameter:
+Push the **script** to theme using `enquque_script` with 4 available parameter:
 - **$id**: (*string/array*) Script id for registering.
 - **$file**: (*string*) Stylesheet filename and path.
 - **$dependency**: (*array*) File that needed for your stylesheet run properly, leave it blank array when your script doesn't have any dependency.
@@ -92,8 +92,4 @@ example:
 
 	$this->enqueue_script( 'scripts', 'js/scripts.js', array('jquery'), '1.1.0', true );
 
-and then use
-
-	theme_enqueue_foot();
-
-put it in end of tag body on your theme to load all your registered stylesheet.
+and then use `theme_enqueue_foot();` put it in end of tag body on your theme to load all your registered script.
