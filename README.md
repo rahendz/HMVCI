@@ -35,6 +35,7 @@ There is 3 optional extends controller to use my modular and theme engine with p
 - Api Controller *for using restful service as server or client*
 - Private Controller *for backend purpose*
 - Public Controller *for frontend purpose*
+
 ---
 #### Theme Configuration
 Configuration for theme, put it in `construct` each controller to have different theme on each of it. Or
@@ -47,6 +48,7 @@ just set it on `application/includes/controller/(public or private)` for all of 
 
 	$this->theme_var['config']['backend'] = 'default';
 *those are for backend*
+
 ---
 #### Load file asset css and js
 Push the **stylesheet** to theme
