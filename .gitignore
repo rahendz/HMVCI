@@ -1,59 +1,53 @@
 .DS_Store
 
-application/cache/*
-!application/cache/index.html
+/application/cache
 
-application/config/config.php
-application/config/database.php
+/application/config/config.php
+/application/config/database.php
 
-application/controllers/*
-!application/controllers/api
-!application/controllers/oauth2.php
-!application/controllers/welcome.php
+/application/controllers
+/application/helpers
+/application/hooks
+/application/language
+/application/libraries
+/application/logs
 
-application/errors/*
-!application/errors/error_404.php
-!application/errors/error_db.php
-!application/errors/error_general.php
-!application/errors/error_php.php
+/application/models/*
+!/application/models/M_Welcome.php
 
-application/helpers/*
-!application/helpers/index.html
+/application/modules/*
+!/application/modules/welcome
+!/application/modules/api
+!/application/modules/oauth
 
-application/hooks/*
-!application/hooks/index.html
+/application/themes/*
+!/application/themes/default
+!/application/themes/index.html
 
-application/language/*
-!application/language/index.html
+/application/third_party
+/application/views/*
+!/application/views/errors
 
-application/libraries/*
-!application/libraries/index.html
+/themes/*
+!/themes/default
+!/themes/index.html
 
-application/logs/*
-!application/logs/index.html
+/uploads/*
+!/uploads/index.html
 
-application/models/*
-!application/models/M_Welcome.php
+/assets
+/system
 
-application/modules/*
-!application/modules/telo
-
-application/themes/*
-!application/themes/default
-
-application/third_party/*
-!application/third_party/index.html
-
-application/views/*
-!application/views/test_form.php
-!application/views/welcome_message.php
-
-themes/*
-!themes/default
+/modules/*
+!/modules/welcome
+!/modules/api
+*/modules/oauth
 
 /index.php
 
 less
 *.less
+
+*.xxx
 
 composer.*

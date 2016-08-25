@@ -10,7 +10,7 @@
  * as this file.
  *
  */
-	define ( 'SYSTEM_PATH', 'system' );
+	define('SYSTEM_PATH', 'system');
 
 /*
  *---------------------------------------------------------------
@@ -30,8 +30,14 @@
  * NOTE: If you change these, also change the error_reporting() code
  *
  */
-	define ( 'APP_DEBUG', true );
+	define('APP_DEBUG', true);
 
 // END OF EDITING FILE
 // Load system
-include 'system.php';
+@include('load.php');
+
+if(!defined('BASEPATH')){
+	header ( 'HTTP/1.1 500 Internal Server Error.', TRUE, 50 );
+	echo 'System just not responding, check the requirement.';
+	exit(1);
+}
