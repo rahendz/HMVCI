@@ -2,7 +2,7 @@
 Custom Codeigniter based on Official v2.2.x, if you're using CI version 3.x then i'm not recommended
 using my hmvci. My Hmvci for CI version 3.x is still under developing.
 
-### Under-developed Features:
+### Features:
 - [x] HMVC Modular
 - [x] Wordpress-like Theme Structure
 - [x] Simple RESTful API server and client
