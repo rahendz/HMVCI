@@ -50,8 +50,7 @@ just set it on `application/includes/controller/(public or private)` for all of 
 *those are for backend*
 
 ---
-#### Load file asset css and js
-
+#### Registering file CSS to theme
 Push the **stylesheet** to theme using `enqueue_style` with 4 available parameter:
 - **$id**: (*string/array*) Style id for registering.
 - **$file**: (*string*) Stylesheet filename and path.
@@ -72,8 +71,8 @@ example:
 
 and then use `theme_enqueue_head();` put it in tag head on your theme to load all your registered stylesheet.
 
-<br><br>
-
+---
+#### Registering file JS to theme
 Push the **javascript** to theme using `enquque_script` with 4 available parameter:
 - **$id**: (*string/array*) Script id for registering.
 - **$file**: (*string*) Stylesheet filename and path.
