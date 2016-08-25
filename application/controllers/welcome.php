@@ -19,6 +19,11 @@ class Welcome extends Public_Controller {
 		$this->content_theme = 'welcome_message';
 		return $this->render_theme();
 	}
+
+	public function testdb() {
+		$this->load->database();
+		echo_r($this->db->list_tables());
+	}
 }
 
 /* End of file welcome.php */
