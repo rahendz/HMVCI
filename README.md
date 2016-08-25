@@ -97,6 +97,7 @@ example:
 
 and then use `theme_enqueue_foot();` put it in end of tag body on your theme to load all your registered script.
 
+<br>
 #### Render Theme
 **Firstly**, set which file views to be render
 
@@ -114,4 +115,4 @@ example:
 
 	$this->theme_var['data']['error_message'] = 'Username or password was wrong';
 
-**AND last**, let theme rendered by `$this->render_theme()` by putting it at the last line each function
+**AND last**, let theme rendered by `$this->render_theme()` by putting it at the last line of each function
