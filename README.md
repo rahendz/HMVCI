@@ -52,7 +52,7 @@ just set it on `application/includes/controller/(public or private)` for all of 
 ---
 #### Load file asset css and js
 
-##### Push the **stylesheet** to theme using `enqueue_style` with 4 available parameter:
+Push the **stylesheet** to theme using `enqueue_style` with 4 available parameter:
 ---
 
 - **$id**: (*string/array*) Style id for registering.
@@ -74,9 +74,12 @@ example:
 
 and then use `theme_enqueue_head();` put it in tag head on your theme to load all your registered stylesheet.
 
-#
+<!--
 
-> Push the **javascript** to theme using `enquque_script` with 4 available parameter:
+-->
+
+Push the **javascript** to theme using `enquque_script` with 4 available parameter:
+---
 
 - **$id**: (*string/array*) Script id for registering.
 - **$file**: (*string*) Stylesheet filename and path.
