@@ -4,6 +4,12 @@ if ( ! defined ( 'INITPATH' ) ) {
 	show_error ( '<strong>INIT ERROR :</strong> Initialization file not set properly. Call it before system load bootstrap file.' );
 }
 
+@date_default_timezone_set ( DEFAULT_TIMEZONE );
+@set_time_limit ( TIME_LIMIT );
+@ini_set ( 'memory_limit', LIMIT_SIZE );
+@ini_set ( 'post_max_size', LIMIT_SIZE );
+@ini_set ( 'upload_max_filesize', LIMIT_SIZE );
+
 if ( isset ( $root_files ) ) {
 	foreach ( $root_files as $_file ) {
 		$_filepath = FCPATH . $_file . EXT;
