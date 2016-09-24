@@ -118,4 +118,4 @@ example:
 
 	$this->theme_var['data']['error_message'] = 'Username or password was wrong';
 
-**AND last**, let theme rendered by `$this->render_theme()` by putting it at the last line of each function
+**AND last**, let theme rendered by `$this->render_theme()` by put it at the last line of each function
