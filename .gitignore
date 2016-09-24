@@ -1,5 +1,23 @@
 .DS_Store
+
 /application/*
+!/application/cache/
+!/application/config/
+!/application/controllers/
+!/application/core/
+!/application/errors/
+!/application/helpers/
+!/application/hooks/
+!/application/includes/
+!/application/language/
+!/application/libraries/
+!/application/logs/
+!/application/models/
+!/application/modules/
+!/application/themes/
+!/application/third_party/
+!/application/views/
+
 !/application/.htaccess
 !/application/index.html
 
