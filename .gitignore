@@ -37,7 +37,7 @@
 !/application/config/migration.php
 !/application/config/mimes.php
 !/application/config/profiler.php
-!/application/config/routes.php
+!/application/config/routes-sample.php
 !/application/config/smileys.php
 !/application/config/user_agents.php
 
