@@ -260,31 +260,41 @@ class Base_Loader extends CI_Loader {
 	}
 
 	public function theme_initiate() {
-		$router =& $this->_ci_get_component ( 'router' );
+		// Validating theme attribute
 		$this->theme_validate();
-		( $this->theme_dir != false ) OR show_error ( '<p><strong>' . strtoupper ( key ( $this->theme_config ) ) .
-			' THEME NOTICE:</strong> It\'s seems theme directory aren\'t set yet or missing.</p>' );
-		$config =& $this->_ci_get_component ( 'config' );
-		$this->vars ( array (
-			'base_url' => $config->base_url(),
-			'site_url' => $config->site_url(),
+
+		// Returning error notice when theme directory not configured
+		if (!$this->theme_dir) {
+			show_error ( '<p><strong> THEME NOTICE:</strong> It\'s seems theme directory aren\'t set yet or missing.</p>' );	
+		}
+
+		// Registering base variable to loader
+		parent::vars(array(
+			'base_url' => $this->_config->base_url(),
+			'site_url' => $this->_config->site_url(),
 			'template_type' => key ( $this->theme_config ),
 			'template_path' => str_replace ( FCPATH, '', $this->theme_dir ),
-			'stylesheet_url' => $config->base_url ( str_replace ( FCPATH, '', $this->theme_dir ) . 'style.css' )
+			'stylesheet_url' => $this->_config->base_url ( str_replace ( FCPATH, '', $this->theme_dir ) . 'style.css' )
 			) );
-		$path_view = $config->_config_paths[0] . 'views/';
-		if ( is_null ( $this->views_file ) OR empty ( $this->views_file ) ) {
-			if ( $router->method == 'index' AND is_file ( $path_view . $router->class . '/main' . EXT ) ) {
-				$this->views_file = $router->class . '/main';
-			} elseif ( is_file ( $path_view . $router->class . '/' . $router->method . EXT ) ) {
-				$this->views_file = $router->class . '/' . $router->method;
-			} elseif ( is_file ( $path_view . $router->class . EXT ) ) {
-				$this->views_file = $router->class;
+
+		$path_view = $this->_config->_config_paths[0] . 'views/';
+		
+		if (is_null($this->views_file) || empty($this->views_file)) {
+			if ($this->_router->method=='index' && is_file($path_view.$this->_router->class.'/main'.EXT)) {
+				$this->views_file = $this->_router->class.'/main';
+			} 
+			elseif (is_file($path_view.$this->_router->class.'/'.$this->_router->method.EXT)) {
+				$this->views_file = $this->_router->class.'/'.$this->_router->method;
+			} 
+			elseif (is_file($path_view.$this->_router->class.EXT)) {
+				$this->views_file = $this->_router->class;
 			}
-		} elseif ( is_file ( $path_view . $router->class . '/' . $this->views_file . EXT ) ) {
-			$this->views_file = $router->class . '/' . $this->views_file;
-		} elseif ( is_file ( $path_view . $this->views_file . '/main' . EXT ) ) {
-			$this->views_file = $this->views_file . '/main';
+		} 
+		elseif (is_file($path_view.$this->_router->class.'/'.$this->views_file.EXT)) {
+			$this->views_file = $this->_router->class.'/'.$this->views_file;
+		} 
+		elseif (is_file($path_view.$this->views_file.'/main'.EXT)) {
+			$this->views_file = $this->views_file.'/main';
 		}
 	}
 
