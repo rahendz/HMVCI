@@ -13,6 +13,7 @@ class Base_Loader extends CI_Loader {
 	public $theme_path = null;
 	public $theme_part = null;
 	public $theme_dir = false;
+	public $theme_files = array('front-page','blog','home','index');
 	public $views_file = null;
 	public $views_data = array();
 
@@ -299,47 +300,86 @@ class Base_Loader extends CI_Loader {
 	}
 
 	public function theme ( $vars = array(), $_ci_return = false ) {
+		// Initiate theme variables
 		$this->theme_initiate();
-		if ( ! is_null ( $this->views_file ) AND $this->views_file !== false ) {
-			$vars = array_merge ( $vars, array (
-				'content' => $this->view ( $this->views_file, $this->views_data, true )
-				) );
+
+		// Merging file of view into content variable
+		if (!is_null($this->views_file) && $this->views_file!==false) {
+			$vars = array_merge($vars, array(
+				'content' => $this->view($this->views_file, $this->views_data, true)
+				));
 		}
-		$_ci_vars = $this->_ci_object_to_array ( $vars );
-		$theme_files = array ( 'front-page', 'blog', 'home', 'index' );
-		if ( ! is_null ( $this->theme_part ) ) {
-			$theme_files = array ( $this->theme_part );
-			extract ( $this->views_data );
+
+		// Returning registered object (when any) into array based
+		$_ci_vars = $this->_ci_object_to_array($vars);
+
+		// Reconfigure default theme files
+		if (!is_null($this->theme_part)) {
+			$this->theme_files = array($this->theme_part);
+			extract($this->views_data);
 		}
-		foreach ( $theme_files as $index_file ) {
-			if ( file_exists ( $index_path = $this->theme_dir . $index_file . EXT ) !== false ) break;
-			else $index_path = false;
+
+		// Re-Map index path
+		foreach($this->theme_files as $index_file) {
+			$index_path = $this->theme_dir.$index_file.EXT;
+			if (file_exists($index_path)!==false) {
+				break;
+			}
+			else {
+				$index_path = false;
+			} 
 		}
-		( $index_path !== false ) OR show_error ( '<p><strong>' . strtoupper ( key ( $this->theme_config ) ) .
-			' THEME NOTICE:</strong> There\'s no index file on your theme.</p>' );
-		! file_exists ( $theme_functions = $this->theme_dir . 'functions' . EXT ) OR @include_once $theme_functions;
-		$_ci_CI =& get_instance();
-		foreach ( get_object_vars ( $_ci_CI ) as $_ci_key => $_ci_var )
-			if ( ! isset ( $this->$_ci_key ) ) $this->$_ci_key = $_ci_CI->$_ci_key;
-		if ( is_array ( $_ci_vars ) AND count ( $_ci_vars ) > 0 )
-			$this->_ci_cached_vars = array_merge ( $this->_ci_cached_vars, $_ci_vars );
+
+		// Returning error notice when there is no index path configured
+		if (!$index_path) {
+			show_error('<p><strong>THEME NOTICE:</strong> There\'s no index file on your theme.</p>');
+		}
+
+		// Include theme function when there is any
+		$theme_functions = $this->theme_dir.'functions'.EXT;
+		if (file_exists($theme_functions)) {
+			@include_once $theme_functions;
+		}
+
+		// Registering parent variables
+		foreach(get_object_vars($this->_ci) as $_ci_key => $_ci_var) {
+			if (!isset($this->$_ci_key)) {
+				$this->$_ci_key = $this->_ci->$_ci_key;
+			}
+		}
+
+		// Registering and merging variables into cached one
+		if (is_array($_ci_vars) && count($_ci_vars)>0) {
+			$this->_ci_cached_vars = array_merge($this->_ci_cached_vars, $_ci_vars);
+		}
+
+		// Registering cached variables into core for global use
 		$this->vars ( $this->_ci_cached_vars );
+
+		// Extract cached variables for using to current loaded file
 		extract ( $this->_ci_cached_vars );
+
 		ob_start();
-		if ( (bool) @ini_get ( 'short_open_tag' ) === false AND config_item ( 'rewrite_short_tags' ) == true ) :
-			echo eval ( '?>' . preg_replace ( "/;*\s*\?>/", "; ?>", str_replace ( '<?=', '<?php echo ', file_get_contents ( $index_path ) ) ) );
-		else : include ( $index_path ); endif;
+		if ((bool)@ini_get('short_open_tag')===false && config_item('rewrite_short_tags')==true) {
+			echo eval('?>'.preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($index_path))));
+		}
+		else {
+			include ( $index_path );	
+		}
+
 		log_message ( 'debug', 'File loaded: '.$index_path );
-		if ( $_ci_return === true ) {
+		
+		if ($_ci_return===true) {
 			$buffer = ob_get_contents();
 			@ob_end_clean();
 			return $buffer;
 		}
-		if ( ob_get_level() > $this->_ci_ob_level + 1 ) {
+
+		if (ob_get_level()>$this->_ci_ob_level+1) {
 			ob_end_flush();
 		}
 		else {
-			$_ci_CI->output->append_output ( ob_get_contents() );
+			$this->_ci->output->append_output(ob_get_contents());
 			@ob_end_clean();
 		}
 	}
