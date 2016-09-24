@@ -385,43 +385,43 @@ class Base_Loader extends CI_Loader {
 	}
 
 	public function enqueue_style ( $id, $file = null, $require = array(), $version = null ) {
-		$this->enqueue_style[$id] = array ( $file, $version );
+		$this->enqueue_style[$id] = array($file, $version);
 		foreach($require as $req_id) {
 			$this->enqueue_style_requires[$req_id] = $id;
 		}
 	}
 
 	public function enqueue_script ( $id, $file = null, $require = array(), $version = null, $in_footer = false ) {
-		$this->enqueue_script[$id] = array ( $file, $version, $in_footer );
+		$this->enqueue_script[$id] = array($file, $version, $in_footer);
 		foreach($require as $req_id) {
 			$this->enqueue_script_requires[$req_id] = $id;
 		}
 	}
 
 	public function theme_enqueue_head ( $return = null ) {
-		$assets_css_path = INCPATH . 'assets/css/';
-		$assets_js_path = INCPATH . 'assets/js/';
+		$assets_css_path = INCPATH.'assets/css/';
+		$assets_js_path = INCPATH.'assets/js/';
 		$return .= '<meta name="site_url" content="'. $this->config->site_url() .'" />'. "\n\t";
 		$return .= '<meta name="assets_path" content="'. $this->config->base_url ( APPPATH . 'core/assets' ) .'" />'. "\n\t";
 		$return .= '<meta name="template_directory_uri" content="'. get_template_directory_uri() .'" />'. "\n\t";
 		$return .= '<meta name="stylesheet_url" content="'. get_stylesheet_uri() .'" />'. "\n\t";
-		foreach ( $this->enqueue_style as $id => $e ) {
-			list ( $file, $version ) = $e; // $require,
+		foreach($this->enqueue_style as $id => $e) {
+			list($file, $version) = $e; // $require,
 			// $requires = isset ( $require ) ? $require : array();
-			$filepath = get_template_directory_uri ( $file . '?ver=' . ( isset ( $version ) ? $version : null ) );
+			$filepath = get_template_directory_uri($file.'?ver='.(isset($version)?$version:null));
 			$rel = 'stylesheet';
-			if ( strpos ( $file, 'http://' ) !== false ) {
-				$filepath = $file . '?ver=' . ( isset ( $version ) ? $version : NULL );
+			if (strpos($file, 'http://')!==false) {
+				$filepath = $file.'?ver='.(isset($version)?$version:NULL);
 			}
 			if ( strpos($file, '.less')!==false){
 				$rel = 'stylesheet/less';
 			}
-			if ( $this->is_anystyle_required ( $this->enqueue_style_requires ) === false ) {
-				foreach ( $this->enqueue_style_requires as $r ) {
-					$r = file_exists( $assets_css_path . $r . '.min.css' ) ? $r . '.min' : $r;
-					if ( file_exists ( $assets_css_path . $r . '.css' ) ) {
-						$require_file = base_url ( $assets_css_path . $r . '.css' );
-						$return .= sprintf ( '<link rel="%s" id="%s-css" href="%s" />',	$rel, $r, $require_file ) . "\n\t";
+			if ($this->is_anystyle_required($this->enqueue_style_requires)===false) {
+				foreach($this->enqueue_style_requires as $r) {
+					$r = file_exists($assets_css_path.$r.'.min.css')?$r.'.min':$r;
+					if (file_exists($assets_css_path.$r.'.css')) {
+						$require_file = base_url($assets_css_path.$r.'.css');
+						$return .= sprintf('<link rel="%s" id="%s-css" href="%s" />',	$rel, $r, $require_file)."\n\t";
 						$this->enqueue_style_id[] = $r;
 					}
 				}
