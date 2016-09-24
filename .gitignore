@@ -65,8 +65,18 @@
 !/application/hooks/index.html
 
 /application/includes/*
+!/application/includes/assets/
+!/application/includes/controller/
+!/application/includes/initiate/
+!/application/includes/views/
 !/application/includes/index.html
 !/application/includes/assets/.htaccess
+
+/application/includes/assets/*
+!/application/includes/assets/css/
+!/application/includes/assets/fonts/
+!/application/includes/assets/images/
+!/application/includes/assets/js/
 
 !/application/includes/assets/css/bootstrap.min.css
 !/application/includes/assets/css/dashicons.css
@@ -75,7 +85,7 @@
 !/application/includes/assets/css/resetize-collection.css
 !/application/includes/assets/css/select2.css
 
-!/application/includes/assets/fonts/lato/*
+!/application/includes/assets/fonts/lato/
 !/application/includes/assets/fonts/dashicons.eot
 !/application/includes/assets/fonts/dashicons.svg
 !/application/includes/assets/fonts/dashicons.ttf
@@ -91,23 +101,23 @@
 !/application/includes/assets/fonts/glyphicons-halflings-regular.woff
 !/application/includes/assets/fonts/glyphicons-halflings-regular.woff2
 
-!/application/includes/assets/blank.png
-!/application/includes/assets/doc.png
-!/application/includes/assets/docx.png
-!/application/includes/assets/pdf.png
-!/application/includes/assets/ppt.png
-!/application/includes/assets/pptx.png
-!/application/includes/assets/rtf.png
-!/application/includes/assets/select2.png
-!/application/includes/assets/select2x2.png
-!/application/includes/assets/spinner.gif
-!/application/includes/assets/txt.png
-!/application/includes/assets/xls.png
-!/application/includes/assets/xlsx.png
-!/application/includes/assets/zip.png
+!/application/includes/assets/images/blank.png
+!/application/includes/assets/images/doc.png
+!/application/includes/assets/images/docx.png
+!/application/includes/assets/images/pdf.png
+!/application/includes/assets/images/ppt.png
+!/application/includes/assets/images/pptx.png
+!/application/includes/assets/images/rtf.png
+!/application/includes/assets/images/select2.png
+!/application/includes/assets/images/select2x2.png
+!/application/includes/assets/images/spinner.gif
+!/application/includes/assets/images/txt.png
+!/application/includes/assets/images/xls.png
+!/application/includes/assets/images/xlsx.png
+!/application/includes/assets/images/zip.png
 
-!/application/includes/assets/js/tinymce/*
-!/application/includes/assets/js/tinymce-upload/*
+!/application/includes/assets/js/tinymce/
+!/application/includes/assets/js/tinymce-upload/
 !/application/includes/assets/js/bootstrap.min.js
 !/application/includes/assets/js/html5shiv.js
 !/application/includes/assets/js/jquery.js
@@ -117,10 +127,12 @@
 !/application/includes/assets/js/scripts.js
 !/application/includes/assets/js/select2.js
 
+/application/includes/controller/*
 !/application/includes/controller/api.php
 !/application/includes/controller/private.php
 !/application/includes/controller/public.php
 
+/application/includes/initiate/*
 !/application/includes/initiate/assign.php
 !/application/includes/initiate/auth.php
 !/application/includes/initiate/controller.php
@@ -133,7 +145,7 @@
 !/application/includes/initiate/themes.php
 !/application/includes/initiate/unit_test.php
 
-!/application/includes/views/*
+/application/includes/views/*
 
 /application/language/*
 !/application/language/english/*
