@@ -8,6 +8,9 @@ class Base_Loader extends CI_Loader {
 	protected $_ci_controllers = array();
 
 	public $theme_config = array();
+	public $theme_type = false;
+	public $theme_name = 'default';
+	public $theme_path = null;
 	public $theme_part = null;
 	public $theme_dir = false;
 	public $views_file = null;
@@ -204,36 +207,56 @@ class Base_Loader extends CI_Loader {
 
 	// THEME ROUTING
 	public function theme_validate() {
+		// Theme type mapping
 		if ( isset ( $this->theme_config['backend'] ) ) {
-			$type = 'backend';
+			$this->theme_type = 'backend';
 		} elseif ( isset ( $this->theme_config['frontend'] ) ) {
-			$type = 'frontend';
+			$this->theme_type = 'frontend';
 		} else {
 			return false;
 		}
 
-		$theme_name = isset ( $this->theme_config[$type] ) ? $this->theme_config[$type] : 'default';
-		$theme_path = config_item ( $type . '_theme_path' ) ? trim ( config_item ( $type . '_theme_path' ), '/' ) . '/' : $this->get_package_paths();
-		if ( ! is_array ( $theme_path ) ) {
-			if ( is_dir ( FCPATH . $theme_path . $theme_name ) ) {
-				$this->theme_dir = FCPATH . $theme_path . $theme_name . '/'; break;
-			} elseif ( is_dir ( $theme_path . $theme_name ) ) {
-				$this->theme_dir = $theme_path . $theme_name . '/'; break;
-			} elseif ( is_dir ( $theme_path . 'default' ) ) {
-				$this->theme_dir = $theme_path . 'default/'; break;
-			}
-		} elseif ( $type == 'frontend' AND is_dir ( FCPATH . 'themes/' . $theme_name ) ) {
-			$this->theme_dir = 'themes/' . $theme_name . '/';
+		// registering theme name
+		if (isset($this->theme_config[$type])) {
+			$this->theme_name = $this->theme_config[$type];
+		}
+
+		// registering theme path
+		if (config_item($this->theme_type.'_theme_path')) {
+			$theme_path = config_item($this->theme_type.'_theme_path');
+			$this->theme_path = trim ($theme_path);
 		} else {
-			foreach ( $theme_path as $bt ) {
-				if ( is_dir ( FCPATH . $bt . 'themes/' . $theme_name ) ) {
-					$this->theme_dir = $bt . 'themes/' . $theme_name . '/'; break;
-				} elseif ( is_dir ( FCPATH . $bt . 'themes/default' ) ) {
-					$this->theme_dir = $bt . 'themes/default/'; break;
+			$this->theme_path = $this->get_package_paths();
+		}
+
+		// registering theme directory
+		if (!is_array($this->theme_path)) {
+			if (is_dir(FCPATH.$this->theme_path.$this->theme_name)) {
+				$this->theme_dir = FCPATH.$this->theme_path.$this->theme_name.'/';
+			} 
+			elseif (is_dir($this->theme_path.$this->theme_name)) {
+				$this->theme_dir = $this->theme_path.$this->theme_name.'/';
+			} 
+			elseif (is_dir($this->theme_path.'default')) {
+				$this->theme_dir = $this->theme_path.'default/';
+			}
+		} 
+		elseif ($type=='frontend' && is_dir(FCPATH.'themes/'.$this->theme_name)) {
+			$this->theme_dir = 'themes/'.$this->theme_name.'/';
+		} 
+		else {
+			foreach ($this->theme_path as $bt) {
+				if (is_dir(FCPATH.$bt.'themes/'.$this->theme_name)) {
+					$this->theme_dir = $bt.'themes/'.$this->theme_name.'/';
+					break;
+				} 
+				elseif (is_dir(FCPATH.$bt.'themes/default')) {
+					$this->theme_dir = $bt.'themes/default/'; 
+					break;
 				}
 			}
 		}
-		return ! $this->theme_dir ? false : true;
+		return !$this->theme_dir ? false : true;
 	}
 
 	public function theme_initiate() {
