@@ -36,6 +36,7 @@
 // Load system
 @include('load.php');
 
+// Returning header error notice while basepath constant where not defined
 if(!defined('BASEPATH')){
 	header ( 'HTTP/1.1 500 Internal Server Error.', TRUE, 50 );
 	echo 'System just not responding, check the requirement.';
