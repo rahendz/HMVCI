@@ -218,8 +218,8 @@ class Base_Loader extends CI_Loader {
 		}
 
 		// registering theme name
-		if (isset($this->theme_config[$type])) {
-			$this->theme_name = $this->theme_config[$type];
+		if (isset($this->theme_config[$this->theme_type])) {
+			$this->theme_name = $this->theme_config[$this->theme_type];
 		}
 
 		// registering theme path
@@ -242,7 +242,7 @@ class Base_Loader extends CI_Loader {
 				$this->theme_dir = $this->theme_path.'default/';
 			}
 		} 
-		elseif ($type=='frontend' && is_dir(FCPATH.'themes/'.$this->theme_name)) {
+		elseif ($this->theme_type=='frontend' && is_dir(FCPATH.'themes/'.$this->theme_name)) {
 			$this->theme_dir = 'themes/'.$this->theme_name.'/';
 		} 
 		else {
