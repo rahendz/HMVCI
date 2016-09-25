@@ -23,7 +23,7 @@
 
 /application/cache/*
 !/application/cache/.htaccess
-!/application/index.html
+!/application/cache/index.html
 
 /application/config/*
 !/application/config/autoload.php
@@ -156,7 +156,8 @@
 /application/includes/views/*
 
 /application/language/*
-!/application/language/english/*
+!/application/language/english/
+!/application/language/english/index.html
 !/application/language/index.html
 
 /application/libraries/*
@@ -180,6 +181,8 @@
 !/application/third_party/index.html
 
 /application/views/*
+!/application/views/errors/
+!/application/views/errors/html/
 !/application/views/errors/html/error_404.php
 !/application/views/errors/html/error_db.php
 !/application/views/errors/html/error_general.php
@@ -211,5 +214,3 @@ sass
 *.ignore
 
 composer.*
-
-!.htaccess
