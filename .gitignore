@@ -70,7 +70,6 @@
 !/application/includes/initiate/
 !/application/includes/views/
 !/application/includes/index.html
-!/application/includes/assets/.htaccess
 
 /application/includes/assets/*
 !/application/includes/assets/.htaccess
