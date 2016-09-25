@@ -10,7 +10,7 @@ class Welcome extends Public_Controller {
 
 	public function index() {
 		$this->enqueue_style ( array (
-			'style' => array ( 'style.css', array(), '1.0.0' )
+			'style' => array ( 'style.css', array('bootstrap'), '1.0.0' )
 			));
 
 		$this->enqueue_script (array (
