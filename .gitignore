@@ -211,5 +211,3 @@ sass
 *.ignore
 
 composer.*
-
-!.htaccess
