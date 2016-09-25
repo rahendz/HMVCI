@@ -78,13 +78,17 @@
 !/application/includes/assets/images/
 !/application/includes/assets/js/
 
+/application/includes/assets/css/*
 !/application/includes/assets/css/bootstrap.min.css
+!/application/includes/assets/css/bootstrap-theme.min.css
+!/application/includes/assets/css/bootstrap4.min.css
 !/application/includes/assets/css/dashicons.css
 !/application/includes/assets/css/font-awesome.css
 !/application/includes/assets/css/fonts-lato.css
 !/application/includes/assets/css/resetize-collection.css
 !/application/includes/assets/css/select2.css
 
+/application/includes/assets/fonts/*
 !/application/includes/assets/fonts/lato/
 !/application/includes/assets/fonts/dashicons.eot
 !/application/includes/assets/fonts/dashicons.svg
@@ -101,6 +105,7 @@
 !/application/includes/assets/fonts/glyphicons-halflings-regular.woff
 !/application/includes/assets/fonts/glyphicons-halflings-regular.woff2
 
+/application/includes/assets/images/*
 !/application/includes/assets/images/blank.png
 !/application/includes/assets/images/doc.png
 !/application/includes/assets/images/docx.png
@@ -116,9 +121,11 @@
 !/application/includes/assets/images/xlsx.png
 !/application/includes/assets/images/zip.png
 
+/application/includes/assets/js/*
 !/application/includes/assets/js/tinymce/
 !/application/includes/assets/js/tinymce-upload/
 !/application/includes/assets/js/bootstrap.min.js
+!/application/includes/assets/js/bootstrap4.min.js
 !/application/includes/assets/js/html5shiv.js
 !/application/includes/assets/js/jquery.js
 !/application/includes/assets/js/nestable.js
