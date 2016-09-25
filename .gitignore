@@ -73,6 +73,7 @@
 !/application/includes/assets/.htaccess
 
 /application/includes/assets/*
+!/application/includes/assets/.htaccess
 !/application/includes/assets/css/
 !/application/includes/assets/fonts/
 !/application/includes/assets/images/
