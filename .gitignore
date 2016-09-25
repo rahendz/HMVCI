@@ -1,22 +1,22 @@
 .DS_Store
 
 /application/*
-!/application/cache/
-!/application/config/
-!/application/controllers/
-!/application/core/
-!/application/errors/
-!/application/helpers/
-!/application/hooks/
-!/application/includes/
-!/application/language/
-!/application/libraries/
-!/application/logs/
-!/application/models/
-!/application/modules/
-!/application/themes/
-!/application/third_party/
-!/application/views/
+!/application/cache
+!/application/config
+!/application/controllers
+!/application/core
+!/application/errors
+!/application/helpers
+!/application/hooks
+!/application/includes
+!/application/language
+!/application/libraries
+!/application/logs
+!/application/models
+!/application/modules
+!/application/themes
+!/application/third_party
+!/application/views
 
 !/application/.htaccess
 !/application/index.html
@@ -65,18 +65,18 @@
 !/application/hooks/index.html
 
 /application/includes/*
-!/application/includes/assets/
-!/application/includes/controller/
-!/application/includes/initiate/
-!/application/includes/views/
+!/application/includes/assets
+!/application/includes/controller
+!/application/includes/initiate
+!/application/includes/views
 !/application/includes/index.html
 
 /application/includes/assets/*
 !/application/includes/assets/.htaccess
-!/application/includes/assets/css/
-!/application/includes/assets/fonts/
-!/application/includes/assets/images/
-!/application/includes/assets/js/
+!/application/includes/assets/css
+!/application/includes/assets/fonts
+!/application/includes/assets/images
+!/application/includes/assets/js
 
 /application/includes/assets/css/*
 !/application/includes/assets/css/bootstrap.min.css
@@ -89,7 +89,7 @@
 !/application/includes/assets/css/select2.css
 
 /application/includes/assets/fonts/*
-!/application/includes/assets/fonts/lato/
+!/application/includes/assets/fonts/lato
 !/application/includes/assets/fonts/dashicons.eot
 !/application/includes/assets/fonts/dashicons.svg
 !/application/includes/assets/fonts/dashicons.ttf
@@ -122,8 +122,8 @@
 !/application/includes/assets/images/zip.png
 
 /application/includes/assets/js/*
-!/application/includes/assets/js/tinymce/
-!/application/includes/assets/js/tinymce-upload/
+!/application/includes/assets/js/tinymce
+!/application/includes/assets/js/tinymce-upload
 !/application/includes/assets/js/bootstrap.min.js
 !/application/includes/assets/js/bootstrap4.min.js
 !/application/includes/assets/js/html5shiv.js
@@ -156,7 +156,7 @@
 /application/includes/views/*
 
 /application/language/*
-!/application/language/english/
+!/application/language/english
 !/application/language/english/index.html
 !/application/language/index.html
 
@@ -181,8 +181,8 @@
 !/application/third_party/index.html
 
 /application/views/*
-!/application/views/errors/
-!/application/views/errors/html/
+!/application/views/errors
+!/application/views/errors/html
 !/application/views/errors/html/error_404.php
 !/application/views/errors/html/error_db.php
 !/application/views/errors/html/error_general.php
@@ -199,6 +199,7 @@
 !/uploads/index.html
 
 /modules/*
+!/modules/.htaccess
 !/modules/welcome
 !/modules/api
 
