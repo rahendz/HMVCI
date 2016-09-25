@@ -417,7 +417,7 @@ class Base_Loader extends CI_Loader {
 				$rel = 'stylesheet/less';
 			}
 			if ($this->is_anystyle_required($this->enqueue_style_requires)===false) {
-				foreach($this->enqueue_style_requires as $r) {
+				foreach($this->enqueue_style_requires as $r => $id) {
 					$r = file_exists($assets_css_path.$r.'.min.css')?$r.'.min':$r;
 					if (file_exists($assets_css_path.$r.'.css')) {
 						$require_file = base_url($assets_css_path.$r.'.css');
