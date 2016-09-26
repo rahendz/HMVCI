@@ -88,6 +88,7 @@
 !/application/includes/assets/css/fonts-cinzel.css
 !/application/includes/assets/css/fonts-google-lato.css
 !/application/includes/assets/css/fonts-lato.css
+!/application/includes/assets/css/google-icons.css
 !/application/includes/assets/css/resetize-collection.css
 !/application/includes/assets/css/select2.css
 
@@ -138,6 +139,7 @@
 !/application/includes/assets/fonts/glyphicons-halflings-regular.ttf
 !/application/includes/assets/fonts/glyphicons-halflings-regular.woff
 !/application/includes/assets/fonts/glyphicons-halflings-regular.woff2
+!/application/includes/assets/fonts/MaterialIcons-Regular.woff2
 
 /application/includes/assets/images/*
 !/application/includes/assets/images/blank.png
