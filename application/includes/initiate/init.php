@@ -6,7 +6,7 @@
 @require_once dirname ( __FILE__ ) .'/routing.php';
 
 $root_files = array ( 'config' );
-$core_files = array ( 'functions', 'themes', 'auth', 'format', 'controller', 'rest' );
+$core_files = array ( 'functions', 'themes', 'auth', 'format', 'controller', 'rest', 'model' );
 $base_files = array ( 'private', 'public', 'api' );
 
 if ( isset ( $my_config ) AND count ( $my_config ) > 0 ) {

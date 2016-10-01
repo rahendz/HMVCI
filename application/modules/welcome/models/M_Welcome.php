@@ -1,17 +1,22 @@
 <?php if ( ! defined ( 'BASEPATH' ) ) exit ( 'No direct script access allowed' );
 
 class M_Welcome extends Model {
+	public $table = null;
+	
 	public function __construct() {
 		parent::__construct();
 	}
+
 	function test() {
-		$this->table = 'hadeh';
+		$this->table = 'users';
 		return $this->get_all();
 	}
+
 	function test_2(){
 		$this->table = 'keys';
 		return $this->get_all();
 	}
+
 	function sign_validation(){
 		$model = new Model;
 		$model->rules = array (
