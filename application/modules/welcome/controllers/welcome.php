@@ -22,10 +22,14 @@ class Welcome extends Public_Controller {
 	}
 
 	public function testdb() {
-		$welcome =& $this->model('m_welcome');
-		$welcome->where = array ('id'=>'1');
-		echo_r($welcome->test());
-		echo_r($welcome->sql_platform);
+		$welcome = new Model;//
+		// $welcome->where = array ('id'=>'1');
+		$welcome->table = 'balita_master';
+		echo_r($welcome->get_one());
+		$welcome->table = 'users';
+		echo_r($welcome->get_all());
+		$welcome2 = $this->model('m_welcome');
+		echo_r($welcome2->test());
 	}
 
 	public function testapi() {
