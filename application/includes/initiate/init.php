@@ -12,5 +12,3 @@ if (isset($my_config) && count($my_config)>0) {
 		$assign_to_config[$c] = $i;
 	}
 }
-
-// @require_once VENDORPATH . 'autoload.php';

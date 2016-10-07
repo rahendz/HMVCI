@@ -220,14 +220,6 @@
 !/application/third_party/index.html
 
 /application/views/*
-!/application/views/errors
-!/application/views/errors/html
-!/application/views/errors/html/error_404.php
-!/application/views/errors/html/error_db.php
-!/application/views/errors/html/error_general.php
-!/application/views/errors/html/error_php.php
-!/application/views/errors/html/index.html
-!/application/views/errors/index.html
 !/application/views/basic_message.php
 
 /themes/*

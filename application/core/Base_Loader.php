@@ -103,6 +103,9 @@ class Base_Loader extends CI_Loader {
 	}
 
 	public function view ( $view, $vars = array(), $return = false ) {
+		if (!isset($view)) {
+			return;
+		}
 		if ( $this->detect_module ( $view ) && list ( $module, $class ) = $this->detect_module ( $view ) ) {
 			if ( in_array ( $module, $this->_ci_modules ) ) {
 				return parent::view ( $class, $vars, $return );
@@ -234,25 +237,25 @@ class Base_Loader extends CI_Loader {
 		if (!is_array($this->theme_path)) {
 			if (is_dir(FCPATH.$this->theme_path.$this->theme_name)) {
 				$this->theme_dir = FCPATH.$this->theme_path.$this->theme_name.'/';
-			} 
+			}
 			elseif (is_dir($this->theme_path.$this->theme_name)) {
 				$this->theme_dir = $this->theme_path.$this->theme_name.'/';
-			} 
+			}
 			elseif (is_dir($this->theme_path.'default')) {
 				$this->theme_dir = $this->theme_path.'default/';
 			}
-		} 
+		}
 		elseif ($this->theme_type=='frontend' && is_dir(FCPATH.'themes/'.$this->theme_name)) {
 			$this->theme_dir = 'themes/'.$this->theme_name.'/';
-		} 
+		}
 		else {
 			foreach ($this->theme_path as $bt) {
 				if (is_dir(FCPATH.$bt.'themes/'.$this->theme_name)) {
 					$this->theme_dir = $bt.'themes/'.$this->theme_name.'/';
 					break;
-				} 
+				}
 				elseif (is_dir(FCPATH.$bt.'themes/default')) {
-					$this->theme_dir = $bt.'themes/default/'; 
+					$this->theme_dir = $bt.'themes/default/';
 					break;
 				}
 			}
@@ -266,7 +269,7 @@ class Base_Loader extends CI_Loader {
 
 		// Returning error notice when theme directory not configured
 		if (!$this->theme_dir) {
-			show_error ( '<p><strong> THEME NOTICE:</strong> It\'s seems theme directory aren\'t set yet or missing.</p>' );	
+			show_error ( '<p><strong> THEME NOTICE:</strong> It\'s seems theme directory aren\'t set yet or missing.</p>' );
 		}
 
 		// Registering base variable to loader
@@ -279,21 +282,21 @@ class Base_Loader extends CI_Loader {
 			) );
 
 		$path_view = $this->_config->_config_paths[0] . 'views/';
-		
+
 		if (is_null($this->views_file) || empty($this->views_file)) {
 			if ($this->_router->method=='index' && is_file($path_view.$this->_router->class.'/main'.EXT)) {
 				$this->views_file = $this->_router->class.'/main';
-			} 
+			}
 			elseif (is_file($path_view.$this->_router->class.'/'.$this->_router->method.EXT)) {
 				$this->views_file = $this->_router->class.'/'.$this->_router->method;
-			} 
+			}
 			elseif (is_file($path_view.$this->_router->class.EXT)) {
 				$this->views_file = $this->_router->class;
 			}
-		} 
+		}
 		elseif (is_file($path_view.$this->_router->class.'/'.$this->views_file.EXT)) {
 			$this->views_file = $this->_router->class.'/'.$this->views_file;
-		} 
+		}
 		elseif (is_file($path_view.$this->views_file.'/main'.EXT)) {
 			$this->views_file = $this->views_file.'/main';
 		}
@@ -327,7 +330,7 @@ class Base_Loader extends CI_Loader {
 			}
 			else {
 				$index_path = false;
-			} 
+			}
 		}
 
 		// Returning error notice when there is no index path configured
@@ -364,11 +367,11 @@ class Base_Loader extends CI_Loader {
 			echo eval('?>'.preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($index_path))));
 		}
 		else {
-			include ( $index_path );	
+			include ( $index_path );
 		}
 
 		log_message ( 'debug', 'File loaded: '.$index_path );
-		
+
 		if ($_ci_return===true) {
 			$buffer = ob_get_contents();
 			@ob_end_clean();
