@@ -761,8 +761,8 @@ if (!function_exists('__cput')) {
 }
 
 // String Helper
-if (!function_exists('unique_slug')) {
-	function unique_slug ($name, $sep='-', $lowercase=true, $num=null) {
+if (!function_exists('__slug')) {
+	function __slug ($name, $sep='-', $lowercase=true, $num=null) {
 		$_ci =& get_instance();
 		if (!function_exists('increment_string')) {
 			$_ci->load->helper('string');
