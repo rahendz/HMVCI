@@ -32,6 +32,11 @@ class Welcome extends Public_Controller {
 		echo_r($welcome2->test());
 	}
 
+	public function testpaging() {
+		$paging = __set_pagination('m_welcome',array('per_page'=>10));
+		__r($paging);
+	}
+
 	public function testapi() {
 		// $this->load->config('rest_api');
 		// echo_r(config_item('api_logins'));

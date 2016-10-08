@@ -1,38 +1,42 @@
 <?php if ( ! defined ( 'BASEPATH' ) ) exit ( 'No direct script access allowed' );
 
 // DEPRECATED
-if ( ! function_exists ( 'load_controller' ) ) {
-	function &load_controller ( $controller ) {
-		// $_ci =& get_instance();
-		$name = false;
+if (!function_exists('__callc')) {
+	function &__callc ( $controller ) {
+		$classname = false;
 
-		if ( file_exists ( $controllers_file = APPPATH . 'controllers/' . $controller . EXT ) ) {
-			if ( class_exists ( $controller ) === false ) {
-				$name = $controller;
-				require_once $controllers_file;
+		$apppath_controller_file = APPPATH .'controllers/'. $controller .EXT;
+		if (file_exists($apppath_controller_file)) {
+			if (class_exists($controller) === false) {
+				$classname = $controller;
+				require_once $apppath_controller_file;
 			}
 		}
 
-		if ( $modules_locations = config_item ( 'modules_locations' ) ) {
-			if ( strpos ( $controller, '/' ) !== false )
-				list ( $module, $controller ) = explode ( '/', $controller );
-			$controllers_file = current ( $modules_locations ) . ( isset ( $module ) ? $module : $controller ) . '/controllers/'. $controller . EXT;
-			// $controllers_file = key ( $_ci->config->item ( 'modules_locations' ) ) . 'controllers/' . $controller . EXT;
-			if ( file_exists ( $controllers_file ) )
-			{
-				$name = $controller;
-				if ( class_exists ( $name ) === false )
-				{
-					include_once $controllers_file;
+		$modules_locations = config_item ( 'modules_locations' );
+		if ($modules_locations) {
+			$modules_path = current($modules_locations);
+			$modules_name = $controller;
+
+			if (strpos($controller, '/') !== false) {
+				list($module, $controller) = explode('/', $controller);
+				$modules_name = $module;
+			}
+
+			$modules_controller_file = $modules_path . $modules_name .'/controllers/'. $controller .EXT;
+			if (file_exists($modules_controller_file)) {
+				$classname = $controller;
+				if (class_exists($classname ) === false) {
+					require_once $modules_controller_file;
 				}
 			}
 		}
 
-		if ( $name === false ) {
-			__die ( 'Unable to locate the specified class: ' . $controllers_file, 404 );
+		if ( $classname === false ) {
+			__die ( 'Unable to locate the specified class: ' . $controller, 404 );
 		}
 
-		$_controllers = new $name();
+		$_controllers = new $classname();
 		return $_controllers;
 	}
 }
@@ -51,170 +55,135 @@ if ( ! function_exists ( 'on_input' ) ) :
 	}
 endif;
 
-// Basic Helper
-if ( ! function_exists ( 'ci_version' ) ) {
-	function ci_version ( $operator = null, $version = null ) {
-		if ( is_null ( $version ) ) {
-			return CI_VERSION;
-		}
-
-		switch ( $operator ) {
-			default:
-			case '<':
-				return CI_VERSION < $version ? true : false;
-				break;
-
-			case '>':
-				return CI_VERSION > $version ? true : false;
-				break;
-
-			case '<=':
-				return CI_VERSION <= $version ? true : false;
-				break;
-
-			case '>=':
-				return CI_VERSION >= $version ? true : false;
-				break;
-
-			case '=':
-				return CI_VERSION == $version ? true : false;
-				break;
-		}
-	}
-}
-
 // Loader Helper
-if ( ! function_exists ( '_library' ) ) {
-	function &_library ( $library ) {
+if (!function_exists('__calll')) {
+	function &__calll ($library) {
 		$_ci =& get_instance();
-		if ( ! isset ( $_ci->$library ) ) {
-			$_ci->load->library ( $library );
+		if (!isset($_ci->$library)) {
+			$_ci->load->library($library);
 		}
 		return $_ci->$library;
 	}
 }
 
-if ( ! function_exists ( '_model' ) ) {
-	function &_model ( $model ) {
+if (!function_exists('__callm')) {
+	function &_callm ($model) {
 		$_ci =& get_instance();
-		if ( ! isset ( $_ci->$model ) ) {
-			$_ci->load->model ( $model );
+		if (!isset($_ci->$model)) {
+			$_ci->load->model($model);
 		}
 		return $_ci->$model;
 	}
 }
 
-if ( ! function_exists ( '_view_load' ) ) {
-	function _view_load ( $view_path, $vars = array() ) {
+if (!function_exists('__the_view')) {
+	function __the_view ($filepath, $vars = array()) {
 		$_ci =& get_instance();
-		return $_ci->load->view ( $view_path, $vars );
+		return $_ci->load->view($filepath, $vars);
 	}
 }
 
-if ( ! function_exists ( '_view_get' ) ) {
-	function _view_get ( $view_path, $vars = array() ) {
+if (!function_exists('__get_the_view' ) ) {
+	function __get_the_view ($filepath, $vars = array()) {
 		$_ci =& get_instance();
-		return $_ci->load->view ( $view_path, $vars, true );
+		return $_ci->load->view($filepath, $vars, true);
 	}
 }
 
-// Path Helper
-if ( ! function_exists ( 'get_current_path' ) ) {
-	function get_current_path ( $type = null, $realpath = false ) {
+// Path / URL Helper
+if (!function_exists('__get_current_path')) {
+	function __get_current_path ($type = null, $realpath = false) {
 		$_ci =& get_instance();
 		$debug = current ( debug_backtrace() );
 		$current_path = str_replace ( array ( FCPATH, '\\' ), array ( '', '/' ), $debug['file'] );
 
-		if ( 'views' == $type AND strpos ( $current_path, $type ) !== false ) {
+		if ('views' == $type && strpos($current_path, $type) !== false) {
 			return $current_path;
 		}
-
-		elseif ( 'views' == $type AND strpos ( $current_path, $type ) === false ) {
+		elseif('views' == $type && strpos($current_path, $type) === false) {
 			return '<small>It\'s not a views file!</small>';
 		}
-
-		elseif ( 'controllers' == $type ) {
+		elseif('controllers' == $type) {
 			return $_ci->load->current_controller;
 		}
-
 		else {
-			return $realpath ? realpath ( $current_path ) : $current_path;
+			return $realpath ? realpath($current_path) : $current_path;
 		}
 	}
 }
 
-// URL Helper
-if ( ! function_exists ( 'redirect' ) ) {
-	function redirect ( $uri = '/', $method = 'location', $http_response_code = 302 ) {
+if (!function_exists('__get_current_url')) {
+	function __get_current_url($string_only = false) {
 		$_ci =& get_instance();
-		$type = $uri === '/' ? 'base_url' : 'site_url';
-		$redirect_to = '?redirect=' . urlencode ( $_ci->config->site_url ( $_ci->uri->uri_string() ) );
+		$query_string = null;
 
-		if ( ! preg_match ( '#^https?://#i', $uri ) ) {
-			$uri = $_ci->config->$type ( $uri );
+		if (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING'])) {
+			$query_string = "?{$_SERVER['QUERY_STRING']}";
 		}
 
-		switch ( $method ) {
-			case 'refresh' :
-				header ( "Refresh:0;url=" . $uri );
-				break;
+		$url_string = $_ci->uri->uri_string() . $query_string;
 
-			case 'meta' :
-				return '<meta http-equiv="refresh" content="' . $http_response_code . '; url=' . $uri . '">' . "\n";
-				break;
+		if ($string_only) {
+			return $url_string;
+		}
+		return $_ci->config->site_url($url_string);
+	}
+}
 
-			case 'redirect' :
-				header ( "Location: " . $uri . $redirect_to, true, $http_response_code );
-				break;
+if (!function_exists('__site_url')) {
+	function __site_url ($path = null) {
+		$_ci =& get_instance();
+		return $_ci->config->site_url($path);
+	}
+}
 
-			default :
-				header ( "Location: " . $uri, true, $http_response_code );
-				break;
+if (!function_exists('__base_url')) {
+	function __base_url ($path = null) {
+		$_ci =& get_instance();
+		return $_ci->config->base_url($path);
+	}
+}
+
+if (!function_exists('__redirect')) {
+	function __redirect ($redirect_url_path = '/', $method = 'location', $http_response_code = 302) {
+		$_ci =& get_instance();
+
+		$type = 'site';
+		if ($redirect_url_path === '/') {
+			$type = 'base';
+		}
+		$url_type = $type.'_url';
+		$url_string = $_ci->uri->uri_string();
+		$url_path = $_ci->config->site_url($url_string);
+		$url_encoded = urlencode($url_path);
+		$url_direct = "?redirect={$url_encoded}";
+
+		if (!preg_match('#^https?://#i', $redirect_url_path)) {
+			$redirect_url_path = $_ci->config->$url_type($redirect_url_path);
+		}
+
+		switch($method) {
+			case 'refresh': header("Refresh:0;url={$redirect_url_path}"); break;
+			case 'meta': return "<meta http-equiv='refresh' content='{$http_response_code}; url={$redirect_url_path}'>\n"; break;
+			case 'redirect': header("Location: {$redirect_url_path}{$url_direct}", true, $http_response_code); break;
+			default: header("Location: {$redirect_url_path}", true, $http_response_code); break;
 		}
 		exit;
 	}
 }
 
-if ( ! function_exists ( 'current_url_string' ) ) {
-	function current_url_string() {
-		$_ci =& get_instance();
-		$query_string = ( isset ( $_SERVER['QUERY_STRING'] ) AND ! empty ( $_SERVER['QUERY_STRING'] ) ) ?
-			'?' . $_SERVER['QUERY_STRING'] : null;
-		return $_ci->uri->uri_string() . $query_string;
-	}
-}
-
-if ( ! function_exists ( 'site_url' ) ) {
-	function site_url ( $path = null ) {
-		$_ci =& get_instance();
-		if ( is_null ( $path ) ) {
-			$url = null;
-		} elseif ( ! $path ) {
-			$url = current_url_string();
-		} else {
-			$url = $path;
-		}
-		return $_ci->config->site_url ( $url );
-	}
-}
-
-if ( ! function_exists ( 'base_url' ) ) {
-	function base_url ( $path = null ) {
-		$_ci =& get_instance();
-		return $_ci->config->base_url ( $path );
-	}
-}
-
 // Data Input Helper
-if ( ! function_exists ( 'get_input' ) ) {
-	function get_input ( $type = null, $name = null ) {
-		if ( is_null ( $type ) ) {
-			parse_str ( $_SERVER['QUERY_STRING'], $parse );
-			return is_null ( key ( $parse ) ) ? false : key ( $parse );
+if (!function_exists('__get_input')) {
+	function __get_input ($type=null, $name=null) {
+		if (is_null($type)) {
+			parse_str($_SERVER['QUERY_STRING'], $parse);
+			return is_null(key($parse)) ? false : key($parse);
 		}
+
 		$_ci =& get_instance();
 		$type = strtolower ( $type );
 		$func = array (
+		// 	$name 		=> $method
 			'post'		=> 'post',
 			'get'		=> 'get',
 			'both'		=> 'get_post',
@@ -226,60 +195,70 @@ if ( ! function_exists ( 'get_input' ) ) {
 			'md5'		=> 'post'
 			);
 
-		if ( $type === 'files' ) {
-			$files = current ( $_FILES );
-
-			if ( ! is_null ( $name ) ) {
+		if ($type==='files') {
+			$files = current($_FILES);
+			if (!is_null($name)) {
 				return $files[$name];
 			}
-
 			return $files;
 		}
 
-		if ( ! array_key_exists ( $type, $func ) ) {
+		if (!array_key_exists($type, $func)) {
 			return false;
 		}
 
 		$input_method = $func[$type];
+		$input_value = $_ci->input->$input_method($name, true);
 
-		if ( $type == 'md5' ) {
-			return md5 ( $_ci->input->$input_method ( $name, true ) );
+		if ($type==='md5') {
+			return md5($input_value);
 		}
-		return $_ci->input->$input_method ( $name, true );
+		return $input_value;
 	}
 }
 
-if ( ! function_exists ( 'is_input' ) ) {
-	function is_input ( $type, $name = null, $value = null ) {
-		if ( is_null ( $name ) ) {
-			return get_input ( $type );
-		}
-		$input = get_input ( $type, $name );
-		if ( ! $input OR $input !== $value ) {
+if (!function_exists('__is_input')) {
+	function __is_input ($type, $name=null, $value=null) {
+		$input = __get_input($type, $name);
+		if (!$input || $input!==$value) {
 			return false;
 		}
-		if ( is_null ( $value ) ) {
+		if (is_null($value)) {
 			return $input;
 		}
 		return true;
 	}
 }
 
-if ( ! function_exists ( 'is_post' ) ) {
-	function is_post ( $name, $value = null ) {
-		return is_input ( 'post', $name, $value );
+if (!function_exists('__is_post')) {
+	function __is_post ($name, $value=null) {
+		return __is_input('post', $name, $value);
 	}
 }
 
-if ( ! function_exists ( 'is_get' ) ) {
-	function is_get ( $name, $value = null ) {
-		return is_input ( 'get', $name, $value );
+if (!function_exists('__is_get')) {
+	function __is_get($name, $value=null) {
+		return __is_input('get', $name, $value);
+	}
+}
+
+if (!function_exists('__is_submit')) {
+	function __is_submit ($value=null) {
+		if (__is_get('submit')) {
+			return __is_get('submit', $value);
+		}
+		elseif (__is_post('submit')) {
+			return __is_post('submit', $value);
+		}
+		else {
+			return false;
+		}
 	}
 }
 
 // Date Helper
-if ( ! function_exists ( 'date_translate' ) ) {
-	function date_translate ( $date, $from = 'en', $to = 'id' ) {
+if (!function_exists('__date_translate')) {
+	function __transdate($date, $from='en', $to='id') {
 		$en = array (
 			'January', 'February', 'March', 'May', 'June',
 			'July', 'August', 'October', 'December', 'Sunday',
@@ -292,49 +271,49 @@ if ( ! function_exists ( 'date_translate' ) ) {
 			'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat',
 			'Sabtu', 'Agt', 'Okt', 'Des', 'Min', 'Sen', 'Sel',
 			'Rab', 'Kam', 'Jum', 'Sab' );
-		return ( is_array ( $from ) AND is_array ( $to ) ) ?
-			str_replace ( $from, $to, $date ) :
-			str_replace ( $$from, $$to, $date );
+		return (is_array($from) && is_array($to)) ?
+			str_replace($from, $to, $date) :
+			str_replace($$from, $$to, $date);
 	}
 }
 
-if ( ! function_exists ( 'date_range' ) ) {
-	function date_range ( $date1, $date2, $duration = false ) {
-		$date1 = strtotime ( $date1 );
-		$date2 = strtotime ( $date2 );
+if (!function_exists('__date_range')) {
+	function __date_range ($date1, $date2, $duration=false) {
+		$date1 = strtotime($date1);
+		$date2 = strtotime($date2);
 
-		if ( $date1 == $date2 AND $duration ) {
+		if ($date1==$date2 && $duration) {
 			return array();
 		}
-		elseif ( $date1 == $date2 AND ! $duration ) {
-			return array ( $date1 );
+		elseif ($date1==$date2 && !$duration) {
+			return array($date1);
 		}
 
-		$first = $date1 < $date2 ? $date1 : $date2;
-		$last = $date1 > $date2 ? $date1 : $date2;
+		$first = $date1<$date2 ? $date1 : $date2;
+		$last = $date1>$date2 ? $date1 : $date2;
 
-		if ( ! $duration ) {
-			$date_range[] = date ( 'Y-m-d', $first );
+		if (!$duration) {
+			$date_range[] = date('Y-m-d', $first);
 		}
 
-		while ( $first != $last ) {
-			$first = mktime ( 0, 0, 0, date ( "m", $first ), date ( "d", $first ) + 1, date ( "Y", $first ) );
-			$date_range[] = date ( 'Y-m-d', $first );
+		while($first!=$last) {
+			$first = mktime(0, 0, 0, date("m", $first), date("d", $first)+1, date("Y", $first));
+			$date_range[] = date('Y-m-d', $first);
 		}
 
 		return $date_range;
 	}
 }
 
-if ( ! function_exists ( 'date_duration' ) ) {
-	function date_duration ( $date1, $date2 ) {
-		return date_range ( $date1, $date2, true );
+if (!function_exists ( '__date_duration')) {
+	function __date_duration ($date1, $date2) {
+		return __date_range($date1, $date2, true);
 	}
 }
 
 // Array Helper
-if  ( ! function_exists ( 'array_column' ) ) {
-	function array_column ( $input = null, $columnKey = null, $indexKey = null ) {
+if  (!function_exists('array_column')) {
+	function array_column ($input=null, $columnKey=null, $indexKey=null) {
 		$argc = func_num_args();
 		$params = func_get_args();
 		if ($argc < 2) {
@@ -345,21 +324,11 @@ if  ( ! function_exists ( 'array_column' ) ) {
 			trigger_error('array_column() expects parameter 1 to be array, ' . gettype($params[0]) . ' given', E_USER_WARNING);
 			return null;
 		}
-		if (!is_int($params[1])
-			&& !is_float($params[1])
-			&& !is_string($params[1])
-			&& $params[1] !== null
-			&& !(is_object($params[1]) && method_exists($params[1], '__toString'))
-		) {
+		if (!is_int($params[1]) && !is_float($params[1]) && !is_string($params[1]) && $params[1] !== null && !(is_object($params[1]) && method_exists($params[1], '__toString'))) {
 			trigger_error('array_column(): The column key should be either a string or an integer', E_USER_WARNING);
 			return false;
 		}
-		if (isset($params[2])
-			&& !is_int($params[2])
-			&& !is_float($params[2])
-			&& !is_string($params[2])
-			&& !(is_object($params[2]) && method_exists($params[2], '__toString'))
-		) {
+		if (isset($params[2]) && !is_int($params[2]) && !is_float($params[2]) && !is_string($params[2]) && !(is_object($params[2]) && method_exists($params[2], '__toString'))) {
 			trigger_error('array_column(): The index key should be either a string or an integer', E_USER_WARNING);
 			return false;
 		}
@@ -400,124 +369,148 @@ if  ( ! function_exists ( 'array_column' ) ) {
 	}
 }
 
-if ( ! function_exists ( 'array_flatten' ) ) {
-	function array_flatten ( $array, $flattened = array() ) {
-		return call_user_func_array ( 'array_merge', $array );
+if (!function_exists('array_flatten')) {
+	function array_flatten($array, $flattened=array()) {
+		return call_user_func_array('array_merge', $array);
 	}
 }
 
-if ( ! function_exists ( 'recursive_array_search' ) ) {
-	function recursive_array_search ( $needle, $haystack ) {
-		foreach ( $haystack as $key => $value ) {
-			if ( is_array ( $value ) ) {
-				$inside = recursive_array_search ( $needle, $value );
+if (!function_exists('recursive_array_search')) {
+	function recursive_array_search ($needle, $haystack) {
+		foreach ($haystack as $key => $value) {
+			if (is_array($value)) {
+				$inside = recursive_array_search($needle, $value);
 			}
-
-			if ( $needle === $value OR ( isset ( $inside ) AND $inside !== false ) ) {
+			if ($needle===$value || (isset($inside) && $inside!==false)) {
 				return $value;
 			}
 		}
-
 		return false;
 	}
 }
 
-if ( ! function_exists ( 'recursive_array_search_key' ) ) {
-	function recursive_array_search_key ( $needle, $haystack ) {
-		foreach ( $haystack as $key => $value ) {
-			if ( is_array ( $value ) ) {
-				$inside = recursive_array_search_key ( $needle, $value );
+if (!function_exists('recursive_array_search_key')) {
+	function recursive_array_search_key($needle, $haystack) {
+		foreach ($haystack as $key => $value) {
+			if (is_array($value)) {
+				$inside = recursive_array_search_key($needle, $value);
 			}
-
-			if ( $needle === $value OR ( isset ( $inside ) AND $inside !== false ) ) {
+			if ($needle===$value || (isset($inside) && $inside!==false)) {
 				return $key;
 			}
 		}
-
 		return false;
 	}
 }
 
 // Benchmark Helper
-if ( ! function_exists ( 'benchmark_start' ) ) {
-	function benchmark_start ( $slug ) {
+if (!function_exists('__begin_mark')) {
+	function __begin_mark ($slug) {
 		$_ci =& get_instance();
-		$mark_name = $slug . '_start';
-		return $_ci->benchmark->mark ( $mark_name );
+		$mark_name = $slug .'_start';
+		return $_ci->benchmark->mark($mark_name);
 	}
 }
 
-if ( ! function_exists ( 'benchmark_end' ) ) {
-	function benchmark_end ( $slug ) {
+if (!function_exists('__end_mark')) {
+	function __end_mark ($slug) {
 		$_ci =& get_instance();
-		$mark_name = $slug . '_end';
-		return $_ci->benchmark->mark ( $mark_name );
+		$mark_name = $slug .'_end';
+		return $_ci->benchmark->mark($mark_name);
 	}
 }
 
-if ( ! function_exists ( 'benchmark_time' ) ) {
-	function benchmark_time ( $slug ) {
+if (!function_exists('__time_mark')) {
+	function __time_mark ($slug) {
 		$_ci =& get_instance();
-		$mark_start = $slug . '_start';
-		$mark_end = $slug . '_end';
-		$mark_time = str_replace ( ',', '', $_ci->benchmark->elapsed_time ( $mark_start, $mark_end ) );
-		$mark_suffix_time = $mark_time < 60 ? ' detik' : ( $mark_time < 3600 ? ' menit' : ( $mark_time < 86400 ? ' jam' : ' hari' ) );
-		$mark_exact_time = $mark_time < 60 ? $mark_time : ( $mark_time < 3600 ? $mark_time / 60 : ( $mark_time < 86400 ? $mark_time / 3600 : $mark_time / 86400 ) );
-		return floor ( $mark_exact_time ) . $mark_suffix_time;
+		$mark_start = $slug .'_start';
+		$mark_end = $slug .'_end';
+		$mark_time = str_replace(',', '', $_ci->benchmark->elapsed_time($mark_start, $mark_end));
+		$mark_suffix_time = $mark_time<60 ? ' detik' : ($mark_time<3600 ? ' menit' : ($mark_time<86400 ? ' jam' : ' hari'));
+		$mark_exact_time = $mark_time<60 ? $mark_time : ($mark_time<3600 ? $mark_time/60 : ($mark_time<86400 ? $mark_time/3600 : $mark_time/86400));
+		return floor($mark_exact_time) . $mark_suffix_time;
 	}
 }
 
 // Pagination Helper
-if ( ! function_exists ( 'pagination' ) ) {
-	function pagination ( $page_name = 'page', $uri_segment = 3, $per_page = 10, $num_links = 3, $total_rows = 100, $page_query_string = false ) {
+if (!function_exists('__set_pagination')) {
+	function __set_pagination($model,$args='page') {
 		$_ci =& get_instance();
-		if ( is_array ( $page_name ) ) extract ( $page_name );
-		if ( ! isset ( $_ci->paged ) ) $_ci->load->library ( 'pagination', null, 'paged' );
+		$default_var = array(
+			'page_name'		=> 'page',
+			'uri_segment'	=> 3,
+			'per_page'		=> 10,
+			'num_links'		=> 3,
+			'page_query_string'	=> false
+			);
+		if (!is_null($args) && $args!==false && !empty($args)) {
+			$default_var['page_name'] = $args;
+		}
+		extract($default_var);
+		if (is_array($args)) {
+			extract($args);
+		}
+		if (!isset($_ci->paged)) {
+			$_ci->load->library('pagination', null, 'paged');
+		}
+		if (!isset($_ci->data_paged)) {
+			$_ci->load->model($model,'data_paged');
+		}
 		$offset = $_ci->uri->segment ( $uri_segment ) ? ( $per_page * $_ci->uri->segment ( $uri_segment ) ) - $per_page : 0;
 		$url = isset ( $uri_string ) ? $uri_string : $_ci->uri->uri_string();
-		if ( ! is_array ( $page_name ) AND strpos ( $url, $page_name ) !== false ) {
-			list ( $url, $page ) = explode ( $page_name, $url );
+		if (!is_array($page_name) && strpos($url, $page_name)!==false) {
+			list($url, $page) = explode($page_name, $url);
 		}
-		$paging['base_url']	= $_ci->config->site_url (  $url . '/' . $page_name );
-		if ( $_ci->input->get ( 'submit', true ) == 'search' OR $page_query_string !== false ) :
-			$paging['first_url'] = $_ci->config->site_url (  $url ) .'?'. http_build_query ( $_ci->input->get ( null, true ) );
-			$paging['suffix'] = '?'. http_build_query ( $_ci->input->get ( null, true ) );
-		endif;
-		$paging['total_rows'] = isset ( $total_rows ) ? $total_rows : 100;
-		$paging['per_page'] = isset ( $per_page ) ? $per_page : 10;
-		$paging['num_links'] = isset ( $num_links ) ? $num_links - 1 : 2;
-		$paging['uri_segment'] = isset ( $uri_segment ) ? $uri_segment : 3;
-		$paging['use_page_numbers'] = isset ( $use_page_numbers ) ? $use_page_numbers : false;
-		$paging['page_query_string'] = isset ( $page_query_string ) ? $page_query_string : false;
-		$paging['full_tag_open'] = isset ( $full_tag_open ) ? $full_tag_open : '<ul class="pagination">';
-		$paging['full_tag_close'] = isset ( $full_tag_close ) ? $full_tag_close : '</ul>';
-		$paging['first_link'] = isset ( $first_link ) ? $first_link : 'First';
-		$paging['first_tag_open'] = isset ( $first_tag_open ) ? $first_tag_open : '<li>';
-		$paging['first_tag_close'] = isset ( $first_tag_close ) ? $first_tag_close : '</li>';
-		$paging['last_link'] = isset ( $last_link ) ? $last_link : 'Last';
-		$paging['last_tag_open'] = isset ( $last_tag_open ) ? $last_tag_open : '<li>';
-		$paging['last_tag_close'] = isset ( $last_tag_close ) ? $last_tag_close : '</li>';
-		$paging['next_link'] = isset ( $next_link ) ? $next_link : '&raquo;';
-		$paging['next_tag_open'] = isset ( $next_tag_open ) ? $next_tag_open : '<li>';
-		$paging['next_tag_close'] = isset ( $next_tag_close ) ? $next_tag_close : '</li>';
-		$paging['prev_link'] = isset ( $prev_link ) ? $prev_link : '&laquo;';
-		$paging['prev_tag_open'] = isset ( $prev_tag_open ) ? $prev_tag_open : '<li>';
-		$paging['prev_tag_close'] = isset ( $prev_tag_close ) ? $prev_tag_close : '</li>';
-		$paging['cur_tag_open'] = isset ( $cur_tag_open ) ? $cur_tag_open : '<li class="active"><a>';
-		$paging['cur_tag_close'] = isset ( $cur_tag_close ) ? $cur_tag_close : '</a></li>';
-		$paging['num_tag_open'] = isset ( $num_tag_open ) ? $num_tag_open : '<li>';
-		$paging['num_tag_close'] = isset ( $num_tag_close ) ? $num_tag_close : '</li>';
-		if ( isset ( $display_pages ) ) $paging['display_pages'] = $display_pages;
-		$_ci->paged->initialize ( $paging );
+		$paging['base_url']	= $_ci->config->site_url($url .'/'. $page_name);
+		if ($_ci->input->get('submit', true)=='search' || $page_query_string!==false) {
+			$paging['first_url'] = $_ci->config->site_url($url) .'?'. http_build_query($_ci->input->get(null, true));
+			$paging['suffix'] = '?'. http_build_query($_ci->input->get(null, true));
+		}
+		if (!method_exists($_ci->data_paged,'pagination_total_rows')) {
+			show_error('Undefined pagination_total_rows');
+		}
+		$paging['total_rows'] = $_ci->data_paged->pagination_total_rows();
+		// show_error($paging['total_rows']);
+		$paging['per_page'] = isset($per_page) ? $per_page : 10;
+		$paging['num_links'] = isset($num_links) ? $num_links - 1 : 2;
+		$paging['uri_segment'] = isset($uri_segment) ? $uri_segment : 3;
+		$paging['use_page_numbers'] = isset($use_page_numbers) ? $use_page_numbers : false;
+		$paging['page_query_string'] = isset($page_query_string) ? $page_query_string : false;
+		$paging['full_tag_open'] = isset($full_tag_open) ? $full_tag_open : '<ul class="pagination">';
+		$paging['full_tag_close'] = isset($full_tag_close) ? $full_tag_close : '</ul>';
+		$paging['first_link'] = isset($first_link) ? $first_link : 'First';
+		$paging['first_tag_open'] = isset($first_tag_open) ? $first_tag_open : '<li>';
+		$paging['first_tag_close'] = isset($first_tag_close) ? $first_tag_close : '</li>';
+		$paging['last_link'] = isset($last_link) ? $last_link : 'Last';
+		$paging['last_tag_open'] = isset($last_tag_open) ? $last_tag_open : '<li>';
+		$paging['last_tag_close'] = isset($last_tag_close) ? $last_tag_close : '</li>';
+		$paging['next_link'] = isset($next_link) ? $next_link : '&raquo;';
+		$paging['next_tag_open'] = isset($next_tag_open) ? $next_tag_open : '<li>';
+		$paging['next_tag_close'] = isset($next_tag_close) ? $next_tag_close : '</li>';
+		$paging['prev_link'] = isset($prev_link) ? $prev_link : '&laquo;';
+		$paging['prev_tag_open'] = isset($prev_tag_open) ? $prev_tag_open : '<li>';
+		$paging['prev_tag_close'] = isset($prev_tag_close) ? $prev_tag_close : '</li>';
+		$paging['cur_tag_open'] = isset($cur_tag_open) ? $cur_tag_open : '<li class="active"><a>';
+		$paging['cur_tag_close'] = isset($cur_tag_close) ? $cur_tag_close : '</a></li>';
+		$paging['num_tag_open'] = isset($num_tag_open) ? $num_tag_open : '<li>';
+		$paging['num_tag_close'] = isset($num_tag_close) ? $num_tag_close : '</li>';
+		if (isset($display_pages)) {
+			$paging['display_pages'] = $display_pages;
+		}
+		$_ci->paged->initialize($paging);
 		$current_offset = $paging['use_page_numbers'] !== false ? $offset : $_ci->uri->segment ( $uri_segment );
 		$current_num = $paging['use_page_numbers'] !== false ? $offset + 1 : $_ci->uri->segment ( $uri_segment ) + 1;
-		$last_per_page = $total_rows < ( $current_num * $per_page ) ? $total_rows : $current_num * $per_page;
-		return ( object ) array (
+		$last_per_page = $paging['total_rows'] < ( $current_num * $per_page ) ? $paging['total_rows'] : $current_num * $per_page;
+		if (!method_exists($_ci->data_paged,'pagination_data_each')) {
+			show_error('Undefined pagination_data_each');
+		}
+		return (object) array(
 			'limit' => $per_page,
 			'offset' => $current_offset,
 			'num' => $current_num,
-			'info' => 'Showing ' .$current_num. ' to ' .$last_per_page. ' of ' .$total_rows. ' Records',
-			'links' => $_ci->paged->create_links()
+			'info' => 'Showing ' .$current_num. ' to ' .$last_per_page. ' of ' .$paging['total_rows']. ' Records',
+			'links' => $_ci->paged->create_links(),
+			'data' => $_ci->data_paged->pagination_data_each($per_page, $current_offset)
 			);
 	}
 }
@@ -557,60 +550,63 @@ if ( ! function_exists ( 'do_upload' ) ) {
 }
 
 // Database helper
-if ( ! function_exists ( 'initiate_db' ) ) {
-	function &initiate_db() {
+if (!function_exists('__initiate_db')) {
+	function &__initiate_db() {
 		$_ci =& get_instance();
-		$_ci->load->config ( 'database', false, true );
-		$dbparam = ! config_item ( 'default' ) ? '' : config_item ( 'default' );
-		unset ( $_ci->db );
-		$db = $_ci->load->database ( $dbparam, true );
-		return $db;
+		$_ci->load->config('database', false, true);
+		$dbparam = !$_ci->config->item('default') ? '' : $_ci->config->item('default');
+		unset($_ci->db);
+		$object = $_ci->load->database($dbparam, true);
+		return $object;
 	}
 }
 
-if ( ! function_exists ( 'list_tables' ) ) {
-	function list_tables() {
-		$_db =& initiate_db();
-		return $_db->list_tables();
+if (!function_exists('__list_tables')) {
+	function __list_tables() {
+		$_db =& __initiate_db();
+		$list_tables = $_db->list_tables();
+		return $list_tables;
 	}
 }
 
-if ( ! function_exists ( 'table_exists' ) ) {
-	function table_exists ( $table ) {
-		$_db =& initiate_db();
-		return $_db->table_exists ( $_db->dbprefix ( $table ) );
+if (!function_exists('__table_exists')) {
+	function __table_exists($table) {
+		$_db =& __initiate_db();
+		$is_exists = $_db->table_exists($_db->dbprefix($table));
+		return $is_exists;
 	}
 }
 
-if ( ! function_exists ( 'list_fields' ) ) {
-	function list_fields() {
-		$_db =& initiate_db();
-		return $_db->list_fields();
+if (!function_exists('__list_fields')) {
+	function __list_fields() {
+		$_db =& __initiate_db();
+		$list_fields = $_db->list_fields();
+		return $list_fields;
 	}
 }
 
-if ( ! function_exists ( 'field_exists' ) ) {
-	function field_exists ( $field, $table ) {
-		$_db =& initiate_db();
-		return $_db->field_exists ( $field, $_db->dbprefix ( $table ) );
+if (!function_exists('__field_exists')) {
+	function __field_exists($field, $table) {
+		$_db =& __initiate_db();
+		$is_exists = $_db->field_exists($field, $_db->dbprefix($table));
+		return $is_exists;
 	}
 }
 
-if ( ! function_exists ( 'field_data' ) ) {
-	function field_data ( $table = null ) {
-		$_db =& initiate_db();
-		return $_db->field_data ( $_db->dbprefix ( $table ) );
+if (!function_exists('__field_data')) {
+	function __field_data($table=null) {
+		$_db =& __initiate_db();
+		$field_data = $_db->field_data($_db->dbprefix($table));
+		return $field_data;
 	}
 }
 
-if ( ! function_exists ( 'fields_data' ) ) {
-	function fields_data ( $table = null ) {
-		$_db =& initiate_db();
-		$query = $_db->query ( 'SHOW COLUMNS FROM ' . $_db->dbprefix ( $table ) );
-		if ( $query->num_rows() > 0 ) {
-			// while ( $row = $query->result() ) {
-			echo_r ( $query->result() );
-			// }
+if (!function_exists('__fields_data')) { # tekan kene
+	function __fields_data($table=null) {
+		$_db =& __initiate_db();
+		$query = $_db->query('SHOW COLUMNS FROM ' . $_db->dbprefix($table));
+		if ($query->num_rows()>0) {
+			return $query->result();
 		}
 	}
 }
@@ -645,10 +641,13 @@ if ( ! function_exists ( 'fields_data' ) ) {
 	Third parameter are used for the backup function to handle a force download, default is false
 	Fourth parameter are used for the backup filename, default is backup.gz
 */
-if ( ! function_exists ( 'db_tools' ) ) {
-	function db_tools ( $func, $data, $param = false ) {
+if (!function_exists('__db_tools')) {
+	function __db_tools ($func=null, $data=null, $param=false) {
 		$_ci =& get_instance();
 		$_ci->load->dbforge();
+		if (is_null($func)) {
+			return $_ci->dbforge;
+		}
 		return $_ci->dbforge->$func ( $data, $param );
 	}
 }
@@ -679,213 +678,99 @@ if ( ! function_exists ( 'db_tools' ) ) {
 	Third parameter are used for the backup function to handle a force download, default is false
 	Fourth parameter are used for the backup filename, default is backup.gz
 */
-if ( ! function_exists ( 'db_utility' ) ) {
-	function db_utility ( $func, $param = array(), $download = false, $filepath = 'backup.gz' ) {
+if (!function_exists('__db_utility')) {
+	function __db_utility ($func=null, $param=array(), $download=false, $filepath='backup.gz') {
 		$_ci =& get_instance();
 		$_ci->load->dbutil();
 
-		if ( 'backup' !== $func AND ! $download ) {
-			return $this->dbutil->$func ( $param );
+		if (is_null($func)) {
+			return $_ci->dbutil;
 		}
 
-		$backup =& $_ci->dbutil->$func ( $param );
+		if ('backup'!==$func && !$download) {
+			return $_ci->dbutil->$func($param);
+		}
 
-		$_ci->load->helper ( 'file' );
-		write_file ( FCPATH . $filepath, $backup );
-
-		$_ci->load->helper ( 'download' );
-		return force_download ( $filepath, $backup );
+		$backup =& $_ci->dbutil->$func($param);
+		$_ci->load->helper('file');
+		write_file(FCPATH.$filepath, $backup);
+		$_ci->load->helper('download');
+		return force_download($filepath, $backup);
 	}
 }
 
 // CURL Helper
-if ( ! function_exists ( 'get_remote' ) ) {
-	function get_remote ( $source, $value = array(), $format = 'json' ) {
-		$server = config_item ( 'api_base_url' ) ? config_item ( 'api_base_url' ) .'/' : null;
-
-		if ( config_item ( 'api_logins' ) ) {
-			$username = key ( config_item ( 'api_logins' ) );
-			$password = current ( config_item ( 'api_logins' ) );
+if (!function_exists('__crequest')) {
+	function __crequest ($type='get',$source, $value=array(), $user_auth=array('admin'=>'1234'), $format='json', $http_auth='basic') {
+		if (is_array($user_auth)) {
+			$username = key($user_auth);
+			$password = current($user_auth);
 		}
 
-		if ( ! isset ( $value['format'] ) ) {
-			$value['format'] = $format;
+		switch ( $format ) {
+			case 'json': $header = 'Content-Type: application/json'; break;
+			case 'xml': $header = 'Content-Type: application/xml'; break;
+			case 'html': $header = 'Content-Type: text/html'; break;
+			default: $header = 'Content-Type: text/plain'; break;
 		}
-
-		$query = count ( $value ) > 0 ? '?' . http_build_query ( $value ) : null;
 
 		$curl_handle = curl_init();
-		curl_setopt ( $curl_handle, CURLOPT_URL, $server . $source . $query );
-		curl_setopt ( $curl_handle, CURLOPT_RETURNTRANSFER, 1 );
+		curl_setopt($curl_handle, CURLOPT_URL, $source.$query);
+		curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, 1);
+		// curl_setopt($curl_handle, CURLOPT_HEADER, 0);
+		if ($type==='post') {
+			curl_setopt($curl_handle, CURLOPT_POST, 1);
+		} elseif ($type==='put') {
+			curl_setopt($curl_handle, CURLOPT_PUT, 1);
+		}
+		curl_setopt($curl_handle, CURLOPT_POSTFIELDS, http_build_query($value));
+		curl_setopt($curl_handle, CURLOPT_HTTPHEADER, array($header));
 
-		if ( isset ( $username ) AND isset ( $password ) ) {
-			curl_setopt ( $curl_handle, CURLOPT_USERPWD, $username . ':' . $password );
-			curl_setopt ( $curl_handle,  CURLOPT_HTTPAUTH, CURLAUTH_DIGEST );
+		if (isset($username, $password)) {
+			curl_setopt($curl_handle, CURLOPT_USERPWD, "{$username}:{$password}");
+			if ($http_auth==='basic') {
+				curl_setopt($curl_handle,  CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+			} elseif ($http_auth==='digest') {
+				curl_setopt($curl_handle,  CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
+			}
 		}
 
 		$buffer = curl_exec ( $curl_handle );
 		curl_close ( $curl_handle );
-		$format_type = isset($value['format'])?$value['format']:$format;
-		if ( ! $buffer ) {
-			$key_status = config_item ( 'rest_status_field_name' ) ? config_item ( 'rest_status_field_name' ) : 'status';
-			$key_message = config_item ( 'rest_message_field_name' ) ? config_item ( 'rest_message_field_name' ) : 'error';
-			$method = 'to_' . $format_type;
-			$format = new Format ( array ( $key_status => false, $key_message => 'Error on communicating to server' ) );
-			$buffer = $format->$method();
-		}
 
-		switch ( $format_type ) {
-			case 'json':
-				header('Content-Type: application/json');
-				break;
-
-			case 'xml':
-				header('Content-Type: application/xml');
-				break;
-
-			case 'html':
-				header('Content-Type: text/html');
-				break;
-
-			default:
-				header('Content-Type: text/plain');
-				break;
-		}
 		return $buffer;
 	}
 }
 
-if ( ! function_exists ( 'post_remote' ) ) {
-	function post_remote ( $source, $value = array(), $format = 'json' ) {
-		$server = config_item ( 'api_base_url' ) ? config_item ( 'api_base_url' ) .'/' : null;
-
-		if ( config_item ( 'api_logins' ) ) {
-			$username = key ( config_item ( 'api_logins' ) );
-			$password = current ( config_item ( 'api_logins' ) );
-		}
-
-		$curl_handle = curl_init();
-		curl_setopt ( $curl_handle, CURLOPT_URL, $server . $source );
-		curl_setopt ( $curl_handle, CURLOPT_RETURNTRANSFER, 1 );
-		curl_setopt ( $curl_handle, CURLOPT_POST, 1 );
-		curl_setopt ( $curl_handle, CURLOPT_POSTFIELDS, $value );
-
-		if ( isset ( $username ) AND isset ( $password ) ) {
-			curl_setopt ( $curl_handle, CURLOPT_USERPWD, $username . ':' . $password );
-			curl_setopt ( $curl_handle,  CURLOPT_HTTPAUTH, CURLAUTH_DIGEST );
-		}
-
-		$buffer = curl_exec ( $curl_handle );
-		curl_close ( $curl_handle );
-		$format_type = isset($value['format'])?$value['format']:$format;
-		if ( ! $buffer ) {
-			$key_status = config_item ( 'rest_status_field_name' ) ? config_item ( 'rest_status_field_name' ) : 'status';
-			$key_message = config_item ( 'rest_message_field_name' ) ? config_item ( 'rest_message_field_name' ) : 'error';
-			$method = 'to_' . $format_type;
-			$format = new Format ( array ( $key_status => false, $key_message => 'Error on communicating to server' ) );
-			$buffer = $format->$method();
-		}
-
-		switch ( $format_type ) {
-			case 'json':
-				header('Content-Type: application/json');
-				break;
-
-			case 'xml':
-				header('Content-Type: application/xml');
-				break;
-
-			case 'html':
-				header('Content-Type: text/html');
-				break;
-
-			default:
-				header('Content-Type: text/plain');
-				break;
-		}
-		return $buffer;
+if (!function_exists('__cget')) {
+	function __cget($source, $value=array(), $user_auth=array('admin'=>'1234'), $format='json', $http_auth='basic') {
+		return __crequest('get',$source, $value, $user_auth, $format, $http_auth);
 	}
 }
 
-if ( ! function_exists ( 'put_remote' ) ) {
-	function put_remote ( $source, $value = array(), $format = 'json' ) {
-		$server = config_item ( 'api_base_url' ) ? config_item ( 'api_base_url' ) .'/' : null;
+if (!function_exists('__cpost')) {
+	function __cpost ($source, $value=array(), $user_auth=array('admin'=>'1234'), $format='json', $http_auth='basic') {
+		return __crequest('post',$source, $value, $user_auth, $format, $http_auth);
+	}
+}
 
-		if ( config_item ( 'api_logins' ) ) {
-			$username = key ( config_item ( 'api_logins' ) );
-			$password = current ( config_item ( 'api_logins' ) );
-		}
-
-		$curl_handle = curl_init();
-
-		curl_setopt ( $curl_handle, CURLOPT_URL, $server . $source );
-		curl_setopt ( $curl_handle, CURLOPT_CUSTOMREQUEST, "PUT" );
-		curl_setopt ( $curl_handle, CURLOPT_HEADER, 0 );
-		curl_setopt ( $curl_handle, CURLOPT_RETURNTRANSFER, 1 );
-		curl_setopt ( $curl_handle, CURLOPT_HTTPHEADER, array ( 'Content-Type: application/json' ) );
-		curl_setopt ( $curl_handle, CURLOPT_POSTFIELDS, http_build_query ( $value ) );
-
-		$buffer = curl_exec ( $curl_handle );
-		curl_close ( $curl_handle );
-		$format_type = isset($value['format'])?$value['format']:$format;
-		if ( ! $buffer ) {
-			$key_status = config_item ( 'rest_status_field_name' ) ? config_item ( 'rest_status_field_name' ) : 'status';
-			$key_message = config_item ( 'rest_message_field_name' ) ? config_item ( 'rest_message_field_name' ) : 'error';
-			$method = 'to_' . $format_type;
-			$format = new Format ( array ( $key_status => false, $key_message => 'Error on communicating to server' ) );
-			$buffer = $format->$method();
-		}
-
-		switch ( $format_type ) {
-			case 'json':
-				header('Content-Type: application/json');
-				break;
-
-			case 'xml':
-				header('Content-Type: application/xml');
-				break;
-
-			case 'html':
-				header('Content-Type: text/html');
-				break;
-
-			default:
-				header('Content-Type: text/plain');
-				break;
-		}
-		return $buffer;
+if (!function_exists('__cput')) {
+	function __cput ($source, $value=array(), $user_auth=array('admin'=>'1234'), $format='json', $http_auth='basic') {
+		return __crequest('put',$source, $value, $user_auth, $format, $http_auth);
 	}
 }
 
 // String Helper
-if ( ! function_exists ( 'unique_slug' ) ) {
-	function unique_slug ( $name, $sep = '-', $num = null ) {
+if (!function_exists('unique_slug')) {
+	function unique_slug ($name, $sep='-', $lowercase=true, $num=null) {
 		$_ci =& get_instance();
-
-		if ( ! function_exists ( 'increment_string' ) ) {
+		if (!function_exists('increment_string')) {
 			$_ci->load->helper('string');
 		}
-
-		return increment_string ( $name, $sep, $num );
-	}
-}
-
-if ( ! function_exists ( 'create_slug' ) ) {
-	function create_slug ( $title, $sep = '-', $lowercase = true ) {
-		$_ci =& get_instance();
-
-		if ( ! function_exists ( 'url_title' ) ) {
+		if (!function_exists('url_title')) {
 			$_ci->load->helper('url');
 		}
-
-		return url_title ( $title, $sep, $lowercase );
-	}
-}
-
-// Still unclassified
-if ( ! function_exists ( 'get_option' ) ) {
-	function get_option ( $name ) {
-		$settings =& _model ( 'm_settings' );
-		return $settings->get_option ( $name );
+		$title = url_title($name, $sep, $lowercase);
+		return increment_string($title, $sep, $num);
 	}
 }

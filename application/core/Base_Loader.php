@@ -146,7 +146,7 @@ class Base_Loader extends CI_Loader {
 	public function database ( $params = '', $return = FALSE, $active_record = NULL ) {
 		$CI =& get_instance();
 		$db_method = '_ci_get_database_3';
-		if ( ci_version ( '<', '3' ) ) {
+		if ( __is_version ( '3', '<' ) ) {
 			$db_method = '_ci_get_database';
 		}
 		if ( empty ( $this->_router->module ) ) {

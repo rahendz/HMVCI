@@ -2,7 +2,7 @@
 
 class M_Welcome extends Model {
 	public $table = null;
-	
+
 	public function __construct() {
 		parent::__construct();
 	}
@@ -42,5 +42,16 @@ class M_Welcome extends Model {
 		else {
 			var_dump($model->errors);
 		}
+	}
+
+	function pagination_total_rows() {
+		$this->table = 'products';
+		return $this->count_all_results();
+	}
+
+	function pagination_data_each($limit,$offset) {
+		$this->table = 'products';
+		$this->limit($limit,$offset);
+		return $this->get_all();
 	}
 }

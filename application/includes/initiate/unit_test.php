@@ -123,3 +123,15 @@ if (!function_exists('__r')) {
 		}
 	}
 }
+
+if (!function_exists('__is_version')) {
+	function __is_version ($version, $operator = '=') {
+		switch($operator) {
+			default: case '=': return CI_VERSION == $version ? true : false; break;
+			case '<': return CI_VERSION < $version ? true : false; 	break;
+			case '>': return CI_VERSION > $version ? true : false; break;
+			case '<=': return CI_VERSION <= $version ? true : false; break;
+			case '>=': return CI_VERSION >= $version ? true : false; break;
+		}
+	}
+}
