@@ -167,7 +167,7 @@
 !/application/includes/assets/js/bootstrap4.min.js
 !/application/includes/assets/js/html5shiv.js
 !/application/includes/assets/js/jquery.js
-!/application/includes/assets/js/jquery.min.js
+!/application/includes/assets/js/jquery*
 !/application/includes/assets/js/nestable.js
 !/application/includes/assets/js/npm.js
 !/application/includes/assets/js/respond.js
