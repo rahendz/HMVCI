@@ -457,8 +457,8 @@ class Base_Loader extends CI_Loader {
 				foreach ( $this->enqueue_script_requires as $r => $for ) {
 					$x = $r === 'tinymce' ? 'tinymce/tinymce' : $r;
 					$re = file_exists ( $assets_js_path . $x . '.min.js' ) ? $x . '.min' : $x;
-					if ( ( $r == 'jquery' OR $r == 'tinymce' ) AND file_exists ( $assets_js_path . $re . '.js' ) ) {
-						$require_file = base_url ( $assets_js_path . $re . '.js' );
+					if ( ( strpos($r, 'jquery')!==false OR $r == 'tinymce' ) AND file_exists ( $assets_js_path . $re . '.js' ) ) {
+						$require_file = $this->config->base_url ( $assets_js_path . $re . '.js' );
 						if ( $this->is_anyscript_required ( array ( $r ) ) === false ) {
 							$return .= sprintf ( '<script id="%s" src="%s"></script>', $r, $require_file ) . "\n\t";
 							$this->enqueue_script_id[] = $r;
@@ -488,7 +488,7 @@ class Base_Loader extends CI_Loader {
 				$e[] = '';
 			}
 			list ( $file, $version, $in_footer ) = $e; // $require,
-			$filepath = __get_template_directory_uri ( $file .'?ver='. ( isset ( $version ) ? $version : null ) );
+			$filepath = get_template_directory_uri ( $file .'?ver='. ( isset ( $version ) ? $version : null ) );
 			if ( strpos ( $file, 'http://' ) !== false ){
 				$filepath = $file .'?ver='. ( isset ( $version ) ? $version : NULL );
 			}
