@@ -423,7 +423,7 @@ class Base_Loader extends CI_Loader {
 				foreach($this->enqueue_style_requires as $r => $id) {
 					$r = file_exists($assets_css_path.$r.'.min.css')?$r.'.min':$r;
 					if (file_exists($assets_css_path.$r.'.css')) {
-						$require_file = base_url($assets_css_path.$r.'.css');
+						$require_file = $this->config->base_url($assets_css_path.$r.'.css');
 						$return .= sprintf('<link rel="%s" id="%s-css" href="%s" />',	$rel, $r, $require_file)."\n\t";
 						$this->enqueue_style_id[] = $r;
 					}
@@ -472,8 +472,8 @@ class Base_Loader extends CI_Loader {
 			}
 		}
 		$return .= '<!--[if lt IE 9]>' . "\n\t";
-		$return .= "\t" . sprintf ( '<script src="%s"></script>', base_url ( $assets_js_path . 'html5shiv.js' ) ) . "\n\t";
-		$return .= "\t" . sprintf ( '<script src="%s"></script>', base_url ( $assets_js_path . 'respond.js' ) ) . "\n\t";
+		$return .= "\t" . sprintf ( '<script src="%s"></script>', $this->config->base_url ( $assets_js_path . 'html5shiv.js' ) ) . "\n\t";
+		$return .= "\t" . sprintf ( '<script src="%s"></script>', $this->config->base_url ( $assets_js_path . 'respond.js' ) ) . "\n\t";
 		$return .= '<![endif]-->' . "\n\t";
 		echo rtrim ( $return, "\t" );
 	}
@@ -488,7 +488,7 @@ class Base_Loader extends CI_Loader {
 				$e[] = '';
 			}
 			list ( $file, $version, $in_footer ) = $e; // $require,
-			$filepath = get_template_directory_uri ( $file .'?ver='. ( isset ( $version ) ? $version : null ) );
+			$filepath = __get_template_directory_uri ( $file .'?ver='. ( isset ( $version ) ? $version : null ) );
 			if ( strpos ( $file, 'http://' ) !== false ){
 				$filepath = $file .'?ver='. ( isset ( $version ) ? $version : NULL );
 			}
@@ -589,6 +589,10 @@ class Base_Loader extends CI_Loader {
 			return array ( $class );
 		}
 		return false;
+	}
+
+	public function is_module($class) {
+		return $this->detect_module($class);
 	}
 
 	private function find_module ( $module ) {

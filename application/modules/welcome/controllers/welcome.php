@@ -5,17 +5,17 @@ class Welcome extends Public_Controller {
 
 	public function __construct() {
 		parent::__construct();
-		$this->theme_var['config']['frontend'] = 'default';
+		// $this->theme_var['config']['frontend'] = 'default';
 	}
 
 	public function index() {
-		$this->enqueue_style(array(
-			'style' => array ( 'style.css', array(), '1.0.0' )
-			));
+		// $this->enqueue_style(array(
+		// 	'style' => array ( 'style.css', array(), '1.0.0' )
+		// 	));
 
-		$this->enqueue_script (array (
-			'meneh' => array ( 'meneh.js',array(),'3.2.0', TRUE )
-			));
+		// $this->enqueue_script (array (
+		// 	'meneh' => array ( 'meneh.js',array(),'3.2.0', TRUE )
+		// 	));
 
 		$this->theme_var['content'] = 'welcome_message';
 		return $this->render_theme();
@@ -32,9 +32,18 @@ class Welcome extends Public_Controller {
 		echo_r($welcome2->test());
 	}
 
+	public function testfunc() {
+		__r(__fields_data('products',array('Field'=>'id')));
+	}
+
 	public function testpaging() {
 		$paging = __set_pagination('m_welcome',array('per_page'=>10));
 		__r($paging);
+	}
+
+	public function testgetdoc() {
+		$this->theme_var['content'] = 'welcome_message';
+		return $this->render_theme();
 	}
 
 	public function testapi() {

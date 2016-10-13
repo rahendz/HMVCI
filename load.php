@@ -17,7 +17,7 @@ if (defined('APP_DEBUG')) {
 		case 'testing':
 			if (version_compare(PHP_VERSION, '5.3', '>=')) {
 				error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);
-			} 
+			}
 			else {
 				error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_USER_NOTICE);
 			}
@@ -30,7 +30,7 @@ if (defined('APP_DEBUG')) {
 			echo 'The application state is not set correctly.';
 			exit(1); // EXIT_ERROR
 	}
-} 
+}
 else {
 	header('HTTP/1.1 503 Service Unavailable.', true, 503);
 	echo 'The application debug is not set correctly.';
@@ -107,7 +107,7 @@ $modules_folder = 'modules';
 	// The path to the "application" folder
 	if (is_dir($application_folder)) {
 		define('APPPATH', $application_folder.'/');
-	} 
+	}
 	elseif (!is_dir(BASEPATH.$application_folder.'/')) {
 		exit("Your application folder path does not appear to be set correctly. Please open the following file and correct this: ".SELF);
 	}
@@ -132,7 +132,7 @@ $modules_folder = 'modules';
 
 	if (($_temp=realpath($view_folder))!==FALSE) {
 		$view_folder = $_temp.DIRECTORY_SEPARATOR;
-	} 
+	}
 	else {
 		$view_folder = rtrim($view_folder, '/\\').DIRECTORY_SEPARATOR;
 	}
@@ -143,21 +143,21 @@ $modules_folder = 'modules';
 	// The path to the "application" folder
 	if (is_dir($modules_folder)) {
 		define('MODULESPATH', $modules_folder.'/');
-	} 
+	}
 	elseif(is_dir(APPPATH.$modules_folder.'/')) {
 		define('MODULESPATH', APPPATH.$modules_folder.'/');
-	} 
+	}
 	else {
 		exit("Your modules folder path does not appear to be set correctly. Please open the following file and correct this: ".SELF);
 	}
 
 // The path to the "application" folder
 	if(is_dir('includes')) {
-		define('INCPATH', 'includes/');
-	} 
+		define('INCPATH', FCPATH.'includes/');
+	}
 	elseif(is_dir(APPPATH.'includes')) {
 		define('INCPATH', APPPATH.'includes/');
-	} 
+	}
 	else {
 		exit("Includes folder are missing. Please open the following file and correct this: ".SELF);
 	}

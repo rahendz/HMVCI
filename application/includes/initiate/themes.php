@@ -1,189 +1,314 @@
 <?php if ( ! defined ( 'BASEPATH' ) ) exit ( 'No direct script access allowed' );
 
-if ( ! function_exists ( 'get_header' ) ) :
-	function get_header ( $slug = null ) {
-		return get_template_part ( 'header', $slug );
-	}
-endif;
-
-if ( ! function_exists ( 'get_navbar' ) ) :
-	function get_navbar ( $slug = null ) {
-		return get_template_part ( 'navbar', $slug );
-	}
-endif;
-
-if ( ! function_exists ( 'get_footer' ) ) :
-	function get_footer ( $slug = null ) {
-		return get_template_part ( 'footer', $slug );
-	}
-endif;
-
-if ( ! function_exists ( 'get_sidebar' ) ) :
-	function get_sidebar ( $slug = null ) {
-		return get_template_part ( 'sidebar', $slug );
-	}
-endif;
-
-if ( ! function_exists ( 'get_content' ) ) :
-	function get_content () {
+if (!function_exists('get_template_part')) {
+	function get_template_part($name, $slug=null) {
 		$_ci =& get_instance();
-		return $_ci->load->get_var ( 'content' );
+		$_ci->load->theme_part = $name;
+		if (!is_null($slug)) {
+			$_ci->load->theme_part .= '-'.$slug;
+		}
+		echo 'header'!==$name?"\n":null;
+		$_ci->load->theme();
+		echo 'footer'!==$name?"\n":null;
 	}
-endif;
+}
 
-if ( ! function_exists ( 'content' ) ) :
+if (!function_exists('get_header')) {
+	function get_header ($slug=null) {
+		return get_template_part('header', $slug);
+	}
+}
+
+if (!function_exists('get_footer')) {
+	function get_footer($slug=null) {
+		return get_template_part('footer', $slug);
+	}
+}
+
+if (!function_exists('get_sidebar')) {
+	function get_sidebar($slug=null) {
+		return get_template_part('sidebar', $slug);
+	}
+}
+
+if (!function_exists('get_appinfo')) {
+	function get_appinfo ($info='name') {
+		$_ci =& get_instance();
+		// $_ci->load->theme_initiate();
+		$_get_info = $_ci->load->get_var($info);
+		if (!$_get_info) {
+			switch ($info) {
+				case 'name':
+					return $_ci->config->item('app_name');
+					break;
+				case 'title':
+					return get_app_title();
+					break;
+				default:
+					return false;
+					break;
+			}
+		}
+		return $_get_info;
+	}
+}
+
+if (!function_exists('appinfo')) {
+	function appinfo($show='name') {
+		echo get_appinfo($show);
+	}
+}
+
+if (!function_exists('get_content')) {
+	function get_content () {
+		// $_ci =& get_instance();
+		return get_appinfo('content');
+	}
+}
+
+if (!function_exists('content')) {
 	function content() {
 		echo get_content();
 	}
-endif;
+}
 
-if ( ! function_exists ( 'get_template_part' ) ) :
-	function get_template_part ( $name, $slug = null ) {
+if (!function_exists('get_template_directory_uri')) {
+	function get_template_directory_uri ($filepath=null) {
 		$_ci =& get_instance();
-		$theme_file = $name . ( is_null ( $slug ) ? null : '-' . $slug );
-		$_ci->load->theme_part = $theme_file;
-		if ( 'header' !== $name ) echo "\n";
-		$_ci->load->theme();
-		if ( 'footer' !== $name ) echo "\n";
+		// $uri_string = trim(__get_info('template_path'), '/') .'/'. trim($filepath, '/');
+		return $_ci->config->base_url(get_appinfo('template_path').$filepath);
 	}
-endif;
+}
 
-if ( ! function_exists ( 'get_template_directory_uri' ) ) :
-	function get_template_directory_uri ( $filepath = null ) {
+if (!function_exists('template_directory_uri')) {
+	function template_directory_uri($filepath=null) {
+		echo get_template_directory_uri($filepath);
+	}
+}
+
+if (!function_exists('get_template_directory')) {
+	function get_template_directory($filepath=null) {
+		return FCPATH.trim(get_appinfo('template_path'), '/') .'/'. trim($filepath, '/');
+	}
+}
+
+if (!function_exists('template_directory')) {
+	function template_directory($filepath=null) {
+		echo get_template_directory($filepath);
+	}
+}
+
+if (!function_exists('get_template_dir')) {
+	function get_template_dir ($path=null) {
 		$_ci =& get_instance();
-		$uri_string = trim ( get_appinfo ( 'template_path ' ), '/' ) .'/'. trim ( $filepath, '/' );
-		return $_ci->config->base_url ( get_appinfo ( 'template_path' ) . $filepath );
+		return $_ci->load->theme_dir.$path;
 	}
-endif;
+}
 
-if ( ! function_exists ( 'get_template_directory' ) ) :
-	function get_template_directory ( $filepath = null ) {
-		return FCPATH . trim ( get_appinfo ( 'template_path' ), '/' ) .'/'. trim ( $filepath, '/' );
-	}
-endif;
-
-if ( ! function_exists ( 'get_stylesheet_uri' ) ) :
+if (!function_exists('get_stylesheet_uri')) {
 	function get_stylesheet_uri() {
-		return get_appinfo ( 'stylesheet_url' );
+		return get_appinfo('stylesheet_url');
 	}
-endif;
+}
 
-if ( ! function_exists( 'get_enqueue_style' ) ) :
-	function get_enqueue_style ( $id, $file, $require = array(), $version = null ) {
+if (!function_exists('stylesheet_uri')) {
+	function stylesheet_uri() {
+		echo get_stylesheet_uri();
+	}
+}
+
+if (!function_exists('app_enqueue_style')) {
+	function app_enqueue_style ($id, $file, $require = array(), $version=null) {
 		$_ci =& get_instance();
 		$_ci->load->enqueue_style ( $id, $file, $require, $version );
 	}
-endif;
+}
 
-if ( ! function_exists( 'get_enqueue_script' ) ) :
-	function get_enqueue_script ( $id, $file, $require = array(), $version = null, $in_footer = FALSE ) {
+if (!function_exists('app_enqueue_script')) {
+	function app_enqueue_script ($id, $file, $require = array(), $version = null, $in_footer=false) {
 		$_ci =& get_instance();
 		$_ci->load->enqueue_script ( $id, $file, $require, $version, $in_footer );
 	}
-endif;
+}
 
-if ( ! function_exists( 'theme_enqueue_head' ) ) :
-	function theme_enqueue_head ( $return = null ) {
+if (!function_exists('app_header')) {
+	function app_header ($return = null) {
 		$_ci =& get_instance();
-		$_ci->load->theme_enqueue_head ( $return );
+		$_ci->load->theme_enqueue_head($return);
 	}
-endif;
+}
 
-if ( ! function_exists( 'theme_enqueue_foot' ) ) :
-	function theme_enqueue_foot ( $return = null ) {
+if (!function_exists('app_footer')) {
+	function app_footer ($return = null) {
 		$_ci =& get_instance();
-		$_ci->load->theme_enqueue_foot ( $return );
+		$_ci->load->theme_enqueue_foot($return);
 	}
-endif;
+}
 
-if ( ! function_exists ( 'app_title' ) ) :
-	function app_title ( $sep = '&raquo;', $display = TRUE, $seplocation = 'left', $additional_sep = '&ndash;' ) {
+if (!function_exists('get_app_title')) {
+	function get_app_title ($sep='&raquo;', $display=false, $seplocation='left', $additional_sep='&ndash;') {
 		$_ci =& get_instance();
 		$return = null;
-
-		if ( ! $_ci->uri->segment(1) ) {
+		if (!$_ci->uri->segment(1)) {
 			return;
 		}
 
-		if ( $_ci->load->get_var ( 'title' ) ) {
-			$title = $_ci->load->get_var ( 'title' );
-		} elseif ( $_ci->load->get_var ( 'title_page' ) ) {
-			$title = $_ci->load->get_var ( 'title_page' );
+		if ($_ci->load->get_var('title')) {
+			$title = $_ci->load->get_var('title');
+		} elseif ($_ci->load->get_var('title_page')) {
+			$title = $_ci->load->get_var('title_page');
 		} else {
-			// $title = ucwords ( str_replace ( '-', ' ', end ( $_ci->uri->segment_array() ) ) );
-			$_ci->load->model('m_posts','posts');
-			$post = $_ci->posts->get_postdata();
-			$title = $post['post_title'];
+			$title = ucwords(str_replace('-', ' ', end($_ci->uri->segment_array())));
+			// $_ci->load->model('m_posts','posts');
+			// $post = $_ci->posts->get_postdata();
+			// $title = $post['post_title'];
 		}
 
-		if ( $seplocation === 'left' AND ( ! is_null ( $title ) AND ! empty ( $title ) ) ) {
+		if ($seplocation==='left' && (!is_null($title) && !empty($title))) {
 			$return = $sep .' '. $title;
-		} elseif ( $seplocation === 'right' AND ( ! is_null ( $title ) AND ! empty ( $title ) ) ) {
+		} elseif ($seplocation==='right' && (!is_null($title) && !empty($title))) {
 			$return = $title .' '. $sep ;
 		}
 
-		if ( ! $display ) {
+		if (!$display) {
 			return $return;
 		}
 		echo $return;
 	}
-endif;
+}
 
-if ( ! function_exists ( 'get_appinfo' ) ) :
-	function get_appinfo ( $info = 'name' ) {
-		$_ci =& get_instance();
-		$_ci->load->theme_initiate();
-		$get_info = $_ci->load->get_var ( $info );
-		return ( 'name' == $info AND ! $get_info ) ? $_ci->config->item('app_name') : $get_info;
-	}
-endif;
-
-if ( ! function_exists ( 'get_template_dir' ) ) {
-	function get_template_dir ( $path = null ) {
-		$_ci =& get_instance();
-		return $_ci->load->theme_dir . $path;
+if (!function_exists('app_title')) {
+	function app_title ($sep='&raquo;',$seplocation='left') {
+		echo get_app_title($sep, true, $seplocation);
 	}
 }
 
-if ( ! function_exists ( 'call_login_form' ) ) {
-	function call_login_form ( $alert = null ) {
+if (!function_exists('is_home')) {
+	function is_home() {
 		$_ci =& get_instance();
-		extract ( $_ci->load->views_data );
-
-		$default_login = 'login';
-
-		if ( isset ( $alert_msg ) ) {
-			$alert = '<div class="alert alert-warning alert-thin text-center">' . $alert_msg . '</div>';
-		} elseif ( is_get ( 'logged_out', 'true' ) ) {
-			$alert = '<div class="alert alert-warning alert-thin text-center">Anda berhasil keluar.</div>';
-		}
-
-		if ( file_exists ( get_template_dir ( $default_login . EXT ) ) ) {
-			include get_template_dir ( $default_login . EXT );
-		} else {
-			include INIT_VIEWS . 'login_form' . EXT;
-		}
-	}
-}
-
-if ( ! function_exists ( 'is_updated' ) ) {
-	function is_updated() {
-		if ( is_get ( 'status_updated', 'true' ) OR is_get ( 'status_added', 'true' ) OR is_get ( 'status_trashed', 'true' ) OR is_get ( 'status_restored', 'true' ) ) {
+		if (!$_ci->uri->segment(1)) {
 			return true;
-		} elseif ( is_get ( 'status_updated', 'false' ) OR is_get ( 'status_added' ,'false' ) OR is_get ( 'status_trashed', 'false' ) OR is_get ( 'status_restored', 'false' ) ) {
+		}
+		return false;
+	}
+}
+
+if (!function_exists('is_updated')) {
+	function is_updated() {
+		if (is_get('status_updated', 'true') ||
+			is_get('status_added', 'true') ||
+			is_get('status_trashed', 'true') ||
+			is_get('status_restored', 'true')) {
+			return true;
+		}
+		elseif (is_get('status_updated', 'false') ||
+				is_get('status_added' ,'false') ||
+				is_get('status_trashed', 'false') ||
+				is_get ( 'status_restored', 'false' ) ) {
 			return false;
-		} else {
+		}
+		else {
 			return null;
 		}
 	}
 }
 
-if ( ! function_exists ( 'appinfo' ) ) :
-	function appinfo ( $show = 'name' ) {
-		echo get_appinfo($show);
+if (!function_exists('get_login_url') && !function_exists('login_url') && !function_exists('get_login_link') && !function_exists('login_link')) {
+	function get_login_url ($custom_method='sign'){
+		$_ci =& get_instance();
+		$query = (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING'])) ? '?'.$_SERVER['QUERY_STRING'] : null;
+		$url = $_ci->config->site_url($_ci->uri->uri_string().$query);
+		return $_ci->config->site_url($custom_method.'?in&redirect=' . urlencode($url));
 	}
-endif;
 
+	function login_url ($custom_method='sign'){
+		echo get_login_url($custom_method);
+	}
+
+	function get_login_link ($label='Login', $wrapper='li', $class=null, $custom_method='sign'){
+		if (!is_null($class)) {
+			$class = " class='{$class}'";
+		}
+		if ($wrapper!==false) {
+			$_get_login_link = "<{$wrapper}>";
+		}
+		$_get_login_link = '<a href="'.get_login_url($custom_method). '"'.$class.'>'.$label.'</a>';
+		if ($wrapper!==false) {
+			$_get_login_link = "</{$wrapper}>";
+		}
+		return $_get_login_link;
+	}
+
+	function login_link ($label='Login') {
+		echo get_login_link($label);
+	}
+}
+
+if (!function_exists('get_logout_url') && !function_exists('logout_url') && !function_exists('get_logout_link') && !function_exists('logout_link')) {
+	function get_logout_url ($custom_method='sign'){
+		$_ci =& get_instance();
+		return $_ci->config->site_url($custom_method.'?out');
+	}
+	function logout_url ($custom_method='sign'){
+		echo get_logout_url($custom_method);
+	}
+	function get_logout_link ($label='Logout', $wrapper='li', $class=null, $custom_method='sign'){
+		if (!is_null($class)) {
+			$class = " class='{$class}'";
+		}
+		if ($wrapper!==false) {
+			$_get_logout_link = "<{$wrapper}>";
+		}
+		$_get_logout_link .= '<a href="' .get_logout_url($custom_method). '"' .$class. '>' .$label. '</a>';
+		if ($wrapper!==false) {
+			$_get_logout_link .= "</{$wrapper}>";
+		}
+		return $_get_logout_link;
+	}
+	function logout_link ($label='Logout'){
+		echo get_logout_link($label);
+	}
+}
+
+if (!function_exists('get_file_data')) {
+	function get_file_data( $file, $default_headers = array() ) {
+        $fp = fopen( $file, 'r' );
+        $file_data = fread( $fp, 8192 );
+        fclose( $fp );
+        $file_data = str_replace( "\r", "\n", $file_data );
+        $all_headers = new stdClass();
+        foreach ( $default_headers as $field => $regex ) {
+        	$all_headers->$field = '';
+	        if (preg_match( '/^[ \t\/*#@]*' . preg_quote( $regex, '/' ) . ':(.*)$/mi', $file_data, $match ) && $match['1']) {
+	        	$all_headers->$field = $match['1'];
+	        }
+        }
+        return $all_headers;
+	}
+}
+
+if (!function_exists('get_theme_data')) {
+	function get_theme_data() {
+		$file = get_template_dir('style.css');
+		if (!is_file($file)) {
+			return $file;
+		}
+        $default_headers = array(
+        	'name' => 'Theme Name',
+        	'url' => 'Theme URI',
+        	'description' => 'Description',
+        	'version' => 'Version',
+        	'author' => 'Author',
+        	'author_url' => 'Author URI',
+        	'tags' => 'Tags',
+        	'license' => 'License',
+        	'license_url' => 'License URI'
+        	);
+		return get_file_data($file,$default_headers);
+	}
+}
+
+#tekan kene: not used yet
 if ( ! function_exists ( 'have_posts' ) ) {
 	function have_posts() {
 		$_ci =& get_instance();
@@ -265,56 +390,6 @@ if ( ! function_exists ( 'the_last_query' ) ) {
 		$_ci =& get_instance();
 		$_ci->load->model('m_posts','posts');
 		echo $_ci->posts->the_last_query();
-	}
-}
-
-if ( ! function_exists ( 'get_logout_url' ) AND ! function_exists ( 'logout_url' ) AND ! function_exists ( 'logout_link') ) {
-	function get_logout_url(){
-		$_ci =& get_instance();
-		return $_ci->config->site_url ( 'sign?out' );
-	}
-	function logout_url(){
-		echo get_logout_url();
-	}
-	function get_logout_link ( $label = 'Logout', $class = null ){
-		if ( ! is_null ( $class ) ) {
-			$class = ' class="' .$class. '"';
-		}
-		return '<a href="' .get_logout_url(). '"' .$class. '>' .$label. '</a>';
-	}
-	function logout_link ( $label = 'Logout' ){
-		echo get_logout_link ( $label );
-	}
-}
-
-if ( ! function_exists ( 'get_login_url' ) AND ! function_exists ( 'login_url' ) AND ! function_exists ( 'login_link') ) {
-	function get_login_url(){
-		$_ci =& get_instance();
-		$query = ( isset ( $_SERVER['QUERY_STRING'] ) AND ! empty ( $_SERVER['QUERY_STRING'] ) ) ? '?' . $_SERVER['QUERY_STRING'] : null;
-		return $_ci->config->site_url ( 'sign?in&redirect=' . urlencode ( $_ci->config->site_url ( $_ci->uri->uri_string() . $query ) ) );
-	}
-	function login_url(){
-		echo get_login_url();
-	}
-	function login_link ( $label = 'Login', $class = null ){
-		if ( ! is_null ( $class ) ) {
-			$class = ' class="' .$class. '"';
-		}
-		if ( is_logged_in() ) {
-			echo '<li><a href="' .site_url('control'). '">Control Panel</a></li><li>' .get_logout_link('Log Out','btn btn-warning'). '</li>';
-		} else {
-			echo '<li><a href="' .get_login_url(). '"' .$class. '>' .$label. '</a></li>';
-		}
-	}
-}
-
-if ( ! function_exists ( 'is_home' ) ) {
-	function is_home() {
-		$_ci =& get_instance();
-		if ( ! $_ci->uri->segment(1) ) {
-			return true;
-		}
-		return false;
 	}
 }
 

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Welcome to CodeIgniter Frontend</title>
-	<?php theme_enqueue_head() ?>
+	<?php app_header() ?>
 </head>
 <body>
 
