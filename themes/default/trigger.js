@@ -1,10 +1,11 @@
 $(document).ready(function() {
     $('[role="datatable"]').DataTable( {
-        "processing": true,
-        "serverSide": true,
-        "ajax": {
+        processing: true,
+        serverSide: true,
+        ajax: {
         	url:"http://codeigniter.dev/hmvci/rahendz/index.php/welcome/data_record",
-        	type: "post"
+        	type: "POST",
+        	data: {'draw':1}
         }
     } );
 } );
