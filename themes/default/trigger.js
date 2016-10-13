@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    $('#example').DataTable( {
+    $('[role="datatable"]').DataTable( {
         "processing": true,
         "serverSide": true,
         "ajax": {
