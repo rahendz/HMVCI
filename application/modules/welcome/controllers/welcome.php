@@ -9,27 +9,29 @@ class Welcome extends Public_Controller {
 	}
 
 	public function index() {
-		// $this->enqueue_style(array(
-		// 	'style' => array ( 'style.css', array(), '1.0.0' )
-		// 	));
-
-		// $this->enqueue_script (array (
-		// 	'meneh' => array ( 'meneh.js',array(),'3.2.0', TRUE )
-		// 	));
-
 		$this->theme_var['content'] = 'welcome_message';
 		return $this->render_theme();
 	}
 
 	public function testdb() {
-		$welcome = new Model;//
-		// $welcome->where = array ('id'=>'1');
+		# using direct model class
+		## get one record
+		$welcome = new Model;
 		$welcome->table = 'balita_master';
-		echo_r($welcome->get_one());
-		$welcome->table = 'users';
-		echo_r($welcome->get_all());
+		__e('GET ONE');
+		__r($welcome->get_one());
+		## get all records
+		$welcome->table = 'product_nutrisi';
+		__e('GET ALL');
+		__r($welcome->get_all());
+		# using app model loader
 		$welcome2 = $this->model('m_welcome');
-		echo_r($welcome2->test());
+		__e('TEST');
+		__r($welcome2->test());
+		# using codeigniter method
+		$this->load->model('m_welcome');
+		__e('TEST MENEH');
+		__r($this->m_welcome->test_again());
 	}
 
 	public function testfunc() {
