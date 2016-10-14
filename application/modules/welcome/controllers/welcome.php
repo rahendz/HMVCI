@@ -5,41 +5,54 @@ class Welcome extends Public_Controller {
 
 	public function __construct() {
 		parent::__construct();
-		// $this->theme_var['config']['frontend'] = 'default';
+		/**
+		 * Uncomment this to set theme separatedly each class or put it
+		 * in each function to have theme differently based on function
+		 * it self
+		 */
+
+		/**
+		 * $this->theme_var['config']['frontend'] = 'custom_theme_instead_of_default';
+		 */
 	}
 
 	public function index() {
+		// View file to display inside index theme
 		$this->theme_var['content'] = 'welcome_message';
+		// rendering theme
 		return $this->render_theme();
 	}
 
 	public function testdb() {
-		# using direct model class
-		## get one record
+		// Using direct model to handle data from sql
 		$welcome = new Model;
+		// load with conditional table
 		$welcome->table = 'balita_master';
+		// get one data
 		__e('GET ONE');
 		__r($welcome->get_one());
-		## get all records
+		// Set other table to current
 		$welcome->table = 'product_nutrisi';
+		// get all data from current table
 		__e('GET ALL');
 		__r($welcome->get_all());
-		# using app model loader
+		// Or, using inner model function just like the old one
 		$welcome2 = $this->model('m_welcome');
 		__e('TEST');
 		__r($welcome2->test());
-		# using codeigniter method
+		// Or, using the famous codeigniter model loader
 		$this->load->model('m_welcome');
 		__e('TEST MENEH');
 		__r($this->m_welcome->test_again());
 	}
 
 	public function testfunc() {
-		__r(__fields_data('products',array('Field'=>'id')));
+		// function testing, get data from field of specific table in database
+		__r(fields_data('products',array('Field'=>'id')));
 	}
 
 	public function testpaging() {
-		$paging = __set_pagination('m_welcome',array('per_page'=>10));
+		$paging = pagination('m_welcome',array('per_page'=>10));
 		__r($paging);
 	}
 
