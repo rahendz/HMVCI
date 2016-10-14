@@ -201,6 +201,7 @@
 !/application/language/index.html
 
 /application/libraries/*
+!/application/libraries/Base_*.php
 !/application/libraries/index.html
 
 /application/logs/*
