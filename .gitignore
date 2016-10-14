@@ -187,6 +187,7 @@
 !/application/includes/initiate/format.php
 !/application/includes/initiate/functions.php
 !/application/includes/initiate/init.php
+!/application/includes/initiate/model.php
 !/application/includes/initiate/rest.php
 !/application/includes/initiate/routing.php
 !/application/includes/initiate/themes.php
