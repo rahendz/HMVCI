@@ -9,12 +9,13 @@ class M_Welcome extends Model {
 
 	function test() {
 		$this->table = 'users';
-		return $this->get_all();
+		return $this->get_one();
 	}
 
-	function test_2(){
-		$this->table = 'keys';
-		return $this->get_all();
+	function test_again() {
+		$this->db->from('userlog');
+		$get = $this->db->get();
+		return $get->result();
 	}
 
 	function sign_validation(){
