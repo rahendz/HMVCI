@@ -454,12 +454,17 @@ if (!function_exists('pagination')) {
 			'num_links'		=> 3,
 			'page_query_string'	=> false
 			);
-		if (!is_null($args) && $args!==false && !empty($args)) {
+		if (!is_null($args) && $args!==false && !empty($args) && !is_array($args)) {
 			$default_var['page_name'] = $args;
 		}
 		extract($default_var);
 		if (is_array($args)) {
 			extract($args);
+		}
+		if (strpos($_ci->uri->uri_string(), $page_name)!==false) {
+			$uri_segment = count(explode('/',current(explode($page_name,$_ci->uri->uri_string()))))+1;
+		} else {
+			$uri_segment = count(explode('/',$_ci->uri->uri_string()))+1;
 		}
 		if (!isset($_ci->paged)) {
 			$_ci->load->library('pagination', null, 'paged');
@@ -472,6 +477,7 @@ if (!function_exists('pagination')) {
 		if (!is_array($page_name) && strpos($url, $page_name)!==false) {
 			list($url, $page) = explode($page_name, $url);
 		}
+		$_ci->paged->name = $page_name;
 		$paging['base_url']	= $_ci->config->site_url($url .'/'. $page_name);
 		if ($_ci->input->get('submit', true)=='search' || $page_query_string!==false) {
 			$paging['first_url'] = $_ci->config->site_url($url) .'?'. http_build_query($_ci->input->get(null, true));
@@ -485,7 +491,7 @@ if (!function_exists('pagination')) {
 		$paging['per_page'] = isset($per_page) ? $per_page : 10;
 		$paging['num_links'] = isset($num_links) ? $num_links - 1 : 2;
 		$paging['uri_segment'] = isset($uri_segment) ? $uri_segment : 3;
-		$paging['use_page_numbers'] = isset($use_page_numbers) ? $use_page_numbers : false;
+		$paging['use_page_numbers'] = isset($use_page_numbers) ? $use_page_numbers : true;
 		$paging['page_query_string'] = isset($page_query_string) ? $page_query_string : false;
 		$paging['full_tag_open'] = isset($full_tag_open) ? $full_tag_open : '<ul class="pagination">';
 		$paging['full_tag_close'] = isset($full_tag_close) ? $full_tag_close : '</ul>';
