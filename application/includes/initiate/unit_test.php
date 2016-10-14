@@ -91,6 +91,15 @@ if (!function_exists('__is_false')) {
 	}
 }
 
+if (!function_exists('__e')) {
+	function __e($string, $exit=false) {
+		echo $string;
+		if ($exit) {
+			exit;
+		}
+	}
+}
+
 if (!function_exists('__j')) {
 	function __j ($data, $exit=false) {
 		$return = json_encode($data);
