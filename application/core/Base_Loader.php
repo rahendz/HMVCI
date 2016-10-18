@@ -500,7 +500,7 @@ class Base_Loader extends CI_Loader {
 					$re = file_exists ( $assets_js_path . $r . '.min.js' ) ? $r . '.min' : $r;
 					// echo $assets_js_path . $re . '<br/>';
 					if ( $r !== 'jquery' AND file_exists ( $assets_js_path . $re . '.js' ) ) {
-						$require_file = base_url ( $assets_js_path . $re . '.js' );
+						$require_file = $this->config->base_url ( $assets_js_path . $re . '.js' );
 						$return .= sprintf ( '<script id="%s" src="%s"></script>',	$r, $require_file ) . "\n";
 						$this->enqueue_script_id[] = $r;
 					}
