@@ -120,7 +120,9 @@ class Base_Controller extends CI_Controller {
 	}
 
 	protected function library ($name, $rename=null, $param=null) {
-		$this->load->library($name, $param, $rename);
+		if ((!is_null($rename) && !isset($this->$rename)) || (is_null($rename) && !isset($this->$name))) {
+			$this->load->library($name, $param, $rename);
+		}
 		if (!is_null($rename)) {
 			$name = $rename;
 		}
