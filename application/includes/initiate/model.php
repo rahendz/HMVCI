@@ -38,7 +38,7 @@ class Model extends Models {
 			$result = true;
 			$query = $this->db->get();
 		} elseif ($method!='select') {
-			$return = call_user_func_array(array($this->db, $method), $args);
+			return call_user_func_array(array($this->db, $method), $args);
 		}
 
 		if ($result) {
