@@ -8,7 +8,7 @@ if (!class_exists('Base_Model')) {
 }
 
 class Model extends Models {
-	public $select = '*';
+	public $initiate = false;
 	public $table = null;
 	protected $_ci;
 	protected $db;
@@ -26,9 +26,11 @@ class Model extends Models {
 	public function __call($method, $args) {
 		$result = false;
 		$own_method = array('get_all', 'get_all_array', 'get_one', 'get_one_array', 'count_all', 'count_results', 'is_exists');
-		$this->db
-			->select($this->select)
-			->from($this->table);
+		if (!$this->initiate) {
+			$this->db
+				->select($this->select)
+				->from($this->table);
+		}
 		if (in_array($method, $own_method)) {
 			// $function = '__' . $method;
 			// $call = array($this, $function);
@@ -36,6 +38,7 @@ class Model extends Models {
 			$result = true;
 			$query = $this->db->get();
 		} else {
+			$this->initate = true;
 			return call_user_func_array(array($this->db, $method), $args);
 		}
 
