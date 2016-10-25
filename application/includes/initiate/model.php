@@ -27,6 +27,7 @@ class Model extends Models {
 		$result = false;
 		$own_method = array('get_all', 'get_all_array', 'get_one', 'get_one_array', 'count_all', 'count_results', 'is_exists');
 		if (!$this->initiate) {
+			$this->initiate = true;
 			$this->db->from($this->table);
 		}
 		if (in_array($method, $own_method)) {
@@ -36,8 +37,7 @@ class Model extends Models {
 			$result = true;
 			$query = $this->db->get();
 		} else {
-			$this->initiate = true;
-			return call_user_func_array(array($this->db, $method), $args);
+			$return = call_user_func_array(array($this->db, $method), $args);
 		}
 
 		if ($result) {
