@@ -28,15 +28,16 @@ class Model extends Models {
 		$own_method = array('get_all', 'get_all_array', 'get_one', 'get_one_array', 'count_all', 'count_results', 'is_exists');
 		if (!$this->initiate) {
 			$this->initiate = true;
+			if ($method==='select') {
+				$this->db->select($args);
+			}
 			$this->db->from($this->table);
 		}
 		if (in_array($method, $own_method)) {
-			// $function = '__' . $method;
-			// $call = array($this, $function);
 			$this->db->stop_cache();
 			$result = true;
 			$query = $this->db->get();
-		} else {
+		} elseif ($method!='select') {
 			$return = call_user_func_array(array($this->db, $method), $args);
 		}
 
