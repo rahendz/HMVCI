@@ -112,7 +112,9 @@ class Base_Controller extends CI_Controller {
 	}
 
 	protected function model ($name, $rename=null) {
-		$this->load->model($name, $rename);
+		if ((is_null($rename) && !isset($this->name)) || (!is_null($rename) && !isset($this->$rename))) {
+			$this->load->model($name, $rename);
+		}
 		if (!is_null($rename)) {
 			$name = $rename;
 		}
