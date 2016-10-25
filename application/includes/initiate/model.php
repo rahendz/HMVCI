@@ -25,7 +25,7 @@ class Model extends Models {
 
 	public function __call($method, $args) {
 		$result = false;
-		$own_method = array('get_all', 'get_all_array', 'get_one', 'get_one_array', 'count_all', 'count_results');
+		$own_method = array('get_all', 'get_all_array', 'get_one', 'get_one_array', 'count_all', 'count_results', 'is_exists');
 		$this->db
 			->select($this->select)
 			->from($this->table);
