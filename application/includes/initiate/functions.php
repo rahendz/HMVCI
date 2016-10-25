@@ -195,13 +195,20 @@ if (!function_exists('input')) {
 if (!function_exists('is_input')) {
 	function is_input ($type, $name=null, $value=null) {
 		$input = input($type, $name);
-		if (!$input || $input!==$value) {
+		if (!$input) {
 			return false;
 		}
 		if (is_null($value)) {
+			return true;
+		}
+		if (is_bool($value)===true) {
 			return $input;
 		}
-		return true;
+		if ($input!==$value) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 }
 
