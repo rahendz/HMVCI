@@ -38,7 +38,7 @@ class Model extends Models {
 			$result = true;
 			$query = $this->db->get();
 		} else {
-			$this->initate = true;
+			$this->initiate = true;
 			return call_user_func_array(array($this->db, $method), $args);
 		}
 
