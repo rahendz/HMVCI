@@ -59,6 +59,12 @@ class Model extends Models {
 				case 'count_results':
 					$return = $query->count_all_results();
 					break;
+				case 'is_exists':
+					$return = false;
+					if ($query->num_rows()>0) {
+						$return = true;
+					}
+					break;
 			}
 			$this->db->flush_cache();
 			$this->db->close();
