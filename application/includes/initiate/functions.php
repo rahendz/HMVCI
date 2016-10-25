@@ -2,41 +2,6 @@
 
 if (!function_exists('call')) {
 	function &call ( $controller ) {
-		/*$classname = false;
-
-		$apppath_controller_file = APPPATH .'controllers/'. $controller .EXT;
-		if (file_exists($apppath_controller_file)) {
-			if (class_exists($controller) === false) {
-				$classname = $controller;
-				require_once $apppath_controller_file;
-			}
-		}
-
-		$modules_locations = config_item ( 'modules_locations' );
-		if ($modules_locations) {
-			$modules_path = current($modules_locations);
-			$modules_name = $controller;
-
-			if (strpos($controller, '/') !== false) {
-				list($module, $controller) = explode('/', $controller);
-				$modules_name = $module;
-			}
-
-			$modules_controller_file = $modules_path . $modules_name .'/controllers/'. $controller .EXT;
-			if (file_exists($modules_controller_file)) {
-				$classname = $controller;
-				if (class_exists($classname ) === false) {
-					require_once $modules_controller_file;
-				}
-			}
-		}
-
-		if ( $classname === false ) {
-			__die ( 'Unable to locate the specified class: ' . $controller, 404 );
-		}
-
-		$_controllers = new $classname();
-		return $_controllers;*/
 		switch ($controller) {
 			case 'login-form':
 				$_ci =& get_instance();
@@ -66,7 +31,6 @@ if (!function_exists('call')) {
 				return $_ci->load->controller($controller);
 				break;
 		}
-
 	}
 }
 
