@@ -36,6 +36,7 @@ class Model extends Models {
 		if (in_array($method, $own_method)) {
 			$this->db->stop_cache();
 			$result = true;
+			$this->initiate = false;
 			$query = $this->db->get();
 		} elseif ($method!='select') {
 			return call_user_func_array(array($this->db, $method), $args);
@@ -68,13 +69,9 @@ class Model extends Models {
 					}
 					break;
 			}
-			$this->db->flush_cache();
-			// $this->db->close();
-			return $return;
 		}
-		// $this->db->flush_cache();
-		// $this->db->close();
-		// return $return;
+		$this->db->flush_cache();
+		return $return;
 	}
 }
 
