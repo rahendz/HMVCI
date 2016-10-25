@@ -56,12 +56,9 @@ if (!function_exists('model')) {
 }
 
 if (!function_exists('helper')) {
-	function &helper ($helper) {
+	function helper ($helper) {
 		$_ci =& get_instance();
-		if (!isset($_ci->$helper)) {
-			$_ci->load->helper($helper);
-		}
-		return $_ci->$helper;
+		$_ci->load->helper($helper);
 	}
 }
 
