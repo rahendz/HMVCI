@@ -68,7 +68,7 @@ class Model extends Models {
 					break;
 			}
 			$this->db->flush_cache();
-			$this->db->close();
+			// $this->db->close();
 			return $return;
 		}
 		// $this->db->flush_cache();
