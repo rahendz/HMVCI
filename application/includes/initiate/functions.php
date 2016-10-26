@@ -788,3 +788,71 @@ if (!function_exists('slug')) {
 		return increment_string($title, $sep, $num);
 	}
 }
+
+// Sessions Helper
+if (!function_exists('session')) {
+	function session($type,$name=array(),$value='') {
+		$_ci =& get_instance();
+		if (!isset($_ci->session)) {
+			$_ci->load->library('session');
+		}
+		switch ($type) {
+			case 'set': return $_ci->session->set_userdata($name,$value); break;
+			case 'get': return $_ci->session->userdata($name); break;
+			case 'all': return $_ci->session->all_userdata(); break;
+			case 'unset': return $_ci->session->unset_userdata($name); break;
+			case 'kill': return $_ci->session->sess_destroy(); break;
+			case 'flashset': return $_ci->session->set_flashdata($name, $value); break;
+			case 'flashget': return $_ci->session->flashdata($name); break;
+			case 'flashkeep': return $_ci->session->keep_flashdata($name); break;
+		}
+	}
+}
+
+if (!function_exists('set_session')) {
+	function set_session ($name=array(), $value='') {
+		return session('set', $name, $value);
+	}
+}
+
+if (!function_exists('get_session')) {
+	function get_session ($name=array()) {
+		return session('get', $name);
+	}
+}
+
+if (!function_exists('all_session')) {
+	function all_session() {
+		return session('all');
+	}
+}
+
+if (!function_exists('unset_session')) {
+	function unset_session ($name=array()) {
+		return session('unset', $name);
+	}
+}
+
+if (!function_exists('kill_session')) {
+	function kill_session() {
+		return session('kill');
+	}
+}
+
+if (!function_exists('set_flashdata')) {
+	function set_flashdata ($name=array(), $value='') {
+		return session('flashset', $name, $value);
+	}
+}
+
+if (!function_exists('get_flashdata')) {
+	function get_flashdata ($name=array()) {
+		return session('flashget', $name);
+	}
+}
+
+if (!function_exists('keep_flashdata')) {
+	function keep_flashdata ($name=array()) {
+		return session('flashkeep', $name);
+	}
+}
