@@ -132,11 +132,11 @@ class Base_Controller extends CI_Controller {
 	}
 
 	protected function view ($view, $vars=array(), $return=false) {
-		return $this->load->view($view, $vars, $return);
+		$this->load->view($view, $vars, $return);
 	}
 
 	protected function file ($view, $vars=array(), $return=false) {
-		return $this->load->file($view, $vars, $return);
+		$this->load->file($view, $vars, $return);
 	}
 
 	protected function config ($file='', $use_sections=false, $fail_gracefully=false) {
