@@ -858,7 +858,7 @@ if (!function_exists('keep_flashdata')) {
 }
 
 if (!function_exists('encrypt_this')) {
-	public function encrypt_this($string) {
+	function encrypt_this($string) {
 		$key = md5('rahendz',true);
 		$data = mcrypt_encrypt(MCRYPT_BLOWFISH, $key, $string, 'ecb');
 		return bin2hex($data);
@@ -866,7 +866,7 @@ if (!function_exists('encrypt_this')) {
 }
 
 if (!function_exists('decrypt_this')) {
-	public function decrypt_this($string) {
+	function decrypt_this($string) {
 		$key = md5('rahendz',true);
 		$data = hex2bin($string);
 	    $data = mcrypt_decrypt(MCRYPT_BLOWFISH, $key, $data, 'ecb');
