@@ -248,3 +248,4 @@ sass
 *.ignore
 
 composer.*
+!.htaccess
