@@ -145,10 +145,27 @@ if (!function_exists('redirect')) {
 		}
 
 		switch($method) {
-			case 'refresh': header("Refresh:0;url={$redirect_url_path}"); break;
-			case 'meta': return "<meta http-equiv='refresh' content='{$http_response_code}; url={$redirect_url_path}'>\n"; break;
-			case 'redirect': header("Location: {$redirect_url_path}{$url_direct}", true, $http_response_code); break;
-			default: header("Location: {$redirect_url_path}", true, $http_response_code); break;
+			case 'refresh':
+				if ($http_response_code===302) {
+					$http_response_code = 0;
+				}
+				header("Refresh:{$http_response_code};url={$redirect_url_path}");
+				break;
+
+			case 'meta':
+				if ($http_response_code===302) {
+					$http_response_code = 0;
+				}
+				return "<meta http-equiv='refresh' content='{$http_response_code}; url={$redirect_url_path}'>\n";
+				break;
+
+			case 'redirect':
+				header("Location: {$redirect_url_path}{$url_direct}", true, $http_response_code);
+				break;
+
+			default:
+				header("Location: {$redirect_url_path}", true, $http_response_code);
+				break;
 		}
 		exit;
 	}
