@@ -116,6 +116,15 @@ if (!function_exists('current_url')) {
 	}
 }
 
+if (!function_exists('referer_url')) {
+	function referer_url() {
+		if (isset($_SERVER['HTTP_REFERER'])) {
+			return $_SERVER['HTTP_REFERER'];
+		}
+		return false;
+	}
+}
+
 if (!function_exists('url')) {
 	function url ($path=null, $base=false) {
 		$_ci =& get_instance();
