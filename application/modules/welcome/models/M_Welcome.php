@@ -47,11 +47,17 @@ class M_Welcome extends Model {
 
 	function pagination_total_rows() {
 		$this->table = 'products';
+		if (is_get('search')) {
+			$this->where('merk', is_get('search',true));
+		}
 		return $this->count_all_results();
 	}
 
 	function pagination_data_each($limit,$offset) {
 		$this->table = 'products';
+		if (is_get('search')) {
+			$this->where('merk', is_get('search',true));
+		}
 		$this->limit($limit,$offset);
 		return $this->get_all();
 	}
