@@ -458,8 +458,10 @@ if (!function_exists('pagination')) {
 			'num_links'		=> 3,
 			'page_query_string'	=> false
 			);
-		if (!is_null($args) && $args!==false && !empty($args) && !is_array($args)) {
+		if (!is_null($args) && $args!==false && !empty($args) && !is_array($args) && !is_int($args)) {
 			$default_var['page_name'] = $args;
+		} elseif (is_int($args)) {
+			$default_var['per_page'] = $args;
 		}
 		extract($default_var);
 		if (is_array($args)) {
@@ -525,11 +527,17 @@ if (!function_exists('pagination')) {
 		if (!method_exists($_ci->data_paged,'pagination_data_each')) {
 			show_error('Undefined pagination_data_each');
 		}
+		$find_info = array('{{current}}','{{last}}','{{total}}');
+		$replace_info = array($current_num, $last_per_page, $paging['total_rows']);
+		if (!isset($info_text_format)) {
+			$info_text_format = 'Showing {{current}} to {{last}} of {{total}} records.';
+		}
+		$info_text = str_replace($find_info, $replace_info, $info_text_format);
 		return (object) array(
 			'limit' => $per_page,
 			'offset' => $current_offset,
 			'num' => $current_num,
-			'info' => 'Showing ' .$current_num. ' to ' .$last_per_page. ' of ' .$paging['total_rows']. ' Records',
+			'info' => $info_text,
 			'links' => $_ci->paged->create_links(),
 			'data' => $_ci->data_paged->pagination_data_each($per_page, $current_offset)
 			);
