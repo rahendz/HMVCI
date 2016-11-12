@@ -52,10 +52,12 @@ class Welcome extends Public_Controller {
 	}
 
 	public function testpaging() {
-		$paging = pagination('m_welcome',array('per_page'=>10));
+		$config['per_page'] = 10;
+		$config['info_text_format'] = 'Menampilkan {{current}} hingga {{last}} dari {{total}} data tersedia.';
+		$paging = pagination('m_welcome',$config);
 		__r($paging);
 	}
-
+#teka kene
 	public function testgetdoc() {
 		$this->theme_var['content'] = 'welcome_message';
 		return $this->render_theme();
