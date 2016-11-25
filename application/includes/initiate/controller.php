@@ -2,15 +2,19 @@
 
 class Base_Controller extends CI_Controller {
 
-	public $ignored = array ( 'inheritance', 'test', 'sign' );
+	public $ignored = array('inheritance', 'test', 'sign');
+
 	protected $theme = 'default';
+
 	protected $theme_var = array();
+
 	private $aControllers;
+
 	private $hideMethod = array();
 
 	public function __construct(){
 		parent::__construct();
-		$this->hideMethod = array('views','model','getControllers','setControllerMethods','setControllers','render_theme','user_priviledge');
+		$this->hideMethod = array('views', 'model', 'getControllers', 'setControllerMethods', 'setControllers', 'render_theme', 'user_priviledge');
 		$this->setControllers();
 	}
 
@@ -21,54 +25,54 @@ class Base_Controller extends CI_Controller {
 		return $this->aControllers;
 	}
 
-	public function setControllerMethods($p_sControllerName, $p_aControllerMethods) {
+	public function setControllerMethods ($p_sControllerName, $p_aControllerMethods) {
 		$this->aControllers[$p_sControllerName] = $p_aControllerMethods;
 	}
 
 	private function setControllers() {
 		// Loop through the controller directory
-		foreach(glob(APPPATH . 'controllers/*') as $controller) {
+		foreach (glob(APPPATH . 'controllers/*') as $controller) {
 
 			// if the value in the loop is a directory loop through that directory
-			if(is_dir($controller)) {
+			if (is_dir($controller)) {
 				// Get name of directory
 				$dirname = basename($controller, EXT);
 
 				// Loop through the subdirectory
-				foreach(glob(APPPATH . 'controllers/'.$dirname.'/*') as $subdircontroller) {
+				foreach (glob(APPPATH . 'controllers/'.$dirname.'/*') as $subdircontroller) {
 					// Get the name of the subdir
 					$subdircontrollername = basename($subdircontroller, EXT);
 
 					// Load the controller file in memory if it's not load already
-					if(!class_exists($subdircontrollername)) {
+					if (!class_exists($subdircontrollername)) {
 						$this->load->file($subdircontroller);
 					}
 					// Add the controllername to the array with its methods
 					$aMethods = get_class_methods($subdircontrollername);
 					$aUserMethods = array();
-					foreach($aMethods as $method) {
-						if($method != '__construct' && $method != 'get_instance' && $method != $subdircontrollername) {
+					foreach ($aMethods as $method) {
+						if ($method != '__construct' && $method != 'get_instance' && $method != $subdircontrollername) {
 							$aUserMethods[] = $method;
 						}
 					}
 					$this->setControllerMethods($subdircontrollername, $aUserMethods);
 				}
 			}
-			else if(pathinfo($controller, PATHINFO_EXTENSION) == "php"){
+			elseif (pathinfo($controller, PATHINFO_EXTENSION) == "php"){
 				// value is no directory get controller name
 			    $controllername = basename($controller, EXT);
 
 				// Load the class in memory (if it's not loaded already)
-				if(!class_exists($controllername)) {
+				if (!class_exists($controllername)) {
 					$this->load->file($controller);
 				}
 
 				// Add controller and methods to the array
 				$aMethods = get_class_methods($controllername);
 				$aUserMethods = array();
-				if(is_array($aMethods)){
-					foreach($aMethods as $method) {
-						if($method != '__construct' && $method != 'get_instance' && $method != $controllername && ! in_array ( $method, $this->hideMethod ) && strpos($method, '__') === false ) {
+				if (is_array($aMethods)){
+					foreach ($aMethods as $method) {
+						if ($method != '__construct' && $method != 'get_instance' && $method != $controllername && ! in_array ( $method, $this->hideMethod ) && strpos($method, '__') === false ) {
 							$aUserMethods[] = $method;
 						}
 					}
@@ -107,43 +111,47 @@ class Base_Controller extends CI_Controller {
 		return $this->load->controller($class);
 	}
 
-	protected function model ( $name, $rename = null ) {
-		$this->load->model ( $name, $rename );
+	protected function model ($name, $rename=null) {
+		if ((is_null($rename) && !isset($this->name)) || (!is_null($rename) && !isset($this->$rename))) {
+			$this->load->model($name, $rename);
+		}
 		if (!is_null($rename)) {
 			$name = $rename;
 		}
 		return $this->$name;
 	}
 
-	protected function library ( $name, $rename = null, $param = null ) {
-		$this->load->library ( $name, $param, $rename );
+	protected function library ($name, $rename=null, $param=null) {
+		if ((!is_null($rename) && !isset($this->$rename)) || (is_null($rename) && !isset($this->$name))) {
+			$this->load->library($name, $param, $rename);
+		}
 		if (!is_null($rename)) {
 			$name = $rename;
 		}
 		return $this->$name;
 	}
 
-	protected function view($view, $vars = array(), $return = false) {
-		return $this->load->view($view, $vars, $return);
+	protected function view ($view, $vars=array(), $return=false) {
+		$this->load->view($view, $vars, $return);
 	}
 
-	protected function file($view, $vars = array(), $return = false) {
-		return $this->load->file($view, $vars, $return);
+	protected function file ($view, $vars=array(), $return=false) {
+		$this->load->file($view, $vars, $return);
 	}
 
-	protected function config($file = '', $use_sections = false, $fail_gracefully = false) {
+	protected function config ($file='', $use_sections=false, $fail_gracefully=false) {
 		return $this->load->config($file, $use_sections, $fail_gracefully);
 	}
 
-	protected function database($params = '', $return = FALSE, $active_record = null) {
+	protected function database ($params='', $return=false, $active_record=null) {
 		return $this->load->database($params, $return, $active_record);
 	}
 
-	protected function helper($helper = array()) {
+	protected function helper ($helper = array()) {
 		return $this->load->helper($helper);
 	}
 
-	protected function language($file = array(), $lang = '') {
+	protected function language ($file=array(), $lang='') {
 		return $this->load->language($file, $lang);
 	}
 

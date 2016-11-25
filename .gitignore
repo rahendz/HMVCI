@@ -167,7 +167,7 @@
 !/application/includes/assets/js/bootstrap4.min.js
 !/application/includes/assets/js/html5shiv.js
 !/application/includes/assets/js/jquery.js
-!/application/includes/assets/js/jquery.min.js
+!/application/includes/assets/js/jquery*
 !/application/includes/assets/js/nestable.js
 !/application/includes/assets/js/npm.js
 !/application/includes/assets/js/respond.js
@@ -187,6 +187,7 @@
 !/application/includes/initiate/format.php
 !/application/includes/initiate/functions.php
 !/application/includes/initiate/init.php
+!/application/includes/initiate/model.php
 !/application/includes/initiate/rest.php
 !/application/includes/initiate/routing.php
 !/application/includes/initiate/themes.php
@@ -200,6 +201,7 @@
 !/application/language/index.html
 
 /application/libraries/*
+!/application/libraries/Base_*.php
 !/application/libraries/index.html
 
 /application/logs/*
@@ -220,14 +222,6 @@
 !/application/third_party/index.html
 
 /application/views/*
-!/application/views/errors
-!/application/views/errors/html
-!/application/views/errors/html/error_404.php
-!/application/views/errors/html/error_db.php
-!/application/views/errors/html/error_general.php
-!/application/views/errors/html/error_php.php
-!/application/views/errors/html/index.html
-!/application/views/errors/index.html
 !/application/views/basic_message.php
 
 /themes/*
@@ -254,3 +248,4 @@ sass
 *.ignore
 
 composer.*
+!.htaccess

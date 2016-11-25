@@ -1,8 +1,8 @@
 <?php if ( ! defined ( 'BASEPATH' ) ) exit ( 'No direct script access allowed' );
 // echo 'unit test loaded';
 
-if ( ! function_exists ( '__status_header' ) ) {
-	function __status_header ( $code = 200, $text = '' ) {
+if (!function_exists('__status_header')) {
+	function __status_header ($code=200, $text='') {
 		$stati = array(
 			200	=> 'OK',
 			201	=> 'Created',
@@ -45,79 +45,102 @@ if ( ! function_exists ( '__status_header' ) ) {
 			505	=> 'HTTP Version Not Supported'
 		);
 
-		if ( $code == '' OR ! is_numeric ( $code ) )
-		{
-			__die ( 'Status codes must be numeric', 500 );
+		if ($code=='' || !is_numeric($code)) {
+			__die('Status codes must be numeric', 500);
 		}
 
-		if ( isset ( $stati[$code] ) AND $text == '' )
-		{
+		if (isset($stati[$code]) && $text=='') {
 			$text = $stati[$code];
 		}
 
-		if ( $text == '' )
-		{
-			__die ( 'No status text available.  Please check your status code number or supply your own message text.', 500 );
+		if ($text=='') {
+			__die('No status text available.  Please check your status code number or supply your own message text.', 500);
 		}
 
-		$server_protocol = ( isset ( $_SERVER['SERVER_PROTOCOL'] ) ) ? $_SERVER['SERVER_PROTOCOL'] : false;
+		$server_protocol = isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : false;
 
-		if ( substr ( php_sapi_name(), 0, 3 ) == 'cgi' )
-		{
-			header ( "Status: {$code} {$text}", true );
+		if (substr(php_sapi_name(), 0, 3 )=='cgi') {
+			header("Status: {$code} {$text}", true);
 		}
-		elseif ( $server_protocol == 'HTTP/1.1' OR $server_protocol == 'HTTP/1.0' )
-		{
-			header ( $server_protocol . " {$code} {$text}", true, $code );
-		}
-		else
-		{
-			header ( "HTTP/1.1 {$code} {$text}", true, $code );
-		}
-	}
-}
-
-if ( ! function_exists ( '__die' ) ) {
-	function __die ( $message, $code = 500, $heading = 'An Error Was Encountered', $path_error = 'errors', $file_error = 'error_general' ) {
-		__status_header ( $code );
-		include_once APPPATH . $path_error . '/' . $file_error . EXT; exit;
-	}
-}
-
-if ( ! function_exists ( 'is_true' ) ) {
-	function is_true ( $test ) {
-		return ( is_bool ( $test ) AND $test === true ) ? true : false;
-	}
-}
-
-if ( ! function_exists ( 'is_false' ) ) {
-	function is_false ( $test ) {
-		return ( is_bool ( $test ) AND $test === false ) ? true : false;
-	}
-}
-
-if ( ! function_exists ( 'echo_r' ) ) {
-	function echo_r ( $data, $exit = false, $dump = false ) {
-		if ( $exit === 'json' ) {
-			header ( 'Content-Type: application/json' );
-			exit ( json_encode ( $data ) );
-		}
-		echo $dump ? null : '<pre>';
-		if ( $dump ) {
-			var_dump ( $data );
+		elseif ($server_protocol=='HTTP/1.1' || $server_protocol=='HTTP/1.0') {
+			header($server_protocol . " {$code} {$text}", true, $code);
 		}
 		else {
-			print_r ( $data );
+			header("HTTP/1.1 {$code} {$text}", true, $code);
 		}
-		echo $dump ? null : '</pre>';
-		if ( $exit ) {
+	}
+}
+
+if (!function_exists('__die')) {
+	function __die ($message, $code=500, $heading='An Error Was Encountered', $path_error='errors', $file_error='error_general') {
+		__status_header($code);
+		@include_once APPPATH.$path_error.'/'.$file_error.EXT;
+		exit(1);
+	}
+}
+
+if (!function_exists('__is_true')) {
+	function __is_true ($test) {
+		return (is_bool($test) && $test===true) ? true : false;
+	}
+}
+
+if (!function_exists('__is_false')) {
+	function __is_false ($test) {
+		return (is_bool($test) && $test===false) ? true : false;
+	}
+}
+
+if (!function_exists('__e')) {
+	function __e($string, $exit=false) {
+		echo $string;
+		if ($exit) {
 			exit;
 		}
 	}
 }
 
-if ( ! function_exists ( 'echo_j' ) ) {
-	function echo_j ( $data ) {
-		echo_r ( $data, 'json' );
+if (!function_exists('__j')) {
+	function __j ($data, $exit=false) {
+		$return = json_encode($data);
+		header ( 'Content-Type: application/json' );
+		if ($exit) {
+			exit($return);
+		}
+		echo $return;
+	}
+}
+
+if (!function_exists('__x')) {
+	function __x($data,$exit=false) {
+		echo '<pre>';
+		var_dump($data);
+		echo '</pre>';
+		if ($exit) {
+			exit;
+		}
+	}
+}
+
+if (!function_exists('__r')) {
+	function __r($data,$exit=false) {
+		echo '<pre>';
+		print_r($data);
+		echo '</pre>';
+		if ($exit) {
+			exit;
+		}
+	}
+}
+
+if (!function_exists('__is_version')) {
+	function __is_version ($version, $operator = '=') {
+		switch($operator) {
+			default: case '=': return CI_VERSION == $version ? true : false; break;
+			case '<': return CI_VERSION < $version ? true : false; 	break;
+			case '>': return CI_VERSION > $version ? true : false; break;
+			case '<=': return CI_VERSION <= $version ? true : false; break;
+			case '>=': return CI_VERSION >= $version ? true : false; break;
+		}
 	}
 }

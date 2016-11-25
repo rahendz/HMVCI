@@ -1,4 +1,4 @@
 </div>
-<?php theme_enqueue_foot() ?>
+<?php app_footer() ?>
 </body>
 </html>

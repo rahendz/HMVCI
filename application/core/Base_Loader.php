@@ -103,6 +103,9 @@ class Base_Loader extends CI_Loader {
 	}
 
 	public function view ( $view, $vars = array(), $return = false ) {
+		if (!isset($view)) {
+			return;
+		}
 		if ( $this->detect_module ( $view ) && list ( $module, $class ) = $this->detect_module ( $view ) ) {
 			if ( in_array ( $module, $this->_ci_modules ) ) {
 				return parent::view ( $class, $vars, $return );
@@ -143,7 +146,7 @@ class Base_Loader extends CI_Loader {
 	public function database ( $params = '', $return = FALSE, $active_record = NULL ) {
 		$CI =& get_instance();
 		$db_method = '_ci_get_database_3';
-		if ( ci_version ( '<', '3' ) ) {
+		if ( __is_version ( '3', '<' ) ) {
 			$db_method = '_ci_get_database';
 		}
 		if ( empty ( $this->_router->module ) ) {
@@ -234,25 +237,25 @@ class Base_Loader extends CI_Loader {
 		if (!is_array($this->theme_path)) {
 			if (is_dir(FCPATH.$this->theme_path.$this->theme_name)) {
 				$this->theme_dir = FCPATH.$this->theme_path.$this->theme_name.'/';
-			} 
+			}
 			elseif (is_dir($this->theme_path.$this->theme_name)) {
 				$this->theme_dir = $this->theme_path.$this->theme_name.'/';
-			} 
+			}
 			elseif (is_dir($this->theme_path.'default')) {
 				$this->theme_dir = $this->theme_path.'default/';
 			}
-		} 
+		}
 		elseif ($this->theme_type=='frontend' && is_dir(FCPATH.'themes/'.$this->theme_name)) {
 			$this->theme_dir = 'themes/'.$this->theme_name.'/';
-		} 
+		}
 		else {
 			foreach ($this->theme_path as $bt) {
 				if (is_dir(FCPATH.$bt.'themes/'.$this->theme_name)) {
 					$this->theme_dir = $bt.'themes/'.$this->theme_name.'/';
 					break;
-				} 
+				}
 				elseif (is_dir(FCPATH.$bt.'themes/default')) {
-					$this->theme_dir = $bt.'themes/default/'; 
+					$this->theme_dir = $bt.'themes/default/';
 					break;
 				}
 			}
@@ -266,7 +269,7 @@ class Base_Loader extends CI_Loader {
 
 		// Returning error notice when theme directory not configured
 		if (!$this->theme_dir) {
-			show_error ( '<p><strong> THEME NOTICE:</strong> It\'s seems theme directory aren\'t set yet or missing.</p>' );	
+			show_error ( '<p><strong> THEME NOTICE:</strong> It\'s seems theme directory aren\'t set yet or missing.</p>' );
 		}
 
 		// Registering base variable to loader
@@ -279,21 +282,21 @@ class Base_Loader extends CI_Loader {
 			) );
 
 		$path_view = $this->_config->_config_paths[0] . 'views/';
-		
+
 		if (is_null($this->views_file) || empty($this->views_file)) {
 			if ($this->_router->method=='index' && is_file($path_view.$this->_router->class.'/main'.EXT)) {
 				$this->views_file = $this->_router->class.'/main';
-			} 
+			}
 			elseif (is_file($path_view.$this->_router->class.'/'.$this->_router->method.EXT)) {
 				$this->views_file = $this->_router->class.'/'.$this->_router->method;
-			} 
+			}
 			elseif (is_file($path_view.$this->_router->class.EXT)) {
 				$this->views_file = $this->_router->class;
 			}
-		} 
+		}
 		elseif (is_file($path_view.$this->_router->class.'/'.$this->views_file.EXT)) {
 			$this->views_file = $this->_router->class.'/'.$this->views_file;
-		} 
+		}
 		elseif (is_file($path_view.$this->views_file.'/main'.EXT)) {
 			$this->views_file = $this->views_file.'/main';
 		}
@@ -327,7 +330,7 @@ class Base_Loader extends CI_Loader {
 			}
 			else {
 				$index_path = false;
-			} 
+			}
 		}
 
 		// Returning error notice when there is no index path configured
@@ -364,11 +367,11 @@ class Base_Loader extends CI_Loader {
 			echo eval('?>'.preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($index_path))));
 		}
 		else {
-			include ( $index_path );	
+			include ( $index_path );
 		}
 
 		log_message ( 'debug', 'File loaded: '.$index_path );
-		
+
 		if ($_ci_return===true) {
 			$buffer = ob_get_contents();
 			@ob_end_clean();
@@ -420,7 +423,7 @@ class Base_Loader extends CI_Loader {
 				foreach($this->enqueue_style_requires as $r => $id) {
 					$r = file_exists($assets_css_path.$r.'.min.css')?$r.'.min':$r;
 					if (file_exists($assets_css_path.$r.'.css')) {
-						$require_file = base_url($assets_css_path.$r.'.css');
+						$require_file = $this->config->base_url($assets_css_path.$r.'.css');
 						$return .= sprintf('<link rel="%s" id="%s-css" href="%s" />',	$rel, $r, $require_file)."\n\t";
 						$this->enqueue_style_id[] = $r;
 					}
@@ -454,8 +457,8 @@ class Base_Loader extends CI_Loader {
 				foreach ( $this->enqueue_script_requires as $r => $for ) {
 					$x = $r === 'tinymce' ? 'tinymce/tinymce' : $r;
 					$re = file_exists ( $assets_js_path . $x . '.min.js' ) ? $x . '.min' : $x;
-					if ( ( $r == 'jquery' OR $r == 'tinymce' ) AND file_exists ( $assets_js_path . $re . '.js' ) ) {
-						$require_file = base_url ( $assets_js_path . $re . '.js' );
+					if ( ( strpos($r, 'jquery')!==false OR $r == 'tinymce' ) AND file_exists ( $assets_js_path . $re . '.js' ) ) {
+						$require_file = $this->config->base_url ( $assets_js_path . $re . '.js' );
 						if ( $this->is_anyscript_required ( array ( $r ) ) === false ) {
 							$return .= sprintf ( '<script id="%s" src="%s"></script>', $r, $require_file ) . "\n\t";
 							$this->enqueue_script_id[] = $r;
@@ -469,8 +472,8 @@ class Base_Loader extends CI_Loader {
 			}
 		}
 		$return .= '<!--[if lt IE 9]>' . "\n\t";
-		$return .= "\t" . sprintf ( '<script src="%s"></script>', base_url ( $assets_js_path . 'html5shiv.js' ) ) . "\n\t";
-		$return .= "\t" . sprintf ( '<script src="%s"></script>', base_url ( $assets_js_path . 'respond.js' ) ) . "\n\t";
+		$return .= "\t" . sprintf ( '<script src="%s"></script>', $this->config->base_url ( $assets_js_path . 'html5shiv.js' ) ) . "\n\t";
+		$return .= "\t" . sprintf ( '<script src="%s"></script>', $this->config->base_url ( $assets_js_path . 'respond.js' ) ) . "\n\t";
 		$return .= '<![endif]-->' . "\n\t";
 		echo rtrim ( $return, "\t" );
 	}
@@ -497,7 +500,7 @@ class Base_Loader extends CI_Loader {
 					$re = file_exists ( $assets_js_path . $r . '.min.js' ) ? $r . '.min' : $r;
 					// echo $assets_js_path . $re . '<br/>';
 					if ( $r !== 'jquery' AND file_exists ( $assets_js_path . $re . '.js' ) ) {
-						$require_file = base_url ( $assets_js_path . $re . '.js' );
+						$require_file = $this->config->base_url ( $assets_js_path . $re . '.js' );
 						$return .= sprintf ( '<script id="%s" src="%s"></script>',	$r, $require_file ) . "\n";
 						$this->enqueue_script_id[] = $r;
 					}
@@ -586,6 +589,10 @@ class Base_Loader extends CI_Loader {
 			return array ( $class );
 		}
 		return false;
+	}
+
+	public function is_module($class) {
+		return $this->detect_module($class);
 	}
 
 	private function find_module ( $module ) {
