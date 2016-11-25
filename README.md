@@ -30,8 +30,8 @@ Hierarchical MVC with customized Codeigniter based on Official v2.2.x, if you're
 5.  in `application/config` directory, rename `config-sample.php` into `config.php`
 6.  in `application/config` directory, rename `database-sample.php` into `database.php`
 7.  By default the controller route is set to basic at `application/controller/basic.php`
-8.  Accessing [home url](*http://localhost/index.php*) will show the `basic_message.php` that stored at `application/views`.
-9. To show the modular works just accesing [welcome page](*http://localhost/index.php/welcome*), it will call the welcome controller which stored at `application/modules/welcome/controller/welcome.php`
+8.  Accessing home url `(*http://localhost/index.php*)` will show the `basic_message.php` that stored at `application/views`.
+9. To show the modular works just accesing the welcome page `(*http://localhost/index.php/welcome*)`, it will call the welcome controller which stored at `application/modules/welcome/controller/welcome.php`
 
 ## Simple Documentation
 You can check manually simple documentation that implemented in welcome controller at `application/modules/welcome`, 
