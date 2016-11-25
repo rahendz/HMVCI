@@ -37,11 +37,13 @@ Hierarchical MVC with customized Codeigniter based on Official v2.2.x, if you're
 You can check manually simple documentation that implemented in welcome controller at `application/modules/welcome`, 
 there will be 4 folders, config, controllers, models and views.
 
+Or, visit the [wiki](https://github.com/rahendz/HMVCI/wiki) for complete documentation and feel free to ask for more guidance or just report bugs.
+
 #### Extends Controller
 There is 3 optional extends controller to use my modular and theme engine with properly.
-- Api Controller *for using restful service as server or client*
-- Private Controller *for backend purpose*
-- Public Controller *for frontend purpose*
+- Api Controller (Api_Controller) *for using restful service as server or client*
+- Private Controller (Private_Controller) *for backend purpose*
+- Public Controller (Public_Controller) *for frontend purpose*
 
 <br>
 #### Theme Configuration
