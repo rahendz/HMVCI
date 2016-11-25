@@ -1,25 +1,26 @@
 # HMVCI for Codeigniter v2.x
-Custom Codeigniter based on Official v2.2.x, if you're using CI version 3.x then i'm not recommended
-using my hmvci. My Hmvci for CI version 3.x is still under developing.
+Hierarchical MVC with customized Codeigniter based on Official v2.2.x, if you're using CI version 3.x then i'm not recommended using my hmvci. My Hmvci for CI version 3.x is still under developing.
 
 ### Features:
-- [x] HMVC Modular
+- [x] Hierarchical MVC Modular
 - [x] Wordpress-like Theme Structure with different path for backend and frontend
 - [x] Simple RESTful API server and client
 - [ ] Scaffolding-like from CI v1.7.x (will integrate soon)
 - [ ] OAUTH 2.0 (coming soon)
 
 ### Included Assets:
-- [x] Bootstrap
-- [x] Font Awesome
+- [x] Bootstrap v3.3.7
+- [x] Bootstrap v4.0.0-alpha.4
+- [x] Font Awesome v4.6.3
 - [x] Dashicons
 - [x] Lato Font
-- [x] Select2
-- [x] TinyMCE
-- [x] HTML5Shiv.js
-- [x] JQuery
+- [x] Select2 v3.2
+- [x] TinyMCE v4.1.9
+- [x] HTML5Shiv.js v3.7.0
+- [x] JQuery v2.2.4
+- [x] JQuery v3.1.1
 - [x] Nestable
-- [x] Less.js
+- [x] Respons JS v1.1.0
 
 ## How-To
 1.  Download HMVCI (codeigniter core system not included)
@@ -29,8 +30,8 @@ using my hmvci. My Hmvci for CI version 3.x is still under developing.
 5.  in `application/config` directory, rename `config-sample.php` into `config.php`
 6.  in `application/config` directory, rename `database-sample.php` into `database.php`
 7.  By default the controller route is set to basic at `application/controller/basic.php`
-8.  Accessing home url (*http://localhost/index.php*) will show the `basic_message.php` that stored at `application/views`.
-9. To show the modular works just accesing (*http://localhost/index.php/welcome*), it will call the welcome controller which stored at `application/modules/welcome/controller/welcome.php`
+8.  Accessing [home url](*http://localhost/index.php*) will show the `basic_message.php` that stored at `application/views`.
+9. To show the modular works just accesing [welcome page](*http://localhost/index.php/welcome*), it will call the welcome controller which stored at `application/modules/welcome/controller/welcome.php`
 
 ## Simple Documentation
 You can check manually simple documentation that implemented in welcome controller at `application/modules/welcome`, 
