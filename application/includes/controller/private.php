@@ -9,6 +9,11 @@ abstract class Private_Controller extends Base_Controller {
 		// $this->user_priviledge();
 	}
 
+	public function render_theme($vars = array(), $return = false) {
+		$this->theme_var['config']['backend'] = $this->theme;
+		parent::render_theme($vars, $return);
+	}
+
 	protected function user_priviledge() {
 		$settings =& $this->model('m_settings');
 		if ( $this->router->fetch_class() !== 'inheritance' AND ! $settings->is_priviledge_approved() ) {

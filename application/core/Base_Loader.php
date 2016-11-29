@@ -248,6 +248,9 @@ class Base_Loader extends CI_Loader {
 		elseif ($this->theme_type=='frontend' && is_dir(FCPATH.'themes/'.$this->theme_name)) {
 			$this->theme_dir = 'themes/'.$this->theme_name.'/';
 		}
+		elseif ($this->theme_type=='frontend' && is_dir(FCPATH.'themes/default')) {
+			$this->theme_dir = 'themes/default/';
+		}
 		else {
 			foreach ($this->theme_path as $bt) {
 				if (is_dir(FCPATH.$bt.'themes/'.$this->theme_name)) {

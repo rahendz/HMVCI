@@ -17,6 +17,9 @@ class Welcome extends Public_Controller {
 	}
 
 	public function index() {
+		// Try activate Telo theme, but system will load
+		// Default instead when Telo doesn't exist
+		$this->theme = 'telo';
 		// View file to display inside index theme
 		$this->theme_var['content'] = 'welcome_message';
 		// rendering theme
