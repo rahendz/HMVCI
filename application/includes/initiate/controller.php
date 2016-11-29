@@ -4,7 +4,7 @@ class Base_Controller extends CI_Controller {
 
 	public $ignored = array('inheritance', 'test', 'sign');
 
-	protected $theme = 'default';
+	protected $theme;
 
 	protected $theme_var = array();
 
