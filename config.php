@@ -1,7 +1,7 @@
 <?php if ( ! defined ( 'BASEPATH' ) ) exit ( 'No direct script access allowed' );
 /**
  * The base configuration for system
- * test commit masbott *
+ * 
  * This file contains the following configurations:
  *
  * * MySQL settings
