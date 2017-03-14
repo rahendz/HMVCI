@@ -1,7 +1,7 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php if ( ! defined ( 'BASEPATH' ) ) exit ( 'No direct script access allowed' );
 /**
  * The base configuration for system
- *
+ * test commit masbott *
  * This file contains the following configurations:
  *
  * * MySQL settings
@@ -11,7 +11,7 @@
 
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database */
-define('DB_NAME', 'joss');
+define('DB_NAME', '');
 
 /** MySQL database username */
 define('DB_USER', '');
