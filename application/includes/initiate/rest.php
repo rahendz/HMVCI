@@ -288,6 +288,21 @@ class Rest_Controller extends Base_Controller {
 		// _auth_override_check could exit so we need $this->rest->db initialized before
 		$this->auth_override    = $this->_auth_override_check();
 
+		$key = $this->{$this->request->method}('key');
+		$auth = $this->{$this->request->method}('auth');
+		$private_class = false;
+		if ($key!=false && !is_null($key) && !empty($key)) {
+			$this->config->set_item('rest_enable_keys',true);
+			$private_class = true;
+		}
+		if ($auth!=false && !is_null($auth) && !empty($auth)) {
+			$this->config->set_item('rest_auth',$auth);
+			$private_class = true;
+		}
+		if ($private_class) {
+			$this->request->method = $this->request->method.'_private';
+		}
+
 		// Checking for keys? GET TO WorK!
 	// Skip keys test for $config['auth_override_class_method']['class'['method'] = 'none'
 		if (config_item('rest_enable_keys') and $this->auth_override !== true) {
