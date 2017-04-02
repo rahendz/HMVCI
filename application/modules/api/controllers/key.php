@@ -13,7 +13,7 @@
 // This can be removed if you use __autoload() in config.php
 // require(APPPATH.'/libraries/REST_Controller.php');
 
-class Key extends Api_Controller
+class Key extends API_Controller
 {
 	protected $methods = array(
 		'index_put' => array('level' => 10, 'limit' => 10),
