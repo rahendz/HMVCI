@@ -239,7 +239,7 @@
 /public/*
 !/public/themes
 !/public/uploads
-!/public/index-sample.php
+!/public/index.php
 
 /public/themes/*
 !/public/themes/index.html
@@ -247,8 +247,6 @@
 
 /public/uploads/*
 !/public/uploads/index.html
-
-/index.php
 
 less
 scss
