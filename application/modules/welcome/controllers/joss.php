@@ -5,7 +5,8 @@ class Joss extends CI_Controller {
 
 	public function index()
 	{
-		echo 'joss nan';
+		// __r($this->load->get_component('router'));
+		__r(current ( debug_backtrace() ));
 	}
 
 }

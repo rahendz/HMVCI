@@ -84,7 +84,7 @@ if (!function_exists('current_path')) {
 		$current_path = str_replace ( array ( FCPATH, '\\' ), array ( '', '/' ), $debug['file'] );
 
 		if ('views' == $type && strpos($current_path, $type) !== false) {
-			return $current_path;
+			return str_replace('application/', APPPATH, $current_path);
 		}
 		elseif('views' == $type && strpos($current_path, $type) === false) {
 			return '<small>It\'s not a views file!</small>';
@@ -320,14 +320,14 @@ if (!function_exists('date_range')) {
 	}
 }
 
-if (!function_exists ( 'date_duration')) {
+if (!function_exists('date_duration')) {
 	function date_duration ($date1, $date2) {
 		return date_range($date1, $date2, true);
 	}
 }
 
 // Array Helper
-if  (!function_exists('array_column')) {
+if (!function_exists('array_column')) {
 	function array_column ($input=null, $columnKey=null, $indexKey=null) {
 		$argc = func_num_args();
 		$params = func_get_args();

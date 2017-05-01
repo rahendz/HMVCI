@@ -236,6 +236,18 @@
 !/modules/welcome
 !/modules/api
 
+/public/*
+!/public/themes
+!/public/uploads
+!/public/index-sample.php
+
+/public/themes/*
+!/public/themes/index.html
+!/public/themes/default
+
+/public/uploads/*
+!/public/uploads/index.html
+
 /index.php
 
 less

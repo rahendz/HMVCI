@@ -23,7 +23,7 @@ class Welcome extends Public_Controller {
 		// View file to display inside index theme
 		$this->theme_var['content'] = 'welcome_message';
 		// rendering theme
-		return $this->render_theme();
+		return $this->__render_theme();
 	}
 
 	public function testdb() {
@@ -63,7 +63,7 @@ class Welcome extends Public_Controller {
 #teka kene
 	public function testgetdoc() {
 		$this->theme_var['content'] = 'welcome_message';
-		return $this->render_theme();
+		return $this->__render_theme();
 	}
 
 	public function testapi() {
@@ -140,7 +140,7 @@ class Welcome extends Public_Controller {
 					));
 
 		$this->theme_var['content'] = 'welcome_datatable';
-		return $this->render_theme();
+		return $this->__render_theme();
 	}
 
 	public function data_record() {
@@ -159,6 +159,16 @@ class Welcome extends Public_Controller {
 	public function testjoss() {
 		$joss = $this->controller('joss');
 		echo $joss;
+	}
+
+	public function testsession() {
+		set_session('test_nonce', time());
+		redirect('welcome/testsessiontarget');
+	}
+
+	public function testsessiontarget() {
+		echo get_session('test_nonce');
+		kill_session();
 	}
 
 }

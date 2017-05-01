@@ -2,13 +2,13 @@
 // ERROR REPORTING
 if (defined('APP_DEBUG')) {
 	switch (APP_DEBUG) {
-		case true:
+		case true: case 'development':
 			error_reporting(E_ALL);
 			ini_set('display_errors', 1);
 			$environment = 'development';
 			break;
 
-		case false:
+		case false: case 'production':
 			error_reporting (0);
 			ini_set('display_errors', 0);
 			$environment = 'production';
@@ -17,8 +17,7 @@ if (defined('APP_DEBUG')) {
 		case 'testing':
 			if (version_compare(PHP_VERSION, '5.3', '>=')) {
 				error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);
-			}
-			else {
+			} else {
 				error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_USER_NOTICE);
 			}
 			ini_set('display_errors', 0);
@@ -40,29 +39,19 @@ else {
 // for v3.x
 define('ENVIRONMENT', isset($_SERVER['CI_ENV'])?$_SERVER['CI_ENV']:$environment);
 
-// SYSTEM PATH
-$system_path = SYSTEM_PATH;
-
-// APP PATH
-$application_folder = 'application';
-
-// VIEW PATH for v3.x
-$view_folder = '';
-
-// MODULES PATH, default 'modules' will be at application folder
-$modules_folder = 'modules';
-
-
-
 // --------------------------------------------------------------------
 // END OF USER CONFIGURABLE SETTINGS.  DO NOT EDIT BELOW THIS LINE
 // --------------------------------------------------------------------
-
+@require 'paths.php';
 /*
  * ---------------------------------------------------------------
  *  Resolve the system path for increased reliability
  * ---------------------------------------------------------------
  */
+	extract($_SERVER);
+	if (!isset($document_root)) {
+		$document_root = realpath($root_folder).'/';
+	}
 
 	// Set the current directory correctly for CLI requests
 	if (defined('STDIN')) {
@@ -78,7 +67,8 @@ $modules_folder = 'modules';
 
 	// Is the system path correct?
 	if (!is_dir($system_path)) {
-		exit('Your system folder path does not appear to be set correctly. Please open the following file and correct this: '.pathinfo(__FILE__, PATHINFO_BASENAME));
+		header('HTTP/1.1 500 Internal Server Error.', true, 500);
+		exit('Your system folder path does not appear to be set correctly. Please open the following file and correct this: paths.php');
 	}
 
 /*
@@ -103,15 +93,17 @@ $modules_folder = 'modules';
 	// Name of the "system folder"
 	define('SYSDIR', trim(strrchr(trim(BASEPATH, '/'), '/'), '/'));
 
+	// Path to the root folder, usually the public
+	define('ROOTPATH', rtrim(str_replace('\\', '/', $document_root),'/').'/');
+
 
 	// The path to the "application" folder
 	if (is_dir($application_folder)) {
 		define('APPPATH', $application_folder.'/');
-	}
-	elseif (!is_dir(BASEPATH.$application_folder.'/')) {
-		exit("Your application folder path does not appear to be set correctly. Please open the following file and correct this: ".SELF);
-	}
-	else {
+	} elseif (!is_dir(BASEPATH.$application_folder.'/')) {
+		header('HTTP/1.1 500 Internal Server Error.', true, 500);
+		exit("Your application folder path does not appear to be set correctly. Please open the following file and correct this: paths.php");
+	} else {
 		define('APPPATH', BASEPATH.$application_folder.'/');
 	}
 
@@ -122,7 +114,7 @@ $modules_folder = 'modules';
 			$view_folder = APPPATH.$view_folder;
 		}
 		elseif (!is_dir(APPPATH.'views'.DIRECTORY_SEPARATOR)) {
-			header('HTTP/1.1 503 Service Unavailable.', TRUE, 503);
+			header('HTTP/1.1 500 Internal Server Error.', true, 500);
 			echo 'Your view folder path does not appear to be set correctly. Please open the following file and correct this: '.SELF;
 			exit(3); // EXIT_CONFIG
 		} else {
@@ -148,18 +140,20 @@ $modules_folder = 'modules';
 		define('MODULESPATH', APPPATH.$modules_folder.'/');
 	}
 	else {
-		exit("Your modules folder path does not appear to be set correctly. Please open the following file and correct this: ".SELF);
+		header('HTTP/1.1 500 Internal Server Error.', true, 500);
+		exit("Your modules folder path does not appear to be set correctly. Please open the following file and correct this: paths.php");
 	}
 
 // The path to the "application" folder
-	if(is_dir('includes')) {
-		define('INCPATH', FCPATH.'includes/');
+	if(is_dir($includes_folder)) {
+		define('INCPATH', FCPATH.$includes_folder.'/');
 	}
-	elseif(is_dir(APPPATH.'includes')) {
-		define('INCPATH', APPPATH.'includes/');
+	elseif(is_dir(APPPATH.$includes_folder)) {
+		define('INCPATH', APPPATH.$includes_folder.'/');
 	}
 	else {
-		exit("Includes folder are missing. Please open the following file and correct this: ".SELF);
+		header('HTTP/1.1 500 Internal Server Error.', true, 500);
+		exit("Includes folder are missing. Please open the following file and correct this: paths.php");
 	}
 
 /*
