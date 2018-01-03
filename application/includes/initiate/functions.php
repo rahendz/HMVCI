@@ -762,17 +762,20 @@ if (!function_exists('crequest')) {
 
 		$curl_handle = curl_init();
 		curl_setopt($curl_handle, CURLOPT_URL, $source);
-		curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, 1);
-		// curl_setopt($curl_handle, CURLOPT_HEADER, 0);
+		curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, true);
 		if ($type==='post') {
-			curl_setopt($curl_handle, CURLOPT_POST, 1);
+			curl_setopt($curl_handle, CURLOPT_POST, true);
 		} elseif ($type==='put') {
-			curl_setopt($curl_handle, CURLOPT_PUT, 1);
+			curl_setopt($curl_handle, CURLOPT_PUT, true);
 		}
 		if (is_array($value) && count($value)>0) {
 			curl_setopt($curl_handle, CURLOPT_POSTFIELDS, http_build_query($value));
 		}
-		curl_setopt($curl_handle, CURLOPT_HTTPHEADER, array($header));
+		if($format!=false){
+			curl_setopt($curl_handle, CURLOPT_HTTPHEADER, array($header));
+		}else{
+			curl_setopt($curl_handle, CURLOPT_HEADER, false);
+		}
 
 		if (isset($username, $password)) {
 			curl_setopt($curl_handle, CURLOPT_USERPWD, "{$username}:{$password}");
