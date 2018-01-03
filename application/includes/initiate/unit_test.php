@@ -100,6 +100,16 @@ if (!function_exists('__e')) {
 	}
 }
 
+if (!function_exists('__ej')) {
+	function __ej ($data, $exit=false) {
+		header ( 'Content-Type: application/json' );
+		if ($exit) {
+			exit($data);
+		}
+		echo $data;
+	}
+}
+
 if (!function_exists('__j')) {
 	function __j ($data, $exit=false) {
 		$return = json_encode($data);
