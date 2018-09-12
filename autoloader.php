@@ -50,7 +50,7 @@ define('ENVIRONMENT', isset($_SERVER['CI_ENV'])?$_SERVER['CI_ENV']:$environment)
  */
 	extract($_SERVER);
 	if (!isset($document_root)) {
-		$document_root = realpath($root_folder).'/';
+		$document_root = realpath($root_folder).DIRECTORY_SEPARATOR;
 	}
 
 	// Set the current directory correctly for CLI requests
@@ -58,13 +58,17 @@ define('ENVIRONMENT', isset($_SERVER['CI_ENV'])?$_SERVER['CI_ENV']:$environment)
 		chdir(dirname(__FILE__));
 	}
 
-	if (realpath($system_path)!==FALSE){
-		$system_path = realpath($system_path).'/';
+	if (($_temp = realpath($system_path)) !== FALSE){
+		$system_path = $_temp.DIRECTORY_SEPARATOR;
 	}
-
-	// ensure there's a trailing slash
-	$system_path = rtrim($system_path, '/').'/';
-
+	else {
+		// ensure there's a trailing slash
+		$system_path = strtr(
+			rtrim($system_path, '/\\'),
+			'/\\',
+			DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR
+		).DIRECTORY_SEPARATOR;
+	}
 	// Is the system path correct?
 	if (!is_dir($system_path)) {
 		header('HTTP/1.1 500 Internal Server Error.', true, 500);
@@ -79,23 +83,24 @@ define('ENVIRONMENT', isset($_SERVER['CI_ENV'])?$_SERVER['CI_ENV']:$environment)
 
 	// The name of THIS file
 	define('SELF', pathinfo(__FILE__, PATHINFO_BASENAME));
-
+	// echo 'self: '.SELF."<br/><br/>";
 	// The PHP file extension
 	// this global constant is deprecated.
 	define('EXT', '.'.pathinfo(__FILE__, PATHINFO_EXTENSION));
-
+	// echo 'extension: '.EXT."<br/><br/>";
 	// Path to the system folder
-	define('BASEPATH', str_replace("\\", "/", $system_path));
-
+	define('BASEPATH', $system_path);
+	// echo 'basepath: '.BASEPATH."<br/><br/>";
 	// Path to the front controller (this file)
 	define('FCPATH', str_replace(SELF, '', __FILE__));
-
+	// echo 'front controller: '.FCPATH."<br/><br/>";
 	// Name of the "system folder"
-	define('SYSDIR', trim(strrchr(trim(BASEPATH, '/'), '/'), '/'));
-
+	define('SYSDIR', trim(strrchr(trim(BASEPATH, DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR));
+	// echo 'system: '.SYSDIR."<br/><br/>";
 	// Path to the root folder, usually the public
-	define('ROOTPATH', rtrim(str_replace('\\', '/', $document_root),'/').'/');
-
+	define('ROOTPATH', rtrim(str_replace('\\', DIRECTORY_SEPARATOR, $document_root),DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR);
+	// echo 'root: '.ROOTPATH."<br/><br/>";
+	// exit;
 
 	// The path to the "application" folder
 	if (is_dir($application_folder)) {
