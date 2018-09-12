@@ -84,7 +84,7 @@ if (!function_exists('current_path')) {
 		$current_path = str_replace ( array ( FCPATH, '\\' ), array ( '', '/' ), $debug['file'] );
 
 		if ('views' == $type && strpos($current_path, $type) !== false) {
-			return $current_path;
+			return str_replace('application/', APPPATH, $current_path);
 		}
 		elseif('views' == $type && strpos($current_path, $type) === false) {
 			return '<small>It\'s not a views file!</small>';
@@ -320,14 +320,14 @@ if (!function_exists('date_range')) {
 	}
 }
 
-if (!function_exists ( 'date_duration')) {
+if (!function_exists('date_duration')) {
 	function date_duration ($date1, $date2) {
 		return date_range($date1, $date2, true);
 	}
 }
 
 // Array Helper
-if  (!function_exists('array_column')) {
+if (!function_exists('array_column')) {
 	function array_column ($input=null, $columnKey=null, $indexKey=null) {
 		$argc = func_num_args();
 		$params = func_get_args();
@@ -762,17 +762,20 @@ if (!function_exists('crequest')) {
 
 		$curl_handle = curl_init();
 		curl_setopt($curl_handle, CURLOPT_URL, $source);
-		curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, 1);
-		// curl_setopt($curl_handle, CURLOPT_HEADER, 0);
+		curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, true);
 		if ($type==='post') {
-			curl_setopt($curl_handle, CURLOPT_POST, 1);
+			curl_setopt($curl_handle, CURLOPT_POST, true);
 		} elseif ($type==='put') {
-			curl_setopt($curl_handle, CURLOPT_PUT, 1);
+			curl_setopt($curl_handle, CURLOPT_PUT, true);
 		}
 		if (is_array($value) && count($value)>0) {
 			curl_setopt($curl_handle, CURLOPT_POSTFIELDS, http_build_query($value));
 		}
-		curl_setopt($curl_handle, CURLOPT_HTTPHEADER, array($header));
+		if($format!=false){
+			curl_setopt($curl_handle, CURLOPT_HTTPHEADER, array($header));
+		}else{
+			curl_setopt($curl_handle, CURLOPT_HEADER, false);
+		}
 
 		if (isset($username, $password)) {
 			curl_setopt($curl_handle, CURLOPT_USERPWD, "{$username}:{$password}");

@@ -29,6 +29,7 @@ class Base_Loader extends CI_Loader {
 
 	public $_router = array();
 	public $_config = array();
+	public $_root;
 
 	public function __construct() {
 		parent::__construct();
@@ -212,9 +213,9 @@ class Base_Loader extends CI_Loader {
 	// THEME ROUTING
 	public function theme_validate() {
 		// Theme type mapping
-		if ( isset ( $this->theme_config['backend'] ) ) {
+		if ( array_key_exists ( 'backend', $this->theme_config ) ) {
 			$this->theme_type = 'backend';
-		} elseif ( isset ( $this->theme_config['frontend'] ) ) {
+		} elseif ( array_key_exists ( 'frontend', $this->theme_config ) ) {
 			$this->theme_type = 'frontend';
 		} else {
 			return false;
@@ -235,8 +236,8 @@ class Base_Loader extends CI_Loader {
 
 		// registering theme directory
 		if (!is_array($this->theme_path)) {
-			if (is_dir(FCPATH.$this->theme_path.$this->theme_name)) {
-				$this->theme_dir = FCPATH.$this->theme_path.$this->theme_name.'/';
+			if (is_dir(ROOTPATH.$this->theme_path.$this->theme_name)) {
+				$this->theme_dir = ROOTPATH.$this->theme_path.$this->theme_name.'/';
 			}
 			elseif (is_dir($this->theme_path.$this->theme_name)) {
 				$this->theme_dir = $this->theme_path.$this->theme_name.'/';
@@ -245,10 +246,22 @@ class Base_Loader extends CI_Loader {
 				$this->theme_dir = $this->theme_path.'default/';
 			}
 		}
-		elseif ($this->theme_type=='frontend' && is_dir(FCPATH.'themes/'.$this->theme_name)) {
+		elseif (is_dir(ROOTPATH.$this->theme_path['0'].'/themes/'.$this->theme_name)) {
+			$this->theme_dir = $this->theme_path['0'].'/themes/'.$this->theme_name.'/';
+		}
+		elseif (is_dir(FCPATH.$this->theme_path['0'].'/themes/default')) {
+			$this->theme_dir = $this->theme_path['0'].'/themes/default/';
+		}
+		elseif ($this->theme_type=='frontend' && is_dir(ROOTPATH.'themes/'.$this->theme_name)) {
 			$this->theme_dir = 'themes/'.$this->theme_name.'/';
 		}
-		elseif ($this->theme_type=='frontend' && is_dir(FCPATH.'themes/default')) {
+		elseif ($this->theme_type=='frontend' && is_dir(ROOTPATH.'themes/default')) {
+			$this->theme_dir = 'themes/default/';
+		}
+		elseif ($this->theme_type=='backend' && is_dir(APPPATH.'themes/'.$this->theme_name)) {
+			$this->theme_dir = 'themes/'.$this->theme_name.'/';
+		}
+		elseif ($this->theme_type=='backend' && is_dir(APPPATH.'themes/default')) {
 			$this->theme_dir = 'themes/default/';
 		}
 		else {
@@ -373,8 +386,6 @@ class Base_Loader extends CI_Loader {
 			include ( $index_path );
 		}
 
-		log_message ( 'debug', 'File loaded: '.$index_path );
-
 		if ($_ci_return===true) {
 			$buffer = ob_get_contents();
 			@ob_end_clean();
@@ -411,6 +422,7 @@ class Base_Loader extends CI_Loader {
 		$return .= '<meta name="assets_path" content="'. $this->config->base_url ( APPPATH . 'core/assets' ) .'" />'. "\n\t";
 		$return .= '<meta name="template_directory_uri" content="'. get_template_directory_uri() .'" />'. "\n\t";
 		$return .= '<meta name="stylesheet_url" content="'. get_stylesheet_uri() .'" />'. "\n\t";
+		$return .= '<script type="text/javascript">var base_url = "'. $this->config->base_url() .'", theme_uri = "'. get_template_directory_uri() .'";</script>'."\n\t";
 		foreach($this->enqueue_style as $id => $e) {
 			list($file, $version) = $e; // $require,
 			// $requires = isset ( $require ) ? $require : array();

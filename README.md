@@ -1,124 +1,45 @@
+![](https://github.com/rahendz/hmvci/raw/master/application/includes/assets/images/hmvci-logo.png)
+
 # HMVCI for Codeigniter v2.x
 Hierarchical MVC with customized Codeigniter based on Official v2.2.x, if you're using CI version 3.x then i'm not recommended using my hmvci. My Hmvci for CI version 3.x is still under developing.
 
 ### Features:
 - [x] Hierarchical MVC Modular
-- [x] Wordpress-like Theme Structure with different path for backend and frontend
-- [x] Simple RESTful API server and client
-- [ ] Scaffolding-like from CI v1.7.x (will integrate soon)
+- [x] Wordpress-like Theme Structure with different path for backend and frontend (beta)
+- [x] Simple RESTful API server and client (beta)
+- [ ] Scaffolding-like from CI v1.7.x (coming soon)
 - [ ] OAUTH 2.0 (coming soon)
 
+### Included System
+- [x] Codeigniter v2.2.5
+- [x] Codeigniter v3.1.9
+
 ### Included Assets:
+Some of it will removed or replaced considering to reduced the size of frameworks.
 - [x] Bootstrap v3.3.7
-- [x] Bootstrap v4.0.0-alpha.4
-- [x] Font Awesome v4.6.3
-- [x] Dashicons
-- [x] Lato Font
-- [x] Select2 v3.2
-- [x] TinyMCE v4.1.9
-- [x] HTML5Shiv.js v3.7.0
-- [x] JQuery v2.2.4
-- [x] JQuery v3.1.1
-- [x] Nestable
-- [x] Respons JS v1.1.0
+- [x] Bootstrap v4.0.0-alpha.4 (will updated to v4.1)
+- [x] Font Awesome v4.6.3 (will replaced with simple line icon)
+- [x] Dashicons (removed)
+- [x] Google Lato Font
+- [x] Select2 v3.2 (removed)
+- [x] TinyMCE v4.1.9 (removed)
+- [x] HTML5Shiv.js v3.7.0 (will updated)
+- [x] JQuery v2.2.4 (removed)
+- [x] JQuery v3.1.1 (will updated to v3.3.1)
+- [x] Nestable (removed)
+- [x] Respons JS v1.1.0 (removed)
 
 ## How-To
-1.  Download HMVCI (codeigniter core system not included)
-2.  Download Codeigniter core system v2.x from official site (recommended to use v2.2.5 instead)
-3.  Put system folder from Official Codeigniter inside HMVCI folder
-4.  in root directory, rename `index-sample.php` into `index.php`
-5.  in `application/config` directory, rename `config-sample.php` into `config.php`
-6.  in `application/config` directory, rename `database-sample.php` into `database.php`
-7.  By default the controller route is set to basic at `application/controller/basic.php`
-8.  Accessing home url `(*http://localhost/index.php*)` will show the `basic_message.php` that stored at `application/views`.
-9. To show the modular works just accesing the welcome page `(*http://localhost/index.php/welcome*)`, it will call the welcome controller which stored at `application/modules/welcome/controller/welcome.php`
+1.  Download or Clone HMVCI
+2.  In root directory, duplicate `paths-sample.php` and renamed into `paths.php`
+3.  And choose included system on `paths.php` file, v2.2.5 or v3.1.9. Or if you have your own version, put it in system folder and set to it.
+4.  If you are using database then rename `config-sample.php` into `config.php` then edit the configuration.
+5.  By default the controller route is set to basic at `application/controller/basic.php`
+6.  Accessing home url `(*http://localhost/index.php*)` will show the `basic_message.php` that stored at `application/views`.
+7. To show the modular works just accesing the welcome page `(*http://localhost/index.php/welcome*)`, it will call the welcome controller which stored at `application/modules/welcome/controller/welcome.php`
 
 ## Simple Documentation
 You can check manually simple documentation that implemented in welcome controller at `application/modules/welcome`, 
 there will be 4 folders, config, controllers, models and views.
 
 Or, visit the [wiki](https://github.com/rahendz/HMVCI/wiki) for complete documentation and feel free to ask for more guidance or just report bugs.
-
-#### Extends Controller
-There is 3 optional extends controller to use my modular and theme engine with properly.
-- Api Controller (Api_Controller) *for using restful service as server or client*
-- Private Controller (Private_Controller) *for backend purpose*
-- Public Controller (Public_Controller) *for frontend purpose*
-
-<br>
-#### Theme Configuration
-Configuration for theme, put it in `construct` each controller to have different theme on each of it. Or
-just set it on `application/includes/controller/(public or private)` for all of public controller.
-
-	$this->theme_var['config']['frontend'] = 'default';
-*those are for frontend*
-
-OR
-
-	$this->theme_var['config']['backend'] = 'default';
-*those are for backend*
-
-<br>
-#### Registering file CSS to theme
-Push the **stylesheet** to theme using `enqueue_style` with 4 available parameter:
-- **$id**: (*string/array*) Style id for registering.
-- **$file**: (*string*) Stylesheet filename and path.
-- **$dependency**: (*array*) File that needed for your stylesheet run properly, leave it blank array when your script doesn't have any dependency.
-- **$version**: (*string*) Optional. your stylesheet version.
-
-<!-- -->
-
-	$this->enqueue_style( $id, $file, $dependency, $version );
-
-OR
-
-	$this->enqueue_style( array( $id => array ( $file, $dependency, $version ) ) );
-
-example:
-
-	$this->enqueue_style( 'style', 'css/style.css', array('bootstrap'), '1.1.2' );
-
-and then use `theme_enqueue_head();` put it in tag head on your theme to load all your registered stylesheet.
-
-<br>
-#### Registering file JS to theme
-Push the **script** to theme using `enquque_script` with 4 available parameter:
-- **$id**: (*string/array*) Script id for registering.
-- **$file**: (*string*) Stylesheet filename and path.
-- **$dependency**: (*array*) File that needed for your stylesheet run properly, leave it blank array when your script doesn't have any dependency.
-- **$version**: (*string*) Optional. your stylesheet version.
-- **$footer**: (*boolean*) It set your script placement, will be loaded at footer or inside tag head, default value is **false**.
-
-<!-- -->
-
-	$this->enqueue_script( $id, $file, $dependency, $version, $footer );
-
-OR
-
-	$this->enqueue_script( array( $id => array ( $file, $dependency, $version, $footer ) ) );
-
-example:
-
-	$this->enqueue_script( 'scripts', 'js/scripts.js', array('jquery'), '1.1.0', true );
-
-and then use `theme_enqueue_foot();` put it in end of tag body on your theme to load all your registered script.
-
-<br>
-#### Render Theme
-**Firstly**, set which file views to be render
-
-	$this->theme_var['content'] = 'path/file';
-
-example:
-
-	$this->theme_var['content'] = 'welcome_message';
-
-**Secondly**, set what data would be sent to theme
-
-	$this->theme_var['data'][$var] = 'lorem ipsum dolor sit amet';
-
-example:
-
-	$this->theme_var['data']['error_message'] = 'Username or password was wrong';
-
-**AND last**, let theme rendered by `$this->render_theme()` by put it at the last line of each function

@@ -8,8 +8,8 @@ abstract class Public_Controller extends Base_Controller {
 		parent::__construct();
 	}
 
-	public function render_theme($vars = array(), $return = false) {
+	public function __render_theme($vars = array(), $return = false) {
 		$this->theme_var['config']['frontend'] = $this->theme;
-		parent::render_theme($vars, $return);
+		parent::__render_theme($vars, $return);
 	}
 }
