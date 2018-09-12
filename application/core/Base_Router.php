@@ -132,8 +132,8 @@ class Base_Router extends CI_Router {
 		return $this->module;
 	}
 
-	function set_directory ( $dir ) {
-		$this->directory = $dir;
+	function set_directory ( $dir, $append = false ) {
+		$this->directory = $append ? $this->directory . $dir : $dir;
 	}
 	function _set_overrides ( $routing ) {
 		if ( ! is_array ( $routing ) ) {
