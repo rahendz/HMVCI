@@ -11,7 +11,7 @@ $my_config['modules_locations'] = array ( MODULESPATH => $modules_directory );
 APPLICATION VARS
 */
 $my_config['app_name'] = 'HMVCI';
-
+$my_config['error_views_path'] = APPPATH.'errors'.DIRECTORY_SEPARATOR;
 /*
 RESTful CLIENT API Configuration
 */
