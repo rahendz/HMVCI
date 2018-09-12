@@ -1,3 +1,5 @@
+![](https://github.com/rahendz/hmvci/raw/master/application/includes/assets/images/hmvci-logo.png)
+
 # HMVCI for Codeigniter v2.x
 Hierarchical MVC with customized Codeigniter based on Official v2.2.x, if you're using CI version 3.x then i'm not recommended using my hmvci. My Hmvci for CI version 3.x is still under developing.
 
