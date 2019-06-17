@@ -10,12 +10,13 @@ Hierarchical MVC with customized Codeigniter based on Official v2.2.x, if you're
 - [ ] Scaffolding-like from CI v1.7.x (coming soon)
 - [ ] OAUTH 2.0 (coming soon)
 
-### Included System
+### Included System Version
 - [x] Codeigniter v2.2.5
 - [x] Codeigniter v3.1.9
 
 ### Included Assets:
 Some of it will removed or replaced considering to reduced the size of frameworks.
+There will be an article or wiki to help you setup your own assets
 - [x] Bootstrap v3.3.7
 - [x] Bootstrap v4.0.0-alpha.4 (will updated to v4.1)
 - [x] Font Awesome v4.6.3 (will replaced with simple line icon)
