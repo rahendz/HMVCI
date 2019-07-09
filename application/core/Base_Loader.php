@@ -237,41 +237,41 @@ class Base_Loader extends CI_Loader {
 		// registering theme directory
 		if (!is_array($this->theme_path)) {
 			if (is_dir(ROOTPATH.$this->theme_path.$this->theme_name)) {
-				$this->theme_dir = ROOTPATH.$this->theme_path.$this->theme_name.'/';
+				$this->theme_dir = ROOTPATH.$this->theme_path.$this->theme_name.DIRECTORY_SEPARATOR;
 			}
 			elseif (is_dir($this->theme_path.$this->theme_name)) {
-				$this->theme_dir = $this->theme_path.$this->theme_name.'/';
+				$this->theme_dir = $this->theme_path.$this->theme_name.DIRECTORY_SEPARATOR;
 			}
 			elseif (is_dir($this->theme_path.'default')) {
-				$this->theme_dir = $this->theme_path.'default/';
+				$this->theme_dir = $this->theme_path.'default'.DIRECTORY_SEPARATOR;
 			}
 		}
-		elseif (is_dir(ROOTPATH.$this->theme_path['0'].'/themes/'.$this->theme_name)) {
-			$this->theme_dir = $this->theme_path['0'].'/themes/'.$this->theme_name.'/';
+		elseif (is_dir(ROOTPATH.$this->theme_path['0'].DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.$this->theme_name)) {
+			$this->theme_dir = $this->theme_path['0'].DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.$this->theme_name.DIRECTORY_SEPARATOR;
 		}
-		elseif (is_dir(FCPATH.$this->theme_path['0'].'/themes/default')) {
-			$this->theme_dir = $this->theme_path['0'].'/themes/default/';
+		elseif (is_dir(FCPATH.$this->theme_path['0'].'themes'.DIRECTORY_SEPARATOR.'default')) {
+			$this->theme_dir = $this->theme_path['0'].'themes'.DIRECTORY_SEPARATOR.'default'.DIRECTORY_SEPARATOR;
 		}
-		elseif ($this->theme_type=='frontend' && is_dir(ROOTPATH.'themes/'.$this->theme_name)) {
-			$this->theme_dir = 'themes/'.$this->theme_name.'/';
+		elseif ($this->theme_type=='frontend' && is_dir(PUBLICPATH.'themes'.DIRECTORY_SEPARATOR.$this->theme_name)) {
+			$this->theme_dir = FCPATH.basename(PUBLICPATH).DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.$this->theme_name.DIRECTORY_SEPARATOR;
 		}
-		elseif ($this->theme_type=='frontend' && is_dir(ROOTPATH.'themes/default')) {
-			$this->theme_dir = 'themes/default/';
+		elseif ($this->theme_type=='frontend' && is_dir(PUBLICPATH.'themes'.DIRECTORY_SEPARATOR.'default')) {
+			$this->theme_dir = 'themes'.DIRECTORY_SEPARATOR.'default'.DIRECTORY_SEPARATOR;
 		}
-		elseif ($this->theme_type=='backend' && is_dir(APPPATH.'themes/'.$this->theme_name)) {
-			$this->theme_dir = 'themes/'.$this->theme_name.'/';
+		elseif ($this->theme_type=='backend' && is_dir(APPPATH.'themes'.DIRECTORY_SEPARATOR.$this->theme_name)) {
+			$this->theme_dir = 'themes'.DIRECTORY_SEPARATOR.$this->theme_name.DIRECTORY_SEPARATOR;
 		}
-		elseif ($this->theme_type=='backend' && is_dir(APPPATH.'themes/default')) {
-			$this->theme_dir = 'themes/default/';
+		elseif ($this->theme_type=='backend' && is_dir(APPPATH.'themes'.DIRECTORY_SEPARATOR.'default')) {
+			$this->theme_dir = 'themes'.DIRECTORY_SEPARATOR.'default'.DIRECTORY_SEPARATOR;
 		}
 		else {
 			foreach ($this->theme_path as $bt) {
-				if (is_dir(FCPATH.$bt.'themes/'.$this->theme_name)) {
-					$this->theme_dir = $bt.'themes/'.$this->theme_name.'/';
+				if (is_dir(FCPATH.$bt.'themes'.DIRECTORY_SEPARATOR.$this->theme_name)) {
+					$this->theme_dir = $bt.'themes'.DIRECTORY_SEPARATOR.$this->theme_name.DIRECTORY_SEPARATOR;
 					break;
 				}
-				elseif (is_dir(FCPATH.$bt.'themes/default')) {
-					$this->theme_dir = $bt.'themes/default/';
+				elseif (is_dir(FCPATH.$bt.'themes'.DIRECTORY_SEPARATOR.'default')) {
+					$this->theme_dir = $bt.'themes'.DIRECTORY_SEPARATOR.'default'.DIRECTORY_SEPARATOR;
 					break;
 				}
 			}
