@@ -20,7 +20,7 @@
 	define('APP_DEBUG', true);
 
 // END OF EDITING FILE
-@include('../autoloader.php');
+@include('..'.DIRECTORY_SEPARATOR.'autoloader.'.pathinfo(__FILE__,PATHINFO_EXTENSION));
 
 if(!defined('BASEPATH')){
 	header ( 'HTTP/1.1 500 Internal Server Error.', TRUE, 50 );
